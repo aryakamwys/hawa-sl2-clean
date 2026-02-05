@@ -41,10 +41,10 @@ export default function HeroSection() {
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up animation-delay-500">
               <Link
-                href="/get-started"
+                href="/map"
                 className="btn rounded-full !px-6 !py-4 text-base font-semibold bg-[#005AE1] text-white border-none hover:bg-[#0048b8] hover:scale-105 shadow-lg shadow-[#005AE1]/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
-                Mulai Gratis
+                Mulai Sekarang
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
