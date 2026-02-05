@@ -31,7 +31,7 @@ export default function Navbar({
       <nav
         className={[
           "inline-flex items-center justify-center gap-8",
-          "rounded-full bg-white/120 backdrop-blur-md",
+          "rounded-full bg-white/90 backdrop-blur-md",
           "shadow-lg shadow-black/5",
           "transition-all duration-300",
           scrolled ? "py-4 px-16" : "py-5 px-20",

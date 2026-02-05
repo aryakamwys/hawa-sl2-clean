@@ -1,21 +1,60 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export default function HeroSection() {
   return (
-    <section className="min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Sedang dibuat bruh
-          </h1>
-          <p className="text-lg md:text-xl text-white mb-8">
-            Halaman home sedang dalam proses pembuatan
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <button className="btn btn-soft btn-primary">
-              Get Started
-            </button>
-            <button className="btn btn-soft">
-              Learn More
-            </button>
+    <section className="min-h-screen flex items-center justify-center px-6 pt-32">
+      <div className="max-w-6xl mx-auto w-full">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          {/* Mascot Image */}
+          <div className="flex-1 flex justify-center lg:justify-start">
+            <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[440px]">
+              <Image
+                src="/maskot.png"
+                alt="Hawa Mascot"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Text Content */}
+          <div className="flex-1 text-center lg:text-left">
+            <h1 
+              className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-[#005AE1] to-[#70D8FF] bg-clip-text text-transparent" 
+              style={{ fontStyle: 'italic' }}
+            >
+              HAWA
+            </h1>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
+              Monitor Air Quality
+            </h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#005AE1] to-[#70D8FF] bg-clip-text text-transparent !mb-8">
+              the Smart Way
+            </h2>
+            <p className="text-base md:text-lg text-gray-900 !mb-10 max-w-md mx-auto lg:mx-0">
+              Informasi kualitas udara sendiri dan dapatkan rekomendasi aktivitas secara langsung 
+            </p>
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Link
+                href="/get-started"
+                className="btn rounded-full !px-6 !py-4 text-base font-semibold bg-[#005AE1] text-white border-none hover:bg-[#0048b8] shadow-lg shadow-[#005AE1]/30 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                Mulai Gratis
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              <Link
+                href="/demo"
+                className="btn rounded-full !px-8 !py-4 text-base font-semibold bg-white text-[#005AE1] border-2 border-[#005AE1] hover:bg-[#E0F4FF] transition-all duration-200"
+              >
+                Lihat Demo
+              </Link>
+            </div>
           </div>
         </div>
       </div>
