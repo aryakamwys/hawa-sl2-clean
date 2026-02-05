@@ -32,7 +32,8 @@ export default function Navbar({
         className={[
           "inline-flex items-center justify-center gap-8",
           "rounded-full bg-white/90 backdrop-blur-md",
-          "shadow-lg shadow-black/5",
+          "border-3 border-[#005AE1]/20",
+          "shadow-lg shadow-[#005AE1]/20",
           "transition-all duration-300",
           scrolled ? "py-4 px-16" : "py-5 px-20",
         ].join(" ")}
