@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --primary: #005AE1;
+  --primary-light: #E0F4FF;
+  --soft-shadow-light: rgba(255, 255, 255, 0.8);
+  --soft-shadow-dark: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --soft-radius: 16px;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--primary-light);
+  color: #212529;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.soft-ui {
+  background: #f8f9fa;
+  box-shadow: 
+    8px 8px 16px var(--soft-shadow-dark),
+    -8px -8px 16px var(--soft-shadow-light);
+  border-radius: var(--soft-radius);
+  transition: var(--transition-smooth);
+}
+
+.soft-ui:hover {
+  box-shadow: 
+    12px 12px 24px var(--soft-shadow-dark),
+    -12px -12px 24px var(--soft-shadow-light);
+  transform: translateY(-2px);
+}
+
+.soft-ui-inset {
+  background: #f8f9fa;
+  box-shadow: 
+    inset 4px 4px 8px var(--soft-shadow-dark),
+    inset -4px -4px 8px var(--soft-shadow-light);
+  border-radius: var(--soft-radius);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--soft-radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+}
+
+
+
+.btn-soft {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: none;
+  border-radius: var(--soft-radius);
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 
+    4px 4px 8px var(--soft-shadow-dark),
+    -4px -4px 8px var(--soft-shadow-light);
+  transition: var(--transition-smooth);
+}
+
+.btn-soft:hover {
+  box-shadow: 
+    6px 6px 12px var(--soft-shadow-dark),
+    -6px -6px 12px var(--soft-shadow-light);
+  transform: translateY(-1px);
+}
+
+.btn-soft:active {
+  box-shadow: 
+    inset 2px 2px 4px var(--soft-shadow-dark),
+    inset -2px -2px 4px var(--soft-shadow-light);
+  transform: translateY(0);
+}
+
+.container-soft {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@layer utilities {
+  .smooth-transition {
+    transition: var(--transition-smooth);
+  }
+}
