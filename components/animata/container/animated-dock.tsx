@@ -93,8 +93,9 @@ function DockIcon({
         className={cn(
           "relative flex items-center justify-center rounded-full transition-all duration-200",
           active 
-            ? "bg-[#005AE1]/15 text-[#005AE1]" 
-            : "bg-gray-100/80 text-gray-500 hover:bg-[#005AE1]/10 hover:text-[#005AE1]"
+            ? "bg-[#005AE1]/15 text-[#005AE1] border-2 border-[#005AE1]" 
+            : "bg-gray-100/80 text-gray-500 hover:bg-white hover:border-2 hover:border-[#005AE1] hover:text-[#005AE1]",
+          !active && "border-2 border-transparent"
         )}
       >
         <AnimatePresence>

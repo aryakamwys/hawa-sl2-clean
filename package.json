@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "create-admin": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/create-admin.ts"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.3.0",
