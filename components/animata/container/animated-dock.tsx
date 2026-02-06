@@ -11,8 +11,16 @@ import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 
+interface DockItem {
+  title: string;
+  icon: React.ReactNode;
+  href: string;
+  active?: boolean;
+  onClick?: () => void;
+}
+
 interface AnimatedDockProps {
-  items: { title: string; icon: React.ReactNode; href: string; active?: boolean }[];
+  items: DockItem[];
   largeClassName?: string;
   smallClassName?: string;
 }
@@ -30,7 +38,7 @@ const LargeDock = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string; active?: boolean }[];
+  items: DockItem[];
   className?: string;
 }) => {
   const mouseXPosition = useMotionValue(Infinity);
@@ -59,12 +67,14 @@ function DockIcon({
   icon,
   href,
   active = false,
+  onClick,
 }: {
   mouseX: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
   active?: boolean;
+  onClick?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -81,8 +91,15 @@ function DockIcon({
 
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <Link href={href}>
+    <Link href={href} onClick={handleClick}>
       <motion.div
         ref={ref}
         style={{ width, height }}
@@ -130,7 +147,7 @@ const SmallDock = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string; active?: boolean }[];
+  items: DockItem[];
   className?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -158,6 +175,13 @@ const SmallDock = ({
               >
                 <Link
                   href={item.href}
+                  onClick={(e) => {
+                    if (item.onClick) {
+                      e.preventDefault();
+                      item.onClick();
+                      setIsOpen(false);
+                    }
+                  }}
                   className={cn(
                     "flex h-12 w-12 items-center justify-center rounded-full shadow-md transition-all duration-200",
                     "bg-white/80 backdrop-blur-xl border border-white/50",

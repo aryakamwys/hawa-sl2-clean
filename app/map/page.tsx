@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import AnimatedDock from "@/components/animata/container/animated-dock";
+import SettingsModal from "@/components/SettingsModal";
 import { Home, Map, Info, Settings, Layers, User, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +20,7 @@ export default function MapPage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const router = useRouter();
 
   const dockItems = [
@@ -26,7 +28,7 @@ export default function MapPage() {
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
     { title: "Layers", icon: <Layers size={22} />, href: "#", active: false },
     { title: "Info", icon: <Info size={22} />, href: "#", active: false },
-    { title: "Settings", icon: <Settings size={22} />, href: "#", active: false },
+    { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: () => setShowSettings(true) },
   ];
 
   // Fetch user session
@@ -147,6 +149,9 @@ export default function MapPage() {
           smallClassName=""
         />
       </div>
+
+      {/* Settings Modal */}
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </>
   );
 }

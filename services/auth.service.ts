@@ -69,6 +69,11 @@ export async function loginUser(data: LoginData): Promise<UserResponse> {
     throw new Error('Invalid credentials');
   }
 
+  // Check if user is active
+  if (!user.isActive) {
+    throw new Error('Account is deactivated');
+  }
+
   const isValidPassword = await bcrypt.compare(password, user.passwordHash);
 
   if (!isValidPassword) {
