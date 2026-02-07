@@ -21,14 +21,23 @@ export default function MapPage() {
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
   const router = useRouter();
+
+  const handleSettingsClick = () => {
+    if (!user) {
+      setShowLoginRequired(true);
+    } else {
+      setShowSettings(true);
+    }
+  };
 
   const dockItems = [
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
     { title: "Layers", icon: <Layers size={22} />, href: "#", active: false },
     { title: "Info", icon: <Info size={22} />, href: "#", active: false },
-    { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: () => setShowSettings(true) },
+    { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
 
   // Fetch user session
@@ -152,6 +161,35 @@ export default function MapPage() {
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Login Required Modal */}
+      {showLoginRequired && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl !p-6 max-w-sm w-full !mx-4 animate-in fade-in zoom-in duration-200">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-gray-900 !mb-2">Login Required</h3>
+              <p className="text-gray-600 !mb-6">You need to login first to access settings.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLoginRequired(false)}
+                  className="flex-1 !px-4 !py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLoginRequired(false);
+                    router.push('/');
+                  }}
+                  className="flex-1 !px-4 !py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

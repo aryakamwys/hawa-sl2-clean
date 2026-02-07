@@ -10,16 +10,40 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
-const menuItems: { id: AdminTab; label: string; icon: React.ReactNode }[] = [
-  { id: "users", label: "User", icon: <Users size={18} /> },
-  { id: "devices", label: "Device IoT", icon: <Cpu size={18} /> },
-  { id: "ai-consume", label: "AI Consume", icon: <Brain size={18} /> },
-  { id: "logs", label: "Log", icon: <ScrollText size={18} /> },
+const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminOnly?: boolean }[] = [
+  { id: "users", label: "User", icon: <Users size={18} />, adminOnly: true },
+  { id: "devices", label: "Device IoT", icon: <Cpu size={18} />, adminOnly: true },
+  { id: "ai-consume", label: "AI Consume", icon: <Brain size={18} />, adminOnly: true },
+  { id: "logs", label: "Log", icon: <ScrollText size={18} />, adminOnly: true },
   { id: "account", label: "Account", icon: <UserCog size={18} /> },
 ];
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const [activeTab, setActiveTab] = useState<AdminTab>("users");
+  const [activeTab, setActiveTab] = useState<AdminTab>("account");
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  // Fetch user role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        setUserRole(data.user?.role || "USER");
+        if (data.user?.role === "ADMIN") {
+          setActiveTab("users");
+        }
+      } catch {
+        setUserRole("USER");
+      }
+    };
+    if (isOpen) {
+      fetchUserRole();
+    }
+  }, [isOpen]);
+
+  const menuItems = userRole === "ADMIN" 
+    ? allMenuItems 
+    : allMenuItems.filter(item => !item.adminOnly);
 
   // UX: ESC close + lock scroll
   useEffect(() => {
@@ -273,40 +297,132 @@ function UsersContent() {
   );
 }
 
+interface Device {
+  no: string;
+  timestamp: string;
+  pm25Raw: string;
+  pm25Density: string;
+  pm10Density: string;
+  airQualityLevel: string;
+  temperature: string;
+  humidity: string;
+  pressure: string;
+  altitudeEstimate: string;
+  deviceId: string;
+}
+
 function DevicesContent() {
-  const devices = [
-    ["DEV-001", "Sensor Bandung Utara", "-6.87, 107.61", <StatusBadge key="1" status="Online" type="success" />, "2m ago"],
-    ["DEV-002", "Sensor Bandung Selatan", "-6.95, 107.63", <StatusBadge key="2" status="Online" type="success" />, "5m ago"],
-    ["DEV-003", "Sensor Cimahi", "-6.88, 107.54", <StatusBadge key="3" status="Offline" type="error" />, "2h ago"],
-    ["DEV-004", "Sensor Lembang", "-6.81, 107.62", <StatusBadge key="4" status="Warning" type="warning" />, "15m ago"],
-  ];
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        const res = await fetch("/api/admin/devices");
+        const data = await res.json();
+        
+        if (!res.ok) {
+          setError(data.error || "Failed to fetch devices");
+          return;
+        }
+        
+        setDevices(data.devices);
+      } catch {
+        setError("Failed to fetch devices");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDevices();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center !py-12">
+        <Loader2 className="animate-spin text-gray-400" size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center !py-8">
+        <p className="text-sm text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  const getStatusType = (airQuality: string): "success" | "warning" | "error" => {
+    const level = airQuality.toUpperCase();
+    if (level === "GOOD") return "success";
+    if (level === "MODERATE") return "warning";
+    return "error";
+  };
+
+  // Pagination
+  const totalPages = Math.ceil(devices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedDevices = devices.slice(startIndex, endIndex);
+
+  const tableData = paginatedDevices.map((device) => [
+    device.no,
+    device.timestamp,
+    device.pm25Raw,
+    device.pm25Density,
+    device.pm10Density,
+    <StatusBadge key={device.no} status={device.airQualityLevel} type={getStatusType(device.airQualityLevel)} />,
+    device.temperature,
+    device.humidity,
+    device.pressure,
+    device.altitudeEstimate,
+    device.deviceId,
+  ]);
 
   return (
     <div>
       <div className="flex items-center justify-between !mb-4">
-        <p className="text-sm text-gray-500">Monitor dan kelola perangkat IoT</p>
-        <button className="!px-3 !py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
-          + Tambah Device
-        </button>
+        <p className="text-sm text-gray-500">{devices.length} records total</p>
       </div>
-      <DataTable 
-        headers={["Device ID", "Nama", "Lokasi", "Status", "Last Sync"]} 
-        data={devices}
-      />
-      <div className="!mt-4 grid grid-cols-3 gap-3">
-        <div className="!p-3 bg-green-50 rounded-lg">
-          <p className="text-xl font-semibold text-green-600">2</p>
-          <p className="text-xs text-green-600">Online</p>
-        </div>
-        <div className="!p-3 bg-amber-50 rounded-lg">
-          <p className="text-xl font-semibold text-amber-600">1</p>
-          <p className="text-xs text-amber-600">Warning</p>
-        </div>
-        <div className="!p-3 bg-red-50 rounded-lg">
-          <p className="text-xl font-semibold text-red-600">1</p>
-          <p className="text-xs text-red-600">Offline</p>
-        </div>
-      </div>
+      {devices.length === 0 ? (
+        <div className="text-center !py-8 text-sm text-gray-400">No data found</div>
+      ) : (
+        <>
+          <div className="overflow-x-auto max-h-[500px] overflow-y-auto border border-gray-200 rounded-lg">
+            <DataTable 
+              headers={["No", "Timestamp", "PM2.5 raw", "PM2.5 density", "PM10 density", "Air quality", "Temp (°C)", "Humidity (%)", "Pressure", "Altitude", "Device ID"]} 
+              data={tableData}
+            />
+          </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 !mt-4">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="!px-3 !py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="!px-3 !py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
