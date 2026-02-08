@@ -167,6 +167,7 @@ export default function MapPage() {
           iconAnchor: [10, 10],
         });
 
+        
         L.marker([-6.970145263211866, 107.6167380802031], { icon: deviceIcon })
           .addTo(mapInstanceRef.current)
           .bindPopup(`

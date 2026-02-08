@@ -6,8 +6,8 @@ const globalForPrisma = globalThis as unknown as {
   adapter: PrismaMariaDb | undefined;
 };
 
-// Build connection string
-const connectionString = `mariadb://${process.env.DB_USER || 'hawa_user'}:${process.env.DB_PASSWORD || 'hawa_password'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || '3306'}/${process.env.DB_NAME || 'hawa'}`;
+// Use DATABASE_URL from .env
+const connectionString = process.env.DATABASE_URL!;
 
 // Create adapter factory once
 if (!globalForPrisma.adapter) {

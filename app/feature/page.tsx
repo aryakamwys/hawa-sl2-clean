@@ -15,7 +15,6 @@ export default function FeaturePage() {
         ]}
         lang="EN"
         onLangChange={(v) => console.log(v)}
-        loginHref="/login"
       />
       <Features />
     </div>

@@ -15,7 +15,6 @@ export default function AboutUsPage() {
         ]}
         lang="EN"
         onLangChange={(v) => console.log(v)}
-        loginHref="/login"
       />
       <AboutUs />
     </div>

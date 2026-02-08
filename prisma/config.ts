@@ -1,13 +1,7 @@
-import { PrismaConfig } from "@prisma/config"
+import type { PrismaConfig } from "@prisma/config"
 
 const config: PrismaConfig = {
-  schema: {
-    folders: ["./prisma"],
-  },
-  adapter: {
-    provider: "mysql",
-    url: process.env.DATABASE_URL,
-  },
+  schema: "./prisma/schema.prisma",
 }
 
 export default config

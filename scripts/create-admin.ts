@@ -8,13 +8,14 @@
  *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=secret123 ADMIN_NAME="Admin User" npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/create-admin.ts
  */
 
+import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import * as readline from 'readline';
 
-// Build connection string
-const connectionString = `mariadb://${process.env.DB_USER || 'hawa_user'}:${process.env.DB_PASSWORD || 'hawa_password'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || '3306'}/${process.env.DB_NAME || 'hawa'}`;
+// Use DATABASE_URL from .env
+const connectionString = process.env.DATABASE_URL!;
 
 // Create adapter and client
 const adapter = new PrismaMariaDb(connectionString);

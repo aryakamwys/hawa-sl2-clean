@@ -2,6 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { analyzeAirQuality, DeviceData } from "@/services/ai.service";
 import { getSession } from "@/lib/auth";
 
+interface AnalyzeResponse {
+  status: string;
+  headline: string;
+  targetGroups?: string;
+  analysis: {
+    meaningForCitizens: string;
+    actionRequired: string;
+    safetySteps: string;
+  };
+  confidence?: number;
+  usage?: {
+    tokenUsage: {
+      promptTokens: number;
+      completionTokens: number;
+      totalTokens: number;
+    };
+    cost: string;
+  };
+}
+
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 10; // 10 requests per minute
@@ -61,7 +81,7 @@ export async function POST(request: NextRequest) {
     const analysis = await analyzeAirQuality(deviceData);
 
     // Response structure
-    const response: any = {
+    const response: AnalyzeResponse = {
       status: analysis.status,
       headline: analysis.headline,
       targetGroups: analysis.targetGroups,

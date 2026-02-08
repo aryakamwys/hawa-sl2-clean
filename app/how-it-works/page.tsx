@@ -15,7 +15,6 @@ export default function HowItWorksPage() {
         ]}
         lang="EN"
         onLangChange={(v) => console.log(v)}
-        loginHref="/login"
       />
       <HowItWorks />
     </div>
