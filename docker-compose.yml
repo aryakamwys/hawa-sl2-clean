@@ -13,7 +13,6 @@ services:
       - hawa_network
 
   mysql:
-  mysql:
     image: mysql:8.4
     container_name: hawa_mysql
     restart: always
