@@ -50,7 +50,7 @@ export default function HeroSection() {
                 </svg>
               </Link>
               <Link
-                href="/demo"
+                href="/map"
                 className="btn rounded-full !px-8 !py-4 text-base font-semibold bg-white text-[#005AE1] border-2 border-[#005AE1] hover:bg-[#E0F4FF] hover:scale-105 transition-all duration-200"
               >
                 Lihat Demo
