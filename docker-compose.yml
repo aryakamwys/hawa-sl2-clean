@@ -40,7 +40,6 @@ services:
         - GROQ_API_KEY=${GROQ_API_KEY}
         - GOOGLE_SPREADSHEET_ID=${GOOGLE_SPREADSHEET_ID}
         - GOOGLE_SERVICE_ACCOUNT_EMAIL=${GOOGLE_SERVICE_ACCOUNT_EMAIL}
-        - GOOGLE_PRIVATE_KEY=${GOOGLE_PRIVATE_KEY}
     container_name: hawa_app
     restart: always
     depends_on:
@@ -57,6 +56,8 @@ services:
       - GOOGLE_PRIVATE_KEY=${GOOGLE_PRIVATE_KEY}
     env_file:
       - .env
+    volumes:
+      - ./google-credentials.json:/app/google-credentials.json:ro
     networks:
       - hawa_network
 
