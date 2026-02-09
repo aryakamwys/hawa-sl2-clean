@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Users, Cpu, Brain, ScrollText, UserCog, Loader2 } from "lucide-react";
+import { X, Users, Cpu, Brain, ScrollText, UserCog, Loader2, Phone, MapPin, FileText, Bell, CheckCircle2, UserCircle } from "lucide-react";
 
-type AdminTab = "users" | "devices" | "ai-consume" | "logs" | "account";
+type AdminTab = "users" | "devices" | "ai-consume" | "logs" | "account" | "profile";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -15,6 +15,7 @@ const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminO
   { id: "devices", label: "Device IoT", icon: <Cpu size={18} />, adminOnly: true },
   { id: "ai-consume", label: "AI Consume", icon: <Brain size={18} />, adminOnly: true },
   { id: "logs", label: "Log", icon: <ScrollText size={18} />, adminOnly: true },
+  { id: "profile", label: "Profile", icon: <UserCircle size={18} /> },
   { id: "account", label: "Account", icon: <UserCog size={18} /> },
 ];
 
@@ -120,6 +121,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 {activeTab === "devices" && <DevicesContent />}
                 {activeTab === "ai-consume" && <AIConsumeContent />}
                 {activeTab === "logs" && <LogsContent />}
+                {activeTab === "profile" && <ProfileContent />}
                 {activeTab === "account" && <AccountContent />}
               </div>
             </div>
@@ -627,43 +629,357 @@ function LogsContent() {
           </button>
         </div>
       </div>
-      <DataTable 
-        headers={["Time", "Level", "Message", "Status"]} 
+      <DataTable
+        headers={["Time", "Level", "Message", "Status"]}
         data={logs}
       />
     </div>
   );
 }
 
-function AccountContent() {
+function ProfileContent() {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  // Form states
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [ageGroup, setAgeGroup] = useState<"" | "ANAK" | "REMAJA" | "DEWASA" | "LANSIA">("");
+  const [gender, setGender] = useState<"" | "MALE" | "FEMALE" | "OTHER">("");
+  const [customNotes, setCustomNotes] = useState("");
+  const [notifEnabled, setNotifEnabled] = useState(false);
+  const [district, setDistrict] = useState("");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      // Fetch user info
+      const userRes = await fetch("/api/auth/me");
+      const userData = await userRes.json();
+      setUser(userData.user);
+
+      // Fetch profile
+      const profileRes = await fetch("/api/profile");
+      const profileData = await profileRes.json();
+
+      if (profileData.profile) {
+        setProfile(profileData.profile);
+        setPhoneNumber(profileData.profile.phoneNumber || "");
+        setAgeGroup(profileData.profile.ageGroup || "");
+        setGender(profileData.profile.gender || "");
+        setCustomNotes(profileData.profile.customNotes || "");
+        setNotifEnabled(profileData.profile.notifEnabled || false);
+        setDistrict(profileData.profile.district || "");
+      }
+    } catch {
+      setError("Gagal memuat data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+    setSaving(true);
+
+    if (!ageGroup || !gender) {
+      setError("Kelompok usia dan jenis kelamin wajib diisi.");
+      setSaving(false);
+      return;
+    }
+
+    const body = {
+      phoneNumber,
+      ageGroup,
+      gender,
+      customNotes,
+      notifEnabled,
+      district,
+    };
+
+    try {
+      const endpoint = profile ? "/api/profile" : "/api/profile";
+      const method = profile ? "PUT" : "POST";
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setError(data?.error || "Terjadi kesalahan.");
+        return;
+      }
+
+      setSuccess(true);
+      setProfile(data.profile);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch {
+      setError("Terjadi kesalahan jaringan.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center !py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Manage administrator account</p>
+      <p className="text-sm text-gray-500 !mb-4">Lengkapi profil kamu untuk rekomendasi yang lebih personal</p>
+
+      {success && (
+        <div className="!mb-4 rounded-xl border border-green-200 bg-green-50 !px-4 !py-3 text-sm text-green-700 flex items-center gap-2">
+          <CheckCircle2 size={16} />
+          Profil berhasil disimpan!
+        </div>
+      )}
+
+      {error && (
+        <div className="!mb-4 rounded-xl border border-red-200 bg-red-50 !px-4 !py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* User Info Card */}
+      <div className="!p-4 bg-gray-50 rounded-lg !mb-4">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-[#005AE1] flex items-center justify-center text-white text-lg font-semibold">
+            {user?.name?.charAt(0).toUpperCase() || "U"}
+          </div>
+          <div className="flex-1">
+            <p className="text-base font-semibold text-gray-900">{user?.name}</p>
+            <p className="text-sm text-gray-500">{user?.email}</p>
+          </div>
+          <span className="!px-3 !py-1 text-xs font-medium rounded-full bg-blue-50 text-[#005AE1]">
+            {user?.role === "ADMIN" ? "Admin" : "User"}
+          </span>
+        </div>
+      </div>
+
+      {/* Profile Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Phone Number */}
+        <div>
+          <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
+            <Phone size={16} className="text-gray-400" />
+            Nomor WhatsApp
+            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+          </label>
+          <input
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="+62812345678"
+            className="w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition"
+          />
+        </div>
+
+        {/* Age Group */}
+        <div>
+          <label className="!mb-2 block text-sm font-semibold text-gray-800">
+            Kelompok Usia <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { value: "ANAK", label: "Anak" },
+              { value: "REMAJA", label: "Remaja" },
+              { value: "DEWASA", label: "Dewasa" },
+              { value: "LANSIA", label: "Lansia" },
+            ].map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setAgeGroup(item.value as any)}
+                className={`rounded-xl border-2 !py-3 text-sm font-semibold transition ${
+                  ageGroup === item.value
+                    ? "border-[#005AE1] bg-[#005AE1] text-white"
+                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label className="!mb-2 block text-sm font-semibold text-gray-800">
+            Jenis Kelamin <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { value: "MALE", label: "Pria" },
+              { value: "FEMALE", label: "Wanita" },
+              { value: "OTHER", label: "Lainnya" },
+            ].map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setGender(item.value as any)}
+                className={`rounded-xl border-2 !py-3 text-sm font-semibold transition ${
+                  gender === item.value
+                    ? "border-[#005AE1] bg-[#005AE1] text-white"
+                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* District */}
+        <div>
+          <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
+            <MapPin size={16} className="text-gray-400" />
+            Kecamatan/Domisili
+            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+          </label>
+          <input
+            type="text"
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+            placeholder="Contoh: Tebet, Jakarta Selatan"
+            className="w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition"
+          />
+        </div>
+
+        {/* Custom Notes */}
+        <div>
+          <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
+            <FileText size={16} className="text-gray-400" />
+            Catatan Kesehatan
+            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+          </label>
+          <textarea
+            value={customNotes}
+            onChange={(e) => setCustomNotes(e.target.value)}
+            placeholder="Contoh: Saya punya asma, ingin saran khusus saat PM2.5 tinggi"
+            rows={3}
+            className="w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition resize-none"
+          />
+          <p className="!mt-1 text-xs text-gray-500">
+            Bantu kami memberikan rekomendasi yang lebih sesuai.
+          </p>
+        </div>
+
+        {/* Notification Toggle */}
+        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 !px-4 !py-3">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white">
+              <Bell size={18} className="text-[#005AE1]" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">Notifikasi</p>
+              <p className="text-xs text-gray-500">Dapatkan peringatan kualitas udara</p>
+            </div>
+          </div>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input
+              type="checkbox"
+              checked={notifEnabled}
+              onChange={(e) => setNotifEnabled(e.target.checked)}
+              className="peer sr-only"
+            />
+            <div className="peer h-6 w-11 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#005AE1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none" />
+          </label>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={saving}
+          className="w-full rounded-xl border-0 bg-[#005AE1] !py-3 text-sm font-semibold text-white hover:bg-[#004BB8] disabled:opacity-60 transition"
+        >
+          {saving ? (
+            <span className="inline-flex items-center justify-center gap-2">
+              <Loader2 size={16} className="animate-spin" />
+              Menyimpan...
+            </span>
+          ) : profile ? (
+            "Update Profil"
+          ) : (
+            "Simpan Profil"
+          )}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function AccountContent() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        setUser(data.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center !py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="text-sm text-gray-500 !mb-4">Manage your account settings</p>
 
       <div className="space-y-4">
         {/* Profile Section */}
         <div className="!p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gray-900 flex items-center justify-center text-white text-lg font-semibold">
-              A
+            <div className="w-14 h-14 rounded-full bg-[#005AE1] flex items-center justify-center text-white text-lg font-semibold">
+              {user?.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-gray-400">Name</label>
-                  <p className="text-sm text-gray-800 font-medium">Admin HAWA</p>
+                  <p className="text-sm text-gray-800 font-medium">{user?.name || "-"}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-400">Email</label>
-                  <p className="text-sm text-gray-800 font-medium">admin@hawa.com</p>
+                  <p className="text-sm text-gray-800 font-medium">{user?.email || "-"}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-400">Role</label>
-                  <p className="text-sm text-gray-800 font-medium">Super Admin</p>
+                  <p className="text-sm text-gray-800 font-medium">{user?.role === "ADMIN" ? "Administrator" : "User"}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400">Last Login</label>
-                  <p className="text-sm text-gray-800 font-medium">6 Feb 2026, 12:45</p>
+                  <label className="text-xs text-gray-400">Status</label>
+                  <p className="text-sm text-gray-800 font-medium">Active</p>
                 </div>
               </div>
             </div>
@@ -680,10 +996,14 @@ function AccountContent() {
             <h4 className="text-sm font-medium text-gray-800">Two-Factor Auth</h4>
             <p className="text-xs text-gray-400 !mt-0.5">Enable 2FA security</p>
           </button>
-          <button className="!p-3 text-left bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-            <h4 className="text-sm font-medium text-gray-800">API Keys</h4>
-            <p className="text-xs text-gray-400 !mt-0.5">Manage API keys</p>
-          </button>
+          {user?.role === "ADMIN" && (
+            <>
+              <button className="!p-3 text-left bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
+                <h4 className="text-sm font-medium text-gray-800">API Keys</h4>
+                <p className="text-xs text-gray-400 !mt-0.5">Manage API keys</p>
+              </button>
+            </>
+          )}
           <button className="!p-3 text-left bg-white rounded-lg border border-red-100 hover:border-red-200 hover:bg-red-50 transition-all">
             <h4 className="text-sm font-medium text-red-600">Logout All Sessions</h4>
             <p className="text-xs text-red-400 !mt-0.5">Sign out everywhere</p>

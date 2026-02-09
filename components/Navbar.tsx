@@ -126,18 +126,13 @@ export default function Navbar({
             {isLoading ? (
               <div className="!mr-4 text-sm text-gray-500">Loading...</div>
             ) : user ? (
-              <>
-                <span className="text-sm font-medium text-[#005AE1]">
-                  {user.name}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="!mr-4 btn btn-sm btn-circle bg-[#005AE1] hover:bg-[#004BB8] text-white border-none"
-                  title="Keluar"
-                >
-                  <LogOut size={16} />
-                </button>
-              </>
+              <button
+                onClick={handleLogout}
+                className="!mr-4 btn btn-sm btn-circle bg-[#005AE1] hover:bg-[#004BB8] text-white border-none"
+                title="Keluar"
+              >
+                <LogOut size={16} />
+              </button>
             ) : (
               <>
                 <button
