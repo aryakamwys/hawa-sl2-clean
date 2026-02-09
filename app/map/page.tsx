@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import AnimatedDock from "@/components/animata/container/animated-dock";
 import SettingsModal from "@/components/SettingsModal";
-import { Home, Map, Info, Settings, Layers, User, LogOut, Sparkles, Loader2, X } from "lucide-react";
+import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserData {
@@ -111,7 +111,7 @@ export default function MapPage() {
   const dockItems = [
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
-    { title: "Layers", icon: <Layers size={22} />, href: "#", active: false },
+    { title: "Game", icon: <Gamepad2 size={22} />, href: "#", active: false },
     { title: "Info", icon: <Info size={22} />, href: "#", active: false },
     { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
@@ -167,7 +167,7 @@ export default function MapPage() {
           iconAnchor: [10, 10],
         });
 
-        
+
         L.marker([-6.970145263211866, 107.6167380802031], { icon: deviceIcon })
           .addTo(mapInstanceRef.current)
           .bindPopup(`
@@ -340,43 +340,43 @@ export default function MapPage() {
             </div>
 
             {/* Headline */}
-            <div className="!mb-4 !p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200">
+            <div className="!mb-4 !p-4 bg-white rounded-xl border border-gray-300">
               <p className="text-lg font-semibold text-gray-900">{aiResult.headline}</p>
               {aiResult.targetGroups && (
-                <p className="text-sm text-gray-600 !mt-2">
-                  <span className="font-medium">Perhatian khusus:</span> {aiResult.targetGroups}
+                <p className="text-sm text-gray-500 !mt-2">
+                  <span className="font-medium text-gray-700">Perhatian khusus:</span> {aiResult.targetGroups}
                 </p>
               )}
             </div>
 
             {/* Analysis Sections */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Meaning for Citizens */}
-              <div className="!p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <h4 className="text-sm font-semibold text-blue-900 !mb-2">📊 Apa Artinya Buat Warga</h4>
-                <p className="text-sm text-gray-700 whitespace-pre-line">{aiResult.analysis.meaningForCitizens}</p>
+              <div className="!p-4 bg-white rounded-xl border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-800 !mb-2">📊 Apa Artinya Buat Warga</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.meaningForCitizens}</p>
               </div>
 
               {/* Action Required */}
-              <div className="!p-4 bg-amber-50 rounded-xl border border-amber-200">
-                <h4 className="text-sm font-semibold text-amber-900 !mb-2">⚡ Apa yang Harus Dilakukan Sekarang</h4>
-                <p className="text-sm text-gray-700 whitespace-pre-line">{aiResult.analysis.actionRequired}</p>
+              <div className="!p-4 bg-white rounded-xl border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-800 !mb-2">⚡ Apa yang Harus Dilakukan Sekarang</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.actionRequired}</p>
               </div>
 
               {/* Safety Steps */}
-              <div className="!p-4 bg-green-50 rounded-xl border border-green-200">
-                <h4 className="text-sm font-semibold text-green-900 !mb-2">🛡️ Langkah Aman</h4>
-                <p className="text-sm text-gray-700 whitespace-pre-line">{aiResult.analysis.safetySteps}</p>
+              <div className="!p-4 bg-white rounded-xl border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-800 !mb-2">🛡️ Langkah Aman</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.safetySteps}</p>
               </div>
             </div>
 
             {/* Usage Info (Admin only) */}
             {aiResult.usage && (
-              <div className="!mt-4 !p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-600">
-                  <span className="font-medium">Tokens:</span> {aiResult.usage.tokenUsage.totalTokens} 
+              <div className="!mt-4 !p-3 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">Tokens:</span> {aiResult.usage.tokenUsage.totalTokens} 
                   ({aiResult.usage.tokenUsage.promptTokens} prompt + {aiResult.usage.tokenUsage.completionTokens} completion)
-                  <span className="!ml-3 font-medium">Cost:</span> {aiResult.usage.cost}
+                  <span className="!ml-3 font-medium text-gray-700">Cost:</span> {aiResult.usage.cost}
                 </p>
               </div>
             )}

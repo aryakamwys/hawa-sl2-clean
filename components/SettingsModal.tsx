@@ -428,42 +428,174 @@ function DevicesContent() {
 }
 
 function AIConsumeContent() {
-  const usageData = [
-    ["2026-02-06", "GPT-4", "1,234", "$2.47"],
-    ["2026-02-05", "GPT-4", "987", "$1.97"],
-    ["2026-02-04", "GPT-4", "1,567", "$3.13"],
-    ["2026-02-03", "GPT-4", "2,100", "$4.20"],
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({ tokensToday: 0, costMonth: 0, totalRequests: 0, avgTokensPerRequest: 0 });
+  const [dailyUsage, setDailyUsage] = useState<{ date: string; model: string; totalTokens: number; totalCost: number; requestCount: number }[]>([]);
+  const [recentLogs, setRecentLogs] = useState<{ id: string; userName: string; userEmail: string; model: string; totalTokens: number; cost: number; createdAt: string }[]>([]);
+  const [dailyPage, setDailyPage] = useState(1);
+  const [recentPage, setRecentPage] = useState(1);
+  const PAGE_SIZE = 5;
+
+  useEffect(() => {
+    const fetchUsage = async () => {
+      try {
+        const res = await fetch("/api/admin/ai-usage");
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || "Failed to fetch AI usage");
+          return;
+        }
+
+        setStats(data.stats);
+        setDailyUsage(data.dailyUsage);
+        setRecentLogs(data.recentLogs);
+      } catch {
+        setError("Failed to fetch AI usage data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsage();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center !py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center !py-12">
+        <p className="text-sm text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  const dailyData = dailyUsage.map((row) => [
+    row.date,
+    row.model,
+    row.totalTokens.toLocaleString(),
+    `$${row.totalCost.toFixed(6)}`,
+    String(row.requestCount),
+  ]);
+
+  const recentData = recentLogs.map((log) => [
+    new Date(log.createdAt).toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" }),
+    log.userName,
+    log.model,
+    log.totalTokens.toLocaleString(),
+    `$${log.cost.toFixed(6)}`,
+  ]);
+
+  const dailyTotalPages = Math.ceil(dailyData.length / PAGE_SIZE);
+  const dailyPaged = dailyData.slice((dailyPage - 1) * PAGE_SIZE, dailyPage * PAGE_SIZE);
+
+  const recentTotalPages = Math.ceil(recentData.length / PAGE_SIZE);
+  const recentPaged = recentData.slice((recentPage - 1) * PAGE_SIZE, recentPage * PAGE_SIZE);
 
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Monitor penggunaan AI dan biaya</p>
+      <p className="text-sm text-gray-500 !mb-4">Monitor penggunaan AI dan biaya (real-time dari Groq)</p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-3 !mb-4">
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-lg font-semibold text-gray-800">5,888</p>
+          <p className="text-lg font-semibold text-gray-800">{stats.tokensToday.toLocaleString()}</p>
           <p className="text-xs text-gray-500">Tokens Today</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-lg font-semibold text-gray-800">$11.77</p>
+          <p className="text-lg font-semibold text-gray-800">${stats.costMonth.toFixed(4)}</p>
           <p className="text-xs text-gray-500">Cost/Month</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-lg font-semibold text-gray-800">142</p>
-          <p className="text-xs text-gray-500">Requests</p>
+          <p className="text-lg font-semibold text-gray-800">{stats.totalRequests.toLocaleString()}</p>
+          <p className="text-xs text-gray-500">Total Requests</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-lg font-semibold text-gray-800">41.4</p>
-          <p className="text-xs text-gray-500">Avg/Request</p>
+          <p className="text-lg font-semibold text-gray-800">{stats.avgTokensPerRequest}</p>
+          <p className="text-xs text-gray-500">Avg Tokens/Req</p>
         </div>
       </div>
 
-      <h3 className="text-sm font-medium text-gray-700 !mb-3">Usage History</h3>
-      <DataTable 
-        headers={["Date", "Model", "Tokens", "Cost"]} 
-        data={usageData}
-      />
+      {/* Daily Usage */}
+      <h3 className="text-sm font-medium text-gray-700 !mb-3">Daily Usage</h3>
+      {dailyData.length === 0 ? (
+        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg !mb-4">No usage data yet</div>
+      ) : (
+        <div className="!mb-4">
+          <div className="overflow-y-auto max-h-[280px]">
+            <DataTable
+              headers={["Date", "Model", "Tokens", "Cost", "Requests"]}
+              data={dailyPaged}
+            />
+          </div>
+          {dailyTotalPages > 1 && (
+            <div className="flex items-center justify-between !mt-2 !px-1">
+              <p className="text-xs text-gray-400">{dailyData.length} total entries</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setDailyPage((p) => Math.max(1, p - 1))}
+                  disabled={dailyPage === 1}
+                  className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Prev
+                </button>
+                <span className="text-xs text-gray-500">{dailyPage} / {dailyTotalPages}</span>
+                <button
+                  onClick={() => setDailyPage((p) => Math.min(dailyTotalPages, p + 1))}
+                  disabled={dailyPage === dailyTotalPages}
+                  className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Recent Requests */}
+      <h3 className="text-sm font-medium text-gray-700 !mb-3">Recent Requests</h3>
+      {recentData.length === 0 ? (
+        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg">No requests yet</div>
+      ) : (
+        <div>
+          <div className="overflow-y-auto max-h-[280px]">
+            <DataTable
+              headers={["Time", "User", "Model", "Tokens", "Cost"]}
+              data={recentPaged}
+            />
+          </div>
+          {recentTotalPages > 1 && (
+            <div className="flex items-center justify-between !mt-2 !px-1">
+              <p className="text-xs text-gray-400">{recentData.length} total entries</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
+                  disabled={recentPage === 1}
+                  className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Prev
+                </button>
+                <span className="text-xs text-gray-500">{recentPage} / {recentTotalPages}</span>
+                <button
+                  onClick={() => setRecentPage((p) => Math.min(recentTotalPages, p + 1))}
+                  disabled={recentPage === recentTotalPages}
+                  className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

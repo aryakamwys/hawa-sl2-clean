@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeAirQuality, DeviceData } from "@/services/ai.service";
 import { getSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface AnalyzeResponse {
   status: string;
@@ -79,6 +80,25 @@ export async function POST(request: NextRequest) {
 
     // Analyze with AI
     const analysis = await analyzeAirQuality(deviceData);
+
+    // Save usage to database (skip if table doesn't exist yet)
+    try {
+      if (prisma.aIUsageLog) {
+        await prisma.aIUsageLog.create({
+          data: {
+            userId: session.userId,
+            model: analysis.model,
+            promptTokens: analysis.tokenUsage.promptTokens,
+            completionTokens: analysis.tokenUsage.completionTokens,
+            totalTokens: analysis.tokenUsage.totalTokens,
+            cost: analysis.cost,
+          },
+        });
+      }
+    } catch (dbError) {
+      console.error("[AI Analyze] Failed to save usage log:", dbError);
+      // Don't fail the request if logging fails
+    }
 
     // Response structure
     const response: AnalyzeResponse = {

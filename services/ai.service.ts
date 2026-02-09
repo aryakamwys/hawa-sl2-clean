@@ -33,7 +33,11 @@ export interface AIAnalysisResult {
     totalTokens: number;
   };
   cost: number;
+  model: string;
 }
+
+// Groq model
+const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
 const PRICE_PER_1M_INPUT_TOKENS = 0.50;
 const PRICE_PER_1M_OUTPUT_TOKENS = 1.50;
@@ -51,10 +55,10 @@ function calculateAirQualityStatus(pm25: number, pm10: number): {
 } {
   // PM2.5 thresholds (μg/m³): 0-15 AMAN, 15-35 WASPADA, >35 BAHAYA
   // PM10 thresholds (μg/m³): 0-50 AMAN, 50-150 WASPADA, >150 BAHAYA
-  
+
   let status: AirQualityStatus = "AMAN";
   let confidence = 1.0;
-  
+
   // Prioritize PM2.5 (more harmful)
   if (pm25 > 35 || pm10 > 150) {
     status = "BAHAYA";
@@ -66,7 +70,7 @@ function calculateAirQualityStatus(pm25: number, pm10: number): {
     status = "AMAN";
     confidence = pm25 < 10 ? 1.0 : 0.9;
   }
-  
+
   return { status, confidence };
 }
 
@@ -74,10 +78,10 @@ export async function analyzeAirQuality(data: DeviceData): Promise<AIAnalysisRes
   const locationStr = data.location || "Bandung, Indonesia";
   const pm25 = parseFloat(data.pm25Density) || 0;
   const pm10 = parseFloat(data.pm10Density) || 0;
-  
+
   // Calculate status using rule-based system
   const { status, confidence } = calculateAirQualityStatus(pm25, pm10);
-  
+
   const systemPrompt = `ROLE:
 Kamu adalah Dr. Udara, ahli kesehatan lingkungan yang membantu warga memahami kualitas udara dengan bahasa sederhana dan menarik.
 
@@ -135,20 +139,20 @@ Format JSON:
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: GROQ_MODEL,
       temperature: 0.5,
-      max_tokens: 500, 
+      max_tokens: 500,
       response_format: { type: "json_object" }
     });
 
     const content = chatCompletion.choices[0]?.message?.content || "{}";
     const analysis = JSON.parse(content);
-    
+
     const usage = chatCompletion.usage;
     const promptTokens = usage?.prompt_tokens || 0;
     const completionTokens = usage?.completion_tokens || 0;
     const totalTokens = usage?.total_tokens || 0;
-    
+
     const cost = calculateCost(promptTokens, completionTokens);
 
     return {
@@ -165,6 +169,7 @@ Format JSON:
         totalTokens,
       },
       cost,
+      model: GROQ_MODEL,
     };
   } catch (error) {
     console.error('[AI Service] Error:', error);
