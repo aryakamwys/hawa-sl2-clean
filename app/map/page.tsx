@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import AnimatedDock from "@/components/animata/container/animated-dock";
 import SettingsModal from "@/components/SettingsModal";
+import InfoModal from "@/components/InfoModal";
 import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -44,6 +45,7 @@ export default function MapPage() {
   const [analyzingDevice, setAnalyzingDevice] = useState(false);
   const [aiResult, setAiResult] = useState<AIAnalysis | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -112,7 +114,7 @@ export default function MapPage() {
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
     { title: "Game", icon: <Gamepad2 size={22} />, href: "#", active: false },
-    { title: "Info", icon: <Info size={22} />, href: "#", active: false },
+    { title: "Info", icon: <Info size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
     { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
 
@@ -285,6 +287,9 @@ export default function MapPage() {
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Info Modal */}
+      <InfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
 
       {/* Login Required Modal */}
       {showLoginRequired && (
