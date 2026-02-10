@@ -6,7 +6,8 @@ import AnimatedDock from "@/components/animata/container/animated-dock";
 import SettingsModal from "@/components/SettingsModal";
 import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
-import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X } from "lucide-react";
+import ForecastModal from "@/components/forecast/ForecastModal";
+import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserData {
@@ -48,6 +49,7 @@ export default function MapPage() {
   const [showAiModal, setShowAiModal] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showGameHub, setShowGameHub] = useState(false);
+  const [showForecast, setShowForecast] = useState(false);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -115,6 +117,7 @@ export default function MapPage() {
   const dockItems = [
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
+    { title: "Forecast", icon: <TrendingUp size={22} />, href: "#", active: false, onClick: () => setShowForecast(true) },
     { title: "Point", icon: <Gamepad2 size={22} />, href: "#", active: false, onClick: () => setShowGameHub(true) },
     { title: "Info", icon: <Info size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
     { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
@@ -308,6 +311,9 @@ export default function MapPage() {
 
       {/* Game Hub Modal */}
       {showGameHub && <GameHubModal onClose={() => setShowGameHub(false)} />}
+
+      {/* Forecast Modal */}
+      {showForecast && <ForecastModal onClose={() => setShowForecast(false)} />}
 
       {/* Login Required Modal */}
       {showLoginRequired && (

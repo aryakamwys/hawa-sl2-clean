@@ -38,7 +38,13 @@ export async function POST(request: Request) {
 
     // Check each answer
     const results = answers.map((answer) => {
-      const isCorrect = answer.userAnswers.every((userAns, index) => 
+      // CRITICAL FIX: Check if user actually answered all blanks
+      // Array.every() returns true for empty arrays, which was causing the bug
+      const hasAllAnswers = answer.userAnswers.length === answer.correctAnswers.length &&
+                           answer.userAnswers.every(ans => ans && ans.trim() !== "");
+      
+      // Only check correctness if all blanks are filled
+      const isCorrect = hasAllAnswers && answer.userAnswers.every((userAns, index) => 
         userAns.toLowerCase().trim() === answer.correctAnswers[index]?.toLowerCase().trim()
       );
 

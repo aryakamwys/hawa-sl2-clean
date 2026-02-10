@@ -259,17 +259,23 @@ PENTING:
 - Bahasa Indonesia
 - Edukatif dan tidak menakut-nakuti`;
 
-    const response = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: prompt },
-        { role: "user", content: "Generate 10 fill-in-the-blank quiz questions." },
-      ],
-      model: GROQ_MODEL,
-      temperature: 0.8,
-      max_tokens: 2000,
-    });
-
-    const content = response.choices[0]?.message?.content || "[]";
+      const completion = await groq.chat.completions.create({
+        model: GROQ_MODEL,
+        messages: [
+          {
+            role: "system",
+            content: prompt, // Use the local 'prompt' variable for fill-in-the-blank
+          },
+          {
+            role: "user",
+            content: "Generate 10 fill-in-the-blank questions NOW. Return ONLY valid JSON array, no markdown, no explanation.",
+          },
+        ],
+        temperature: 0.3, // Lower temperature for faster, more deterministic responses
+        max_tokens: 2000, // Reduced from default to speed up generation
+        response_format: { type: "json_object" },
+      });
+    const content = completion.choices[0]?.message?.content || "[]";
     const quizData = JSON.parse(content);
 
     if (!Array.isArray(quizData) || quizData.length === 0) {
