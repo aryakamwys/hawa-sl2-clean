@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import AnimatedDock from "@/components/animata/container/animated-dock";
 import SettingsModal from "@/components/SettingsModal";
 import InfoModal from "@/components/InfoModal";
+import GameHubModal from "@/components/gamification/GameHubModal";
 import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -46,6 +47,7 @@ export default function MapPage() {
   const [aiResult, setAiResult] = useState<AIAnalysis | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showGameHub, setShowGameHub] = useState(false);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -113,7 +115,7 @@ export default function MapPage() {
   const dockItems = [
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
     { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
-    { title: "Game", icon: <Gamepad2 size={22} />, href: "#", active: false },
+    { title: "Point", icon: <Gamepad2 size={22} />, href: "#", active: false, onClick: () => setShowGameHub(true) },
     { title: "Info", icon: <Info size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
     { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
@@ -161,53 +163,66 @@ export default function MapPage() {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(mapInstanceRef.current);
 
-        // Add marker for IoT device
+        // Add marker for IoT device with factory.gif
         const deviceIcon = L.divIcon({
           className: 'custom-device-marker',
-          html: '<div style="background: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
-          iconSize: [20, 20],
-          iconAnchor: [10, 10],
+          html: '<div style="width: 48px; height: 48px; background-image: url(/factory.gif); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
         });
 
+        // IoT Device locations in Bandung
+        const iotDevices = [
+          { lat: -6.970145263211866, lng: 107.6167380802031, name: "HAWA IoT Sensor", deviceId: "10:B4:1D:E8:2E:E4" },
+          { lat: -6.9219, lng: 107.6102, name: "HAWA IoT Sensor 2", deviceId: "10:B4:1D:E8:2E:E5" },
+          { lat: -6.9035, lng: 107.6313, name: "HAWA IoT Sensor 3", deviceId: "10:B4:1D:E8:2E:E6" },
+          { lat: -6.9388, lng: 107.6084, name: "HAWA IoT Sensor 4", deviceId: "10:B4:1D:E8:2E:E7" },
+        ];
 
-        L.marker([-6.970145263211866, 107.6167380802031], { icon: deviceIcon })
-          .addTo(mapInstanceRef.current)
-          .bindPopup(`
-            <div style="min-width: 220px;">
-              <div style="font-weight: bold; margin-bottom: 8px;">HAWA IoT Sensor</div>
-              <div style="font-size: 13px; color: #666; margin-bottom: 12px;">Device: 10:B4:1D:E8:2E:E4</div>
-              <button 
-                id="ask-ai-btn"
-                style="
-                  width: 100%;
-                  padding: 10px 16px;
-                  background: #005AE1;
-                  color: white;
-                  border: none;
-                  border-radius: 12px;
-                  cursor: pointer;
-                  font-size: 14px;
-                  font-weight: 600;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 8px;
-                  transition: all 0.2s ease;
-                "
-                onmouseover="this.style.background='#004BB8'"
-                onmouseout="this.style.background='#005AE1'"
-              >
-                <span style="font-size: 16px;">✨</span>
-                Ask AI
-              </button>
-            </div>
-          `)
-          .on('popupopen', () => {
-            const btn = document.getElementById('ask-ai-btn');
-            if (btn) {
-              btn.onclick = analyzeIoTDevice;
-            }
+        // Add markers for all IoT devices
+        if (mapInstanceRef.current) {
+          const map = mapInstanceRef.current;
+          iotDevices.forEach((device) => {
+            L.marker([device.lat, device.lng], { icon: deviceIcon })
+              .addTo(map)
+              .bindPopup(`
+                <div style="min-width: 220px;">
+                  <div style="font-weight: bold; margin-bottom: 8px;">${device.name}</div>
+                  <div style="font-size: 13px; color: #666; margin-bottom: 12px;">Device: ${device.deviceId}</div>
+                  <button
+                    id="ask-ai-btn-${device.deviceId}"
+                    style="
+                      width: 100%;
+                      padding: 10px 16px;
+                      background: #005AE1;
+                      color: white;
+                      border: none;
+                      border-radius: 12px;
+                      cursor: pointer;
+                      font-size: 14px;
+                      font-weight: 600;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 8px;
+                      transition: all 0.2s ease;
+                    "
+                    onmouseover="this.style.background='#004BB8'"
+                    onmouseout="this.style.background='#005AE1'"
+                  >
+                    <span style="font-size: 16px;">✨</span>
+                    Ask AI
+                  </button>
+                </div>
+              `)
+              .on("popupopen", () => {
+                const btn = document.getElementById(`ask-ai-btn-${device.deviceId}`);
+                if (btn) {
+                  btn.onclick = analyzeIoTDevice;
+                }
+              });
           });
+        }
       }
     });
 
@@ -290,6 +305,9 @@ export default function MapPage() {
 
       {/* Info Modal */}
       <InfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
+
+      {/* Game Hub Modal */}
+      {showGameHub && <GameHubModal onClose={() => setShowGameHub(false)} />}
 
       {/* Login Required Modal */}
       {showLoginRequired && (

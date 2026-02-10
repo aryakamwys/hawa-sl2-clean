@@ -28,7 +28,7 @@ body {
 
 .soft-ui {
   background: #f8f9fa;
-  box-shadow: 
+  box-shadow:
     8px 8px 16px var(--soft-shadow-dark),
     -8px -8px 16px var(--soft-shadow-light);
   border-radius: var(--soft-radius);
@@ -36,7 +36,7 @@ body {
 }
 
 .soft-ui:hover {
-  box-shadow: 
+  box-shadow:
     12px 12px 24px var(--soft-shadow-dark),
     -12px -12px 24px var(--soft-shadow-light);
   transform: translateY(-2px);
@@ -44,7 +44,7 @@ body {
 
 .soft-ui-inset {
   background: #f8f9fa;
-  box-shadow: 
+  box-shadow:
     inset 4px 4px 8px var(--soft-shadow-dark),
     inset -4px -4px 8px var(--soft-shadow-light);
   border-radius: var(--soft-radius);
@@ -76,21 +76,21 @@ body {
   padding: 12px 24px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     4px 4px 8px var(--soft-shadow-dark),
     -4px -4px 8px var(--soft-shadow-light);
   transition: var(--transition-smooth);
 }
 
 .btn-soft:hover {
-  box-shadow: 
+  box-shadow:
     6px 6px 12px var(--soft-shadow-dark),
     -6px -6px 12px var(--soft-shadow-light);
   transform: translateY(-1px);
 }
 
 .btn-soft:active {
-  box-shadow: 
+  box-shadow:
     inset 2px 2px 4px var(--soft-shadow-dark),
     inset -2px -2px 4px var(--soft-shadow-light);
   transform: translateY(0);

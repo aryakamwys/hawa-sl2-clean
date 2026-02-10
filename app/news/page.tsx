@@ -85,7 +85,7 @@ export default function NewsPage() {
           {/* Header */}
           <div className="text-center mb-8">{/* (!) mb-8: header margin-bottom */}
             <h1 className="text-4xl font-extrabold text-gray-900 mb-3">{/* (!) mb-3: title margin-bottom */}
-              Berita Kualitas Udara
+              BMKG Kualitas Udara
             </h1>
             <p className="text-lg text-gray-600">{/* (!) no margin */}
               Informasi terbaru seputar kualitas udara dan lingkungan di Bandung & Indonesia

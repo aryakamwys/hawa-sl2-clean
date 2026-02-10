@@ -15,17 +15,10 @@ export interface NewsItem {
   source: string;
   sourceUrl: string;
   publishedAt: string;
-  category: NewsCategory;
+  category: "bmkg";
 }
 
-export type NewsCategory =
-  | "all"
-  | "bmkg"
-  | "ispu"
-  | "arimbi"
-  | "iqair"
-  | "nafas"
-  | "aqicn";
+export type NewsCategory = "bmkg";
 
 interface RawNewsItem {
   title: string;
@@ -34,48 +27,13 @@ interface RawNewsItem {
   source: string;
   sourceUrl: string;
   publishedAt: string;
-  category: NewsCategory;
 }
 
-// News source configurations
-const NEWS_SOURCES: Record<
-  Exclude<NewsCategory, "all">,
-  {
-    name: string;
-    url: string;
-    baseUrl: string;
-  }
-> = {
-  bmkg: {
-    name: "BMKG",
-    url: "https://www.bmkg.go.id/",
-    baseUrl: "https://www.bmkg.go.id",
-  },
-  ispu: {
-    name: "ISPU Net",
-    url: "https://ispu.menlhk.go.id/",
-    baseUrl: "https://ispu.menlhk.go.id",
-  },
-  arimbi: {
-    name: "ARIMBI Bandung",
-    url: "https://arimbi.bandung.go.id/",
-    baseUrl: "https://arimbi.bandung.go.id",
-  },
-  iqair: {
-    name: "IQAir",
-    url: "https://www.iqair.com/indonesia",
-    baseUrl: "https://www.iqair.com",
-  },
-  nafas: {
-    name: "Nafas Indonesia",
-    url: "https://nafas.co.id/",
-    baseUrl: "https://nafas.co.id",
-  },
-  aqicn: {
-    name: "AQICN",
-    url: "https://aqicn.org/city/indonesia",
-    baseUrl: "https://aqicn.org",
-  },
+// BMKG news source configuration
+const BMKG_SOURCE = {
+  name: "BMKG",
+  url: "https://www.bmkg.go.id/",
+  baseUrl: "https://www.bmkg.go.id",
 };
 
 // Cache configuration
@@ -84,46 +42,38 @@ let cachedNews: NewsItem[] | null = null;
 let cacheTimestamp = 0;
 
 /**
- * Generic news fetcher using regex parsing
+ * Fetch news from BMKG only
  */
-async function fetchNewsFromSource(
-  category: Exclude<NewsCategory, "all">
-): Promise<RawNewsItem[]> {
-  const source = NEWS_SOURCES[category];
-
+async function fetchBMKGNews(): Promise<RawNewsItem[]> {
   try {
-    console.log(`[News Service] Fetching news from ${source.name}...`);
+    console.log("[News Service] Fetching news from BMKG...");
 
-    const response = await fetch(source.url, {
+    const response = await fetch(BMKG_SOURCE.url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; HAWA-Bot/1.0)",
       },
     });
 
     if (!response.ok) {
-      console.error(`[News Service] Failed to fetch ${source.name}:`, response.status);
+      console.error("[News Service] Failed to fetch BMKG:", response.status);
       return [];
     }
 
     const html = await response.text();
-    return parseNewsFromHtml(html, category, source);
+    return parseBMKGNews(html);
   } catch (error) {
-    console.error(`[News Service] Error fetching from ${source.name}:`, error);
+    console.error("[News Service] Error fetching from BMKG:", error);
     return [];
   }
 }
 
 /**
- * Parse news from HTML using regex patterns
+ * Parse news from BMKG HTML using regex patterns
  */
-function parseNewsFromHtml(
-  html: string,
-  category: Exclude<NewsCategory, "all">,
-  source: { name: string; url: string; baseUrl: string }
-): RawNewsItem[] {
+function parseBMKGNews(html: string): RawNewsItem[] {
   const newsItems: RawNewsItem[] = [];
 
-  // Common regex patterns
+  // BMKG specific regex patterns
   const titleRegex = /<h[1-4][^>]*>(.*?)<\/h[1-4]>/gi;
   const linkRegex = /<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi;
   const imageRegex = /<img[^>]*src="([^"]*)"[^>]*>/gi;
@@ -142,15 +92,15 @@ function parseNewsFromHtml(
   const images = Array.from(html.matchAll(imageRegex)).map((m) => m[1]);
   const dates = Array.from(html.matchAll(dateRegex));
 
-  // Extract news items (limit to 10 per source)
-  const limit = Math.min(titles.length, 10);
+  // Extract news items (limit to 20)
+  const limit = Math.min(titles.length, 20);
 
   for (let i = 0; i < limit; i++) {
     const title = titles[i];
 
     if (!title || title.length < 10) continue;
 
-    // Get content (use title + some context from nearby text)
+    // Get content (use title as content)
     const content = title;
 
     // Find first image after this title position
@@ -162,19 +112,19 @@ function parseNewsFromHtml(
         // Within 2000 chars after title
         imageUrl = images[j];
         if (imageUrl.startsWith("/")) {
-          imageUrl = source.baseUrl + imageUrl;
+          imageUrl = BMKG_SOURCE.baseUrl + imageUrl;
         }
         break;
       }
     }
 
     // Find relevant link
-    let sourceUrl = source.url;
+    let sourceUrl = BMKG_SOURCE.url;
     for (const link of links) {
       if (link.text === title || link.text.includes(title.substring(0, 20))) {
         sourceUrl = link.url;
         if (sourceUrl.startsWith("/")) {
-          sourceUrl = source.baseUrl + sourceUrl;
+          sourceUrl = BMKG_SOURCE.baseUrl + sourceUrl;
         }
         break;
       }
@@ -195,14 +145,13 @@ function parseNewsFromHtml(
       title,
       content,
       imageUrl,
-      source: source.name,
+      source: BMKG_SOURCE.name,
       sourceUrl,
       publishedAt,
-      category,
     });
   }
 
-  console.log(`[News Service] Fetched ${newsItems.length} news items from ${source.name}`);
+  console.log(`[News Service] Fetched ${newsItems.length} news items from BMKG`);
   return newsItems;
 }
 
@@ -246,27 +195,27 @@ Buat rangkuman 1-2 kalimat:`;
       const summary = chatCompletion.choices[0]?.message?.content || item.content.substring(0, 200);
 
       summarizedItems.push({
-        id: Buffer.from(`${item.category}-${item.title}-${Date.now()}`).toString("base64"),
+        id: Buffer.from(`bmkg-${item.title}-${Date.now()}`).toString("base64"),
         title: item.title,
         summary: summary.trim(),
         imageUrl: item.imageUrl,
         source: item.source,
         sourceUrl: item.sourceUrl,
         publishedAt: item.publishedAt,
-        category: item.category,
+        category: "bmkg",
       });
     } catch (error) {
       console.error("[News Service] Error summarizing item:", error);
       // Fallback to original content without summary
       summarizedItems.push({
-        id: Buffer.from(`${item.category}-${item.title}-${Date.now()}`).toString("base64"),
+        id: Buffer.from(`bmkg-${item.title}-${Date.now()}`).toString("base64"),
         title: item.title,
         summary: item.content.substring(0, 200),
         imageUrl: item.imageUrl,
         source: item.source,
         sourceUrl: item.sourceUrl,
         publishedAt: item.publishedAt,
-        category: item.category,
+        category: "bmkg",
       });
     }
   }
@@ -276,32 +225,25 @@ Buat rangkuman 1-2 kalimat:`;
 }
 
 /**
- * Get all news (with caching)
+ * Get all BMKG news (with caching)
  */
 export async function getAllNews(forceRefresh = false): Promise<NewsItem[]> {
   const now = Date.now();
 
   // Return cached news if available and not expired
   if (!forceRefresh && cachedNews && (now - cacheTimestamp < CACHE_DURATION)) {
-    console.log("[News Service] Returning cached news");
+    console.log("[News Service] Returning cached BMKG news");
     return cachedNews;
   }
 
-  console.log("[News Service] Fetching fresh news...");
+  console.log("[News Service] Fetching fresh BMKG news...");
 
   try {
-    // Fetch news from all sources in parallel
-    const sources: Exclude<NewsCategory, "all">[] = ["bmkg", "ispu", "arimbi", "iqair", "nafas", "aqicn"];
+    // Fetch BMKG news
+    const rawNews = await fetchBMKGNews();
 
-    const allNews = await Promise.all(
-      sources.map((source) => fetchNewsFromSource(source))
-    );
-
-    // Combine all news
-    const allRawNews = allNews.flat();
-
-    // Limit to 30 news items total (5 per source max)
-    const limitedNews = allRawNews.slice(0, 30);
+    // Limit to 20 news items
+    const limitedNews = rawNews.slice(0, 20);
 
     // Summarize with Groq AI
     const summarizedNews = await summarizeWithGroq(limitedNews);
@@ -330,16 +272,11 @@ export async function getAllNews(forceRefresh = false): Promise<NewsItem[]> {
 }
 
 /**
- * Get news by category
+ * Get news by category (only BMKG available)
  */
 export async function getNewsByCategory(category: NewsCategory): Promise<NewsItem[]> {
-  const allNews = await getAllNews();
-
-  if (category === "all") {
-    return allNews;
-  }
-
-  return allNews.filter((news) => news.category === category);
+  // Only BMKG is supported now
+  return await getAllNews();
 }
 
 /**

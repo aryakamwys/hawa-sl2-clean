@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllNews, getNewsByCategory, NewsCategory } from "@/services/news.service";
+import { getAllNews } from "@/services/news.service";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -28,15 +28,14 @@ function checkRateLimit(identifier: string): boolean {
 
 /**
  * GET /api/news
- * Get news articles
+ * Get BMKG news articles
  * Query params:
- * - category: "bmkg" | "ispu" | "arimbi" | "iqair" | "nafas" | "aqicn" | "all" (default: "all")
+ * - category: "bmkg" (only option now)
  * - refresh: "true" to force refresh cache
  */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const category = (searchParams.get("category") || "all") as NewsCategory;
     const refresh = searchParams.get("refresh") === "true";
 
     // Simple rate limiting by IP
@@ -48,31 +47,17 @@ export async function GET(req: Request) {
       );
     }
 
-    // Validate category
-    const validCategories: NewsCategory[] = ["bmkg", "ispu", "arimbi", "iqair", "nafas", "aqicn", "all"];
-    if (!validCategories.includes(category)) {
-      return NextResponse.json(
-        {
-          error: `Invalid category. Must be one of: ${validCategories.join(", ")}`
-        },
-        { status: 400 }
-      );
-    }
+    // Only BMKG is supported now
+    console.log(`[API /news] Fetching BMKG news - refresh: ${refresh}`);
 
-    console.log(`[API /news] Fetching news - category: ${category}, refresh: ${refresh}`);
-
-    let news;
-    if (category === "all") {
-      news = await getAllNews(refresh);
-    } else {
-      news = await getNewsByCategory(category);
-    }
+    const news = await getAllNews(refresh);
 
     return NextResponse.json({
       success: true,
       news,
       count: news.length,
       cached: !refresh,
+      source: "BMKG",
     });
   } catch (error) {
     console.error("[API /news] Error:", error);
@@ -80,7 +65,7 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch news",
+        error: error instanceof Error ? error.message : "Failed to fetch BMKG news",
         news: [],
       },
       { status: 500 }

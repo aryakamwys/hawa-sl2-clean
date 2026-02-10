@@ -65,7 +65,104 @@ model UserProfile {
   district       String?   @db.VarChar(100)
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userLevel      UserLevel?
+  quizHistory    QuizHistory[]
+  xpTransactions XPTransaction[]
 
   @@map("user_profiles")
+}
+
+// ============================================
+// GAMIFICATION MODELS
+// ============================================
+
+model UserLevel {
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  userId    String   @unique @map("user_id") @db.VarChar(191)
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  streak    Int      @default(0)
+  lastLogin DateTime? @map("last_login") @db.Timestamp(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  user      UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_levels")
+}
+
+enum XPSource {
+  DAILY_LOGIN
+  CHECK_AIR_QUALITY
+  USE_AI
+  READ_NEWS
+  SOCIAL_SHARE
+  INVITE_FRIEND
+  QUIZ_COMPLETE
+  REPORT_AIR
+  STREAK_BONUS
+  DAILY_QUEST
+  ADMIN_ADJUSTMENT
+}
+
+model XPTransaction {
+  id          String   @id @default(uuid()) @db.VarChar(191)
+  userId      String   @map("user_id") @db.VarChar(191)
+  amount      Int
+  source      XPSource
+  description String?  @db.Text
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  user        UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("xp_transactions")
+}
+
+enum QuestType {
+  CHECK_LOCATIONS
+  USE_AI
+  READ_NEWS
+  COMPLETE_QUIZ
+}
+
+model DailyQuestProgress {
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  userId    String   @map("user_id") @db.VarChar(191)
+  date      DateTime @db.Date @map("date")
+  questType QuestType @map("quest_type")
+  progress  Int      @default(0)
+  target    Int
+  completed Boolean  @default(false)
+  claimed   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  @@unique([userId, date, questType])
+  @@index([userId])
+  @@index([date])
+  @@map("daily_quest_progress")
+}
+
+model QuizHistory {
+  id            String   @id @default(uuid()) @db.VarChar(191)
+  userId        String   @map("user_id") @db.VarChar(191)
+  question      String   @db.Text
+  options       Json
+  correctAnswer Int      @map("correct_answer")
+  userAnswer    Int?     @map("user_answer")
+  isCorrect     Boolean  @map("is_correct")
+  difficulty    String   @db.VarChar(20)
+  xpEarned      Int      @map("xp_earned")
+  completedAt   DateTime @default(now()) @map("completed_at") @db.Timestamp(3)
+
+  user          UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([completedAt])
+  @@map("quiz_history")
 }
