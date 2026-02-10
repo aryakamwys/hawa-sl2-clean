@@ -156,7 +156,6 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
       {showQuizModal && (
         <QuizModal
           onClose={() => setShowQuizModal(false)}
-          ageGroup={userProfile?.ageGroup}
         />
       )}
 
