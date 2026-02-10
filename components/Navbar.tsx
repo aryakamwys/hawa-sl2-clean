@@ -68,33 +68,33 @@ export default function Navbar({
             "border-3 border-[#005AE1]/20",
             "shadow-lg shadow-[#005AE1]/20",
             "transition-all duration-300",
-            scrolled ? "py-4 px-16" : "py-5 px-20",
+            scrolled ? "py-2 px-10" : "py-3 px-12",
           ].join(" ")}
         >
           <Link
             href="/"
-            className="!ml-4 flex items-center justify-center !w-16 !h-16 rounded-full bg-transparent hover:scale-105 transition-transform duration-200"
+            className="!ml-2 flex items-center justify-center !w-12 !h-12 rounded-full bg-transparent hover:scale-105 transition-transform duration-200"
             aria-label="Hawa"
           >
-            <Image src="/logo.png" alt="Hawa" width={32} height={32} priority />
+            <Image src="/logo.png" alt="Hawa" width={28} height={28} priority />
           </Link>
 
-          <div className="h-8 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-gray-200" />
 
-          <ul className="flex items-center gap-8 text-base font-medium text-gray-700">
+          <ul className="flex items-center gap-6 text-sm font-medium text-gray-700">
             {nav.map((it) => (
               <li key={it.href}>
-                <Link
+                <a
                   href={it.href}
                   className="hover:text-[#005AE1] transition-colors duration-200"
                 >
                   {it.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
 
-          <div className="h-8 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-gray-200" />
 
           <div className="flex items-center gap-4">
             <details className="dropdown dropdown-end">
