@@ -15,6 +15,17 @@ export interface QuizQuestion {
   category: string;
 }
 
+export interface FillInTheBlankQuestion {
+  id: string;
+  questionText: string; // Text with ___ for blanks
+  correctAnswers: string[]; // Correct words to fill blanks
+  allOptions: string[]; // All draggable options (correct + distractors)
+  explanation: string;
+  category: string;
+  difficulty: string;
+  xpReward: number;
+}
+
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
 type AgeGroup = "ANAK" | "REMAJA" | "DEWASA" | "LANSIA";
 
@@ -192,3 +203,150 @@ export function getQuizTimeLimit(difficulty: Difficulty): number {
       return 20;
   }
 }
+
+// Generate 10 fill-in-the-blank questions at once
+export async function generateBulkFillInTheBlank(
+  difficulty: Difficulty = "MEDIUM",
+  ageGroup: AgeGroup = "REMAJA"
+): Promise<FillInTheBlankQuestion[]> {
+  try {
+    const ageGroupGuides: Record<AgeGroup, string> = {
+      ANAK: "Anak-anak usia 6-12 tahun. Gunakan bahasa SEDERHANA, menyenangkan, hindari istilah teknis.",
+      REMAJA: "Remaja usia 13-17 tahun. Gunakan bahasa yang relate dengan kehidupan sehari-hari.",
+      DEWASA: "Dewasa usia 18-59 tahun. Bisa gunakan istilah teknis dan penjelasan mendalam.",
+      LANSIA: "Lansia usia 60+. Fokus pada dampak kesehatan dan langkah pencegahan praktis.",
+    };
+
+    const prompt = `ROLE:
+Kamu adalah quiz generator untuk aplikasi HAWA - aplikasi monitoring kualitas udara di Bandung.
+
+TARGET AUDIENCE: ${ageGroupGuides[ageGroup]}
+DIFFICULTY: ${difficulty}
+
+TASK:
+Buat 10 pertanyaan fill-in-the-blank tentang kualitas udara, polusi, dan kesehatan lingkungan.
+
+FORMAT:
+Setiap pertanyaan harus punya format "isi titik-titik" dengan 1 kata/angka yang hilang.
+Contoh: "PM2.5 adalah partikel debu dengan ukuran kurang dari ___ mikrometer"
+
+RETURN JSON ARRAY dengan format:
+[
+  {
+    "questionText": "pertanyaan dengan ___ sebagai blank",
+    "correctAnswers": ["jawaban benar"],
+    "distractors": ["jawaban salah 1", "jawaban salah 2", "jawaban salah 3"],
+    "explanation": "penjelasan singkat",
+    "category": "PM2.5" atau "POLUSI" atau "KESEHATAN"
+  },
+  ... (9 pertanyaan lagi)
+]
+
+TOPIK yang boleh:
+- PM2.5 dan PM10
+- Dampak polusi kesehatan
+- Standar kualitas udara (ISPU)
+- Penyebab polusi
+- Cara mengurangi polusi
+- Cuaca dan kualitas udara
+- Tanaman penyerap polusi
+- Masker dan perlindungan
+
+PENTING:
+- Hanya return JSON array, tidak ada teks lain
+- Setiap pertanyaan hanya 1 blank (___)
+- Distractors harus masuk akal tapi salah
+- Bahasa Indonesia
+- Edukatif dan tidak menakut-nakuti`;
+
+    const response = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: prompt },
+        { role: "user", content: "Generate 10 fill-in-the-blank quiz questions." },
+      ],
+      model: GROQ_MODEL,
+      temperature: 0.8,
+      max_tokens: 2000,
+    });
+
+    const content = response.choices[0]?.message?.content || "[]";
+    const quizData = JSON.parse(content);
+
+    if (!Array.isArray(quizData) || quizData.length === 0) {
+      throw new Error("Invalid AI response format");
+    }
+
+    // Transform to FillInTheBlankQuestion format
+    const questions: FillInTheBlankQuestion[] = quizData.slice(0, 10).map((q, index) => {
+      const correctAnswers = Array.isArray(q.correctAnswers) ? q.correctAnswers : [q.correctAnswers];
+      const distractors = Array.isArray(q.distractors) ? q.distractors : [];
+      
+      // Combine correct answers and distractors, then shuffle
+      const allOptions = [...correctAnswers, ...distractors].sort(() => Math.random() - 0.5);
+
+      return {
+        id: `q${index + 1}`,
+        questionText: q.questionText || "",
+        correctAnswers,
+        allOptions,
+        explanation: q.explanation || "",
+        category: q.category || "UMUM",
+        difficulty,
+        xpReward: getQuizXP(difficulty),
+      };
+    });
+
+    // If we got less than 10, generate fallback questions
+    while (questions.length < 10) {
+      questions.push(generateFallbackFillInTheBlank(questions.length + 1, difficulty));
+    }
+
+    return questions;
+  } catch (error) {
+    console.error("[Quiz AI] Error generating bulk quiz:", error);
+    // Return 10 fallback questions
+    return Array.from({ length: 10 }, (_, i) => generateFallbackFillInTheBlank(i + 1, difficulty));
+  }
+}
+
+// Generate a fallback fill-in-the-blank question
+function generateFallbackFillInTheBlank(index: number, difficulty: Difficulty): FillInTheBlankQuestion {
+  const fallbacks = [
+    {
+      questionText: "PM2.5 adalah partikel debu dengan ukuran kurang dari ___ mikrometer",
+      correctAnswers: ["2.5"],
+      distractors: ["10", "5", "1"],
+      explanation: "PM2.5 adalah partikel debu halus dengan ukuran kurang dari 2.5 mikrometer",
+      category: "PM2.5",
+    },
+    {
+      questionText: "Warna ___ menunjukkan kualitas udara yang baik",
+      correctAnswers: ["hijau"],
+      distractors: ["merah", "kuning", "ungu"],
+      explanation: "Warna hijau menandakan kualitas udara baik (0-50 PM2.5)",
+      category: "ISPU",
+    },
+    {
+      questionText: "Standar WHO untuk PM2.5 adalah maksimal ___ µg/m³",
+      correctAnswers: ["15"],
+      distractors: ["25", "50", "10"],
+      explanation: "WHO menetapkan ambang batas PM2.5 adalah 15 µg/m³",
+      category: "KESEHATAN",
+    },
+  ];
+
+  const template = fallbacks[index % fallbacks.length];
+  const allOptions = [...template.correctAnswers, ...template.distractors].sort(() => Math.random() - 0.5);
+
+  return {
+    id: `q${index}`,
+    questionText: template.questionText,
+    correctAnswers: template.correctAnswers,
+    allOptions,
+    explanation: template.explanation,
+    category: template.category,
+    difficulty,
+    xpReward: getQuizXP(difficulty),
+  };
+}
+
