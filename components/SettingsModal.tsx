@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { X, Users, Cpu, Brain, ScrollText, UserCog, Loader2, Phone, MapPin, FileText, Bell, CheckCircle2, UserCircle } from "lucide-react";
+import NotificationSettings from "./notifications/NotificationSettings";
 
-type AdminTab = "users" | "devices" | "ai-consume" | "logs" | "account" | "profile";
+type AdminTab = "users" | "devices" | "ai-consume" | "logs" | "account" | "profile" | "notifications";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminO
   { id: "ai-consume", label: "AI Consume", icon: <Brain size={18} />, adminOnly: true },
   { id: "logs", label: "Log", icon: <ScrollText size={18} />, adminOnly: true },
   { id: "profile", label: "Profile", icon: <UserCircle size={18} /> },
+  { id: "notifications", label: "Notifications", icon: <Bell size={18} /> },
   { id: "account", label: "Account", icon: <UserCog size={18} /> },
 ];
 
@@ -122,6 +124,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 {activeTab === "ai-consume" && <AIConsumeContent />}
                 {activeTab === "logs" && <LogsContent />}
                 {activeTab === "profile" && <ProfileContent />}
+                {activeTab === "notifications" && <NotificationsContent />}
                 {activeTab === "account" && <AccountContent />}
               </div>
             </div>
@@ -923,6 +926,36 @@ function ProfileContent() {
       </form>
     </div>
   );
+}
+
+function NotificationsContent() {
+  const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/profile");
+        const data = await res.json();
+        setPhoneNumber(data.profile?.phoneNumber);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center !py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  return <NotificationSettings phoneNumber={phoneNumber} />;
 }
 
 function AccountContent() {

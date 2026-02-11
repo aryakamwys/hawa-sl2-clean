@@ -63,6 +63,14 @@ model UserProfile {
   customNotes    String?   @map("custom_notes") @db.Text
   notifEnabled   Boolean?  @map("notif_enabled") @default(false)
   district       String?   @db.VarChar(100)
+  
+  // WhatsApp Notification Settings
+  whatsappNotifEnabled Boolean @default(false) @map("whatsapp_notif_enabled")
+  alertThreshold       Int?    @default(100) @map("alert_threshold") // ISPU threshold
+  scheduledNotifEnabled Boolean @default(false) @map("scheduled_notif_enabled")
+  scheduleTime         String? @map("schedule_time") @db.VarChar(5) // "07:00"
+  scheduleDays         String? @map("schedule_days") @db.VarChar(50) // JSON array
+  
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
   user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)

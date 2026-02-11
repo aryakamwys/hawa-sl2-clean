@@ -7,7 +7,7 @@ import SettingsModal from "@/components/SettingsModal";
 import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
 import ForecastModal from "@/components/forecast/ForecastModal";
-import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X, TrendingUp } from "lucide-react";
+import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X, TrendingUp, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserData {
@@ -50,6 +50,8 @@ export default function MapPage() {
   const [showInfo, setShowInfo] = useState(false);
   const [showGameHub, setShowGameHub] = useState(false);
   const [showForecast, setShowForecast] = useState(false);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const [latestDeviceData, setLatestDeviceData] = useState<any>(null);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -105,12 +107,64 @@ export default function MapPage() {
 
       const result = await res.json();
       setAiResult(result);
+      setLatestDeviceData(latestData); // Store for WhatsApp sending
       setShowAiModal(true);
     } catch (error) {
       console.error("AI analysis error:", error);
       alert("Failed to get AI analysis");
     } finally {
       setAnalyzingDevice(false);
+    }
+  };
+
+  const sendToWhatsApp = async () => {
+    if (!latestDeviceData || !aiResult) {
+      alert("No data available to send");
+      return;
+    }
+
+    setSendingWhatsApp(true);
+    try {
+      const pm25 = parseFloat(latestDeviceData.pm25Density) || 0;
+      const pm10 = parseFloat(latestDeviceData.pm10Density) || 0;
+      
+      const calculateISPU = (p25: number, p10: number) => {
+        const pm25ISPU = p25 <= 15.5 ? 50 : p25 <= 55.4 ? 100 : p25 <= 150.4 ? 200 : p25 <= 250.4 ? 300 : 500;
+        const pm10ISPU = p10 <= 50 ? 50 : p10 <= 150 ? 100 : p10 <= 350 ? 200 : p10 <= 420 ? 300 : 500;
+        return Math.max(pm25ISPU, pm10ISPU);
+      };
+
+      const ispu = calculateISPU(pm25, pm10);
+      const category = aiResult.status || "SEDANG";
+
+      console.log("[WA Debug] Sending:", { pm25, pm10, ispu, category });
+
+      const res = await fetch("/api/notifications/send-recommendation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pm25: pm25 || 1,
+          pm10: pm10 || 1,
+          ispu: ispu || 50,
+          category,
+          location: "Jalan Cisirung, Bandung",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("[WA Debug] Error response:", data);
+        alert(data.message || data.error || "Failed to send WhatsApp notification");
+        return;
+      }
+
+      alert("✅ Rekomendasi berhasil dikirim ke WhatsApp!");
+    } catch (error) {
+      console.error("WhatsApp send error:", error);
+      alert("❌ Gagal mengirim ke WhatsApp");
+    } finally {
+      setSendingWhatsApp(false);
     }
   };
 
@@ -397,6 +451,30 @@ export default function MapPage() {
                 <h4 className="text-sm font-semibold text-gray-800 !mb-2">🛡️ Langkah Aman</h4>
                 <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.safetySteps}</p>
               </div>
+            </div>
+
+            {/* WhatsApp Button */}
+            <div className="!mt-4">
+              <button
+                onClick={sendToWhatsApp}
+                disabled={sendingWhatsApp}
+                className="w-full flex items-center justify-center gap-2 !px-4 !py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {sendingWhatsApp ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    Mengirim...
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Kirim Rekomendasi ke WhatsApp
+                  </>
+                )}
+              </button>
+              <p className="text-xs text-gray-500 text-center !mt-2">
+                Dapatkan rekomendasi ini langsung di WhatsApp Anda
+              </p>
             </div>
 
             {/* Usage Info (Admin only) */}
