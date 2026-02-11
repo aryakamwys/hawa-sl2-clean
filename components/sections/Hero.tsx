@@ -3,62 +3,68 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 pt-32 overflow-hidden">
-      <div className="max-w-6xl mx-auto w-full">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          {/* Mascot Image */}
-          <div className="flex-1 flex justify-center lg:justify-start animate-fade-in-left">
-            <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[440px] animate-float">
-              <Image
-                src="/maskot.png"
-                alt="Hawa Mascot"
-                fill
-                sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"
-                className="object-contain drop-shadow-2xl"
-                priority
+    <section className="relative overflow-hidden">
+      {/* Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#d8e8ff] via-[#e8f0ff] to-white" />
+
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: 'linear-gradient(rgba(0,90,225,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,90,225,1) 1px, transparent 1px)',
+        backgroundSize: '60px 60px',
+      }} />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-36 pb-8 text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full text-sm font-medium text-gray-700 mb-8 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          Platform IoT & AI Kualitas Udara
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6 tracking-tight">
+          Pantau Kualitas Udara{" "}
+          <span className="bg-gradient-to-r from-[#005AE1] to-[#4D9EFF] bg-clip-text text-transparent">
+            Secara Cerdas
+          </span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Data real-time dari sensor IoT, analisis AI dari Groq, dan rekomendasi yang dipersonalisasi untuk masyarakat Bandung.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <Link
+            href="/map"
+            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#005AE1] text-white rounded-full font-semibold text-base hover:bg-[#004BB8] transition-all duration-200 shadow-lg shadow-[#005AE1]/25 hover:shadow-xl hover:shadow-[#005AE1]/30"
+          >
+            Mulai Sekarang
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+          <a
+            href="#features"
+            className="inline-flex items-center justify-center px-7 py-3.5 bg-white text-gray-700 rounded-full font-semibold text-base border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+          >
+            Lihat Fitur
+          </a>
+        </div>
+
+          {/* Hero Image — App Screenshot */}
+          <div className="relative mx-auto max-w-5xl mt-8">
+            <div className="rounded-xl overflow-hidden shadow-2xl shadow-[#005AE1]/20 border border-gray-200/60 bg-white p-2">
+              <img
+                src="https://aicdn.picsart.com/cd96b7b7-2aae-4b22-bbb2-38cef0f82087.png"
+                alt="HAWA Platform Interface"
+                className="w-full h-auto rounded-lg"
               />
             </div>
-          </div>
-
-          {/* Text Content */}
-          <div className="flex-1 text-center lg:text-left">
-            <h1 
-              className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-[#005AE1] to-[#70D8FF] bg-clip-text text-transparent animate-fade-in-up animation-delay-100" 
-              style={{ fontStyle: 'italic' }}
-            >
-              HAWA
-            </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 animate-fade-in-up animation-delay-200">
-              Monitor Air Quality
-            </h2>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#005AE1] to-[#70D8FF] bg-clip-text text-transparent !mb-8 animate-fade-in-up animation-delay-300">
-              the Smart Way
-            </h2>
-            <p className="text-base md:text-lg text-gray-900 !mb-10 max-w-md mx-auto lg:mx-0 animate-fade-in-up animation-delay-400">
-              Informasi kualitas udara sendiri dan dapatkan rekomendasi aktivitas secara langsung 
-            </p>
-
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up animation-delay-500">
-              <Link
-                href="/map"
-                className="btn rounded-full !px-6 !py-4 text-base font-semibold bg-[#005AE1] text-white border-none hover:bg-[#0048b8] hover:scale-105 shadow-lg shadow-[#005AE1]/30 transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                Mulai Sekarang
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link
-                href="/map"
-                className="btn rounded-full !px-8 !py-4 text-base font-semibold bg-white text-[#005AE1] border-2 border-[#005AE1] hover:bg-[#E0F4FF] hover:scale-105 transition-all duration-200"
-              >
-                Lihat Demo
-              </Link>
-            </div>
+            {/* Glow effect */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[#005AE1]/20 blur-[100px] -z-10 rounded-full opacity-50 pointer-events-none" />
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
+      </section>
+    );
+  }

@@ -8,10 +8,12 @@ import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
 import ForecastModal from "@/components/forecast/ForecastModal";
 import RegionForecastModal from "@/components/map/RegionForecastModal";
-import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send } from "lucide-react";
+import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import LottieLoader from "@/components/LottieLoader";
 import GroqIcon from "@/components/GroqIcon";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 
 
@@ -343,17 +345,74 @@ export default function MapPage() {
     };
   }, []);
 
+  // Driver.js Tour
+  const startTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        { 
+          element: '#user-profile-card', 
+          popover: { 
+            title: 'Profil & Akun', 
+            description: 'Login untuk akses fitur personalisasi dan notifikasi WhatsApp.', 
+            side: "left", 
+            align: 'start' 
+          } 
+        },
+        { 
+          element: '#dock-container', 
+          popover: { 
+            title: 'Menu Navigasi', 
+            description: 'Akses cepat ke Forecast, Game Hub, Info, dan Pengaturan.', 
+            side: "top", 
+            align: 'center' 
+          } 
+        },
+        { 
+          popover: { 
+            title: 'Interaksi Peta', 
+            description: 'Klik wilayah kecamatan untuk data iklim, atau klik marker sensor untuk analisis AI.', 
+          } 
+        }
+      ]
+    });
+    driverObj.drive();
+  };
+
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem('hawa_map_tour_seen');
+    if (!hasSeenTour) {
+      setTimeout(() => {
+        startTour();
+        localStorage.setItem('hawa_map_tour_seen', 'true');
+      }, 2000);
+    }
+  }, []);
+
   return (
     <>
       {/* Full screen map */}
       <div 
+        id="map-container"
         ref={mapRef} 
         className="w-screen h-screen"
         style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
+      {/* Tools Button Only */}
+      <div className="fixed top-4 left-4 z-[1000]">
+        <button
+          id="tutorial-btn"
+          onClick={startTour}
+          className="p-3 bg-white/90 backdrop-blur-md text-[#005AE1] hover:bg-white rounded-2xl shadow-lg border border-white/50 transition-all active:scale-95"
+          title="Mulai Tutorial"
+        >
+          <HelpCircle size={20} />
+        </button>
+      </div>
+
       {/* User card in top right corner */}
-      <div className="fixed top-4 right-4 z-[1000]">
+      <div id="user-profile-card" className="fixed top-4 right-4 z-[1000]">
         {loading ? (
           <div className="bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg">
             <div className="w-20 h-5 bg-gray-200 animate-pulse rounded" />
@@ -401,7 +460,7 @@ export default function MapPage() {
       </div>
       
       {/* Floating dock at bottom */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
+      <div id="dock-container" className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
         <AnimatedDock 
           items={dockItems}
           largeClassName=""

@@ -2,42 +2,50 @@ import Image from "next/image";
 
 export default function AboutUs() {
   return (
-    <section id="about-us" className="!py-20 !px-6 !bg-white">
-      <div className="!max-w-6xl !mx-auto">
-        <div className="!grid !grid-cols-1 lg:!grid-cols-2 !gap-12 !items-center">
+    <section id="about-us" className="py-24 px-6 bg-white">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text Content */}
           <div>
-            <h2 className="!text-4xl md:!text-5xl !font-bold !text-gray-900 !mb-6">
-              Tentang HAWA
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
+              Tentang Kami
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
+              Melindungi Masyarakat Bandung dengan Data & AI
             </h2>
-            <p className="!text-lg !text-gray-600 !mb-6 !leading-relaxed">
-              HAWA adalah platform monitoring kualitas udara berbasis IoT dan AI yang dirancang khusus untuk membantu masyarakat Bandung memahami dan merespons kondisi udara di sekitar mereka.
+            <p className="text-gray-500 mb-5 leading-relaxed">
+              HAWA adalah platform monitoring kualitas udara berbasis IoT dan AI yang dirancang khusus untuk membantu warga Bandung memahami dan merespons kondisi udara di lingkungan mereka.
             </p>
-            <p className="!text-lg !text-gray-600 !mb-8 !leading-relaxed">
-              Dengan sensor yang tersebar di berbagai lokasi dan analisis AI yang canggih, kami memberikan informasi real-time yang mudah dipahami dan rekomendasi yang disesuaikan dengan kebutuhan Anda.
+            <p className="text-gray-500 mb-8 leading-relaxed">
+              Dengan sensor yang tersebar di berbagai titik strategis dan analisis AI dari Groq, kami memberikan informasi real-time yang akurat dan mudah dipahami.
             </p>
 
             {/* Stats */}
-            <div className="!grid !grid-cols-2 !gap-6">
-              <div className="!p-6 !bg-[#E0F4FF] !rounded-2xl !border-2 !border-[#005AE1]">
-                <div className="!text-4xl !font-bold !text-[#005AE1] !mb-2">10+</div>
-                <div className="!text-sm !text-gray-700 !font-medium">Active Users</div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="text-2xl font-bold text-[#005AE1] mb-1">4+</div>
+                <div className="text-xs text-gray-500 font-medium">Sensor IoT</div>
               </div>
-              <div className="!p-6 !bg-[#E0F4FF] !rounded-2xl !border-2 !border-[#005AE1]">
-                <div className="!text-4xl !font-bold !text-[#005AE1] !mb-2">99.9%</div>
-                <div className="!text-sm !text-gray-700 !font-medium">Uptime</div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="text-2xl font-bold text-[#005AE1] mb-1">30</div>
+                <div className="text-xs text-gray-500 font-medium">Kecamatan</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="text-2xl font-bold text-[#005AE1] mb-1">24/7</div>
+                <div className="text-xs text-gray-500 font-medium">Monitoring</div>
               </div>
             </div>
           </div>
 
-          {/* Right: Illustration */}
-          <div className="!relative !w-full !h-[400px] !bg-gradient-to-br !from-[#005AE1] !to-[#70D8FF] !rounded-3xl !flex !items-center !justify-center !p-8">
-            <div className="!relative !w-64 !h-64">
+          {/* Right: Mascot */}
+          <div className="flex justify-center">
+            <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#E0F4FF] to-[#d0e8ff] rounded-3xl" />
               <Image
                 src="/maskot.png"
                 alt="HAWA Mascot"
                 fill
-                className="!object-contain drop-shadow-2xl"
+                className="object-contain p-8 drop-shadow-lg"
               />
             </div>
           </div>

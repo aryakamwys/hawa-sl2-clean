@@ -26,6 +26,7 @@ export default function Navbar({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -139,13 +140,19 @@ export default function Navbar({
             ) : (
               <>
                 <button
-                  onClick={() => setIsAuthModalOpen(true)}
+                  onClick={() => {
+                    setAuthMode("login");
+                    setIsAuthModalOpen(true);
+                  }}
                   className="btn rounded-full !px-4 !py-1 text-base font-semibold bg-transparent text-[#005AE1] border border-[#005AE1] hover:bg-[#005AE1] hover:text-white transition-all duration-200"
                 >
                   Masuk
                 </button>
                 <button
-                  onClick={() => setIsAuthModalOpen(true)}
+                  onClick={() => {
+                    setAuthMode("register");
+                    setIsAuthModalOpen(true);
+                  }}
                   className="!mr-4 btn rounded-full !px-7 !py-2 text-base font-semibold bg-[#005AE1] text-white hover:bg-[#004BB8] transition-all duration-200 border-none"
                 >
                   Daftar
@@ -231,6 +238,7 @@ export default function Navbar({
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
+                          setAuthMode("login");
                           setIsAuthModalOpen(true);
                           setMobileMenuOpen(false);
                         }}
@@ -240,6 +248,7 @@ export default function Navbar({
                       </button>
                       <button
                         onClick={() => {
+                          setAuthMode("register");
                           setIsAuthModalOpen(true);
                           setMobileMenuOpen(false);
                         }}
@@ -259,6 +268,7 @@ export default function Navbar({
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
         onSuccess={fetchUser}
       />
     </>

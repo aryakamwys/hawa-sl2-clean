@@ -1,0 +1,177 @@
+"use client";
+
+import { useState } from "react";
+import { Map, Brain, Newspaper, Trophy } from "lucide-react";
+import GroqIcon from "@/components/GroqIcon";
+
+const demos = [
+  {
+    id: "map",
+    label: "Peta Interaktif",
+    icon: <Map size={16} />,
+    title: "Visualisasi Kualitas Udara di Peta Bandung",
+    description: "Klik kecamatan untuk melihat data iklim dan prediksi AI. Sensor IoT menampilkan data PM2.5 dan PM10 secara real-time dengan analisis dari Groq AI.",
+    features: ["30 kecamatan Bandung", "Data iklim BPS", "Prediksi AI per wilayah", "Sensor IoT real-time"],
+  },
+  {
+    id: "ai",
+    label: "Analisis AI",
+    icon: <GroqIcon size={16} />,
+    title: "Analisis Cerdas dari Groq AI",
+    description: "Dapatkan rekomendasi kesehatan yang dipersonalisasi berdasarkan kondisi udara terkini. AI menganalisis data sensor dan memberikan saran aktivitas yang aman.",
+    features: ["Rekomendasi personal", "Analisis PM2.5 & PM10", "Tips keamanan", "Kirim ke WhatsApp"],
+  },
+  {
+    id: "news",
+    label: "Berita AI",
+    icon: <Newspaper size={16} />,
+    title: "Berita Kualitas Udara dengan Ringkasan AI",
+    description: "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Groq AI untuk kemudahan membaca.",
+    features: ["Multi-sumber berita", "Ringkasan Groq AI", "Google News & BMKG", "Update harian"],
+  },
+  {
+    id: "quiz",
+    label: "Quiz & Game",
+    icon: <Trophy size={16} />,
+    title: "Belajar Sambil Bermain tentang Kualitas Udara",
+    description: "Jawab quiz interaktif, kumpulkan poin, dan naik level sambil meningkatkan pengetahuan tentang polusi udara dan cara melindungi diri.",
+    features: ["Quiz interaktif AI", "Sistem poin & level", "Leaderboard", "Edukasi lingkungan"],
+  },
+];
+
+export default function DemoShowcase() {
+  const [activeTab, setActiveTab] = useState("map");
+  const activeDemo = demos.find((d) => d.id === activeTab)!;
+
+  return (
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-6xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
+            Fitur Lengkap
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
+            Semua dalam Satu Platform
+          </h2>
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            Dari peta interaktif hingga game edukasi, HAWA punya semuanya.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {demos.map((demo) => (
+            <button
+              key={demo.id}
+              onClick={() => setActiveTab(demo.id)}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                activeTab === demo.id
+                  ? "bg-[#005AE1] text-white shadow-lg shadow-[#005AE1]/25"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {demo.icon}
+              {demo.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Demo Content Card */}
+        <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Left: Description */}
+            <div className="p-8 lg:p-10 flex flex-col justify-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                {activeDemo.title}
+              </h3>
+              <p className="text-gray-500 mb-6 leading-relaxed">
+                {activeDemo.description}
+              </p>
+
+              {/* Feature List */}
+              <div className="grid grid-cols-2 gap-3">
+                {activeDemo.features.map((feature, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#005AE1] flex-shrink-0" />
+                    <span className="text-sm text-gray-600">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Visual Preview */}
+            <div className="bg-gradient-to-br from-[#e8f0ff] to-[#d8e8ff] p-8 lg:p-10 flex items-center justify-center min-h-[320px]">
+              <div className="w-full max-w-sm bg-white rounded-xl shadow-xl border border-gray-200/60 overflow-hidden">
+                {/* Mock Window Bar */}
+                <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 border-b border-gray-200">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                  <div className="flex-1 ml-3 h-5 bg-gray-200 rounded-md" />
+                </div>
+
+                {/* Mock Content */}
+                <div className="p-5">
+                  {activeTab === "map" && (
+                    <div className="space-y-3">
+                      <div className="h-32 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex items-center justify-center">
+                        <Map size={32} className="text-[#005AE1] opacity-60" />
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="flex-1 h-8 bg-green-50 rounded-lg border border-green-200 flex items-center justify-center text-xs font-semibold text-green-700">AMAN</div>
+                        <div className="flex-1 h-8 bg-orange-50 rounded-lg border border-orange-200 flex items-center justify-center text-xs font-semibold text-orange-700">PM2.5: 12</div>
+                      </div>
+                    </div>
+                  )}
+                  {activeTab === "ai" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <GroqIcon size={16} className="text-[#F55036]" />
+                        <span className="text-sm font-bold text-gray-800">Analisis Groq AI</span>
+                      </div>
+                      <div className="h-3 bg-gray-100 rounded-full w-full" />
+                      <div className="h-3 bg-gray-100 rounded-full w-4/5" />
+                      <div className="h-3 bg-gray-100 rounded-full w-3/5" />
+                      <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div className="text-xs font-semibold text-green-700">Status: AMAN</div>
+                      </div>
+                    </div>
+                  )}
+                  {activeTab === "news" && (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="flex gap-3 items-start">
+                          <div className="w-10 h-10 bg-blue-50 rounded-lg flex-shrink-0 flex items-center justify-center">
+                            <Newspaper size={14} className="text-[#005AE1] opacity-60" />
+                          </div>
+                          <div className="flex-1 space-y-1.5">
+                            <div className="h-2.5 bg-gray-100 rounded-full w-full" />
+                            <div className="h-2.5 bg-gray-100 rounded-full w-3/4" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {activeTab === "quiz" && (
+                    <div className="space-y-3">
+                      <div className="text-center">
+                        <Trophy size={24} className="text-amber-500 mx-auto mb-2" />
+                        <div className="text-sm font-bold text-gray-800 mb-1">Quiz Kualitas Udara</div>
+                      </div>
+                      {["A. Oksigen", "B. PM2.5", "C. Nitrogen"].map((opt, i) => (
+                        <div key={i} className={`p-2.5 rounded-lg border text-xs font-medium ${i === 1 ? "bg-blue-50 border-[#005AE1] text-[#005AE1]" : "bg-gray-50 border-gray-200 text-gray-600"}`}>
+                          {opt}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
