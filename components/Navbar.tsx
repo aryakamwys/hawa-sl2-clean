@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 
 type NavItem = { label: string; href: string };
 
@@ -28,6 +28,7 @@ export default function Navbar({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch user session on mount
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Navbar({
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
+    setMobileMenuOpen(false);
   };
 
   useEffect(() => {
@@ -60,7 +62,8 @@ export default function Navbar({
 
   return (
     <>
-      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center">
+      {/* Desktop Navbar */}
+      <div className="fixed top-6 left-0 right-0 z-50 hidden lg:flex justify-center px-4">
         <nav
           className={[
             "inline-flex items-center justify-center gap-8",
@@ -150,6 +153,106 @@ export default function Navbar({
               </>
             )}
           </div>
+        </nav>
+      </div>
+
+      {/* Mobile/Tablet Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 lg:hidden">
+        <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between px-4 py-3">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.png" alt="Hawa" width={32} height={32} priority />
+              <span className="text-xl font-bold text-[#005AE1]">Hawa</span>
+            </Link>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="border-t border-gray-200 bg-white">
+              <div className="px-4 py-3 space-y-3">
+                {/* Nav Links */}
+                {nav.map((it) => (
+                  <a
+                    key={it.href}
+                    href={it.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors"
+                  >
+                    {it.label}
+                  </a>
+                ))}
+
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  {/* Language Selector */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm text-gray-600">Bahasa:</span>
+                    <div className="flex gap-2">
+                      {(["ID", "EN", "SU"] as const).map((v) => (
+                        <button
+                          key={v}
+                          onClick={() => {
+                            onLangChange?.(v);
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                            v === lang
+                              ? "bg-[#005AE1] text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          {v}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Auth Buttons */}
+                  {isLoading ? (
+                    <div className="text-sm text-gray-500">Loading...</div>
+                  ) : user ? (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                      <LogOut size={18} />
+                      Keluar
+                    </button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setIsAuthModalOpen(true);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex-1 py-2 px-4 border border-[#005AE1] text-[#005AE1] rounded-lg font-medium hover:bg-[#005AE1] hover:text-white transition-colors"
+                      >
+                        Masuk
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsAuthModalOpen(true);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex-1 py-2 px-4 bg-[#005AE1] text-white rounded-lg font-medium hover:bg-[#004BB8] transition-colors"
+                      >
+                        Daftar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </nav>
       </div>
 

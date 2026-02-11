@@ -65,31 +65,31 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
 
   return (
     <>
-      <div className="!fixed !inset-0 !bg-black/50 !flex !items-center !justify-center !z-50">
-        <div className="!bg-white !rounded-2xl !p-8 !max-w-md !w-full !mx-4 !border-2 !border-black">
+      <div className="!fixed !inset-0 !bg-black/50 !flex !items-center !justify-center !z-50 !p-4">
+        <div className="!bg-white !rounded-2xl !p-4 sm:!p-6 md:!p-8 !max-w-md !w-full !border-2 !border-black !max-h-[90vh] !overflow-y-auto">
           {/* Header */}
-          <div className="!text-center !mb-8">
-            <h2 className="!text-3xl !font-bold !text-black">
+          <div className="!text-center !mb-6 md:!mb-8">
+            <h2 className="!text-2xl sm:!text-3xl !font-bold !text-black">
               Point Quiz
             </h2>
-            <div className="!mt-4">
+            <div className="!mt-3 md:!mt-4">
               {userLevel && (
-                <div className="!flex !items-center !justify-center !gap-4">
+                <div className="!flex !items-center !justify-center !gap-3 sm:!gap-4">
                   <div className="!text-center">
-                    <div className="!text-sm !text-gray-600">Level</div>
-                    <div className="!text-xl !font-bold !text-black">
+                    <div className="!text-xs sm:!text-sm !text-gray-600">Level</div>
+                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
                       {userLevel.level}
                     </div>
                   </div>
                   <div className="!text-center">
-                    <div className="!text-sm !text-gray-600">XP</div>
-                    <div className="!text-xl !font-bold !text-black">
+                    <div className="!text-xs sm:!text-sm !text-gray-600">XP</div>
+                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
                       {userLevel.xp}
                     </div>
                   </div>
                   <div className="!text-center">
-                    <div className="!text-sm !text-gray-600">Streak</div>
-                    <div className="!text-xl !font-bold !text-black">
+                    <div className="!text-xs sm:!text-sm !text-gray-600">Streak</div>
+                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
                       🔥 {userLevel.streak}
                     </div>
                   </div>
@@ -99,26 +99,26 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
           </div>
 
           {/* Menu Buttons */}
-          <div className="!space-y-4">
+          <div className="!space-y-3 md:!space-y-4">
             <button
               onClick={handleQuizClick}
-              className="!w-full !h-24 !text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-4 !px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
+              className="!w-full !h-20 sm:!h-24 !text-lg sm:!text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-3 sm:!gap-4 !px-4 sm:!px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
             >
-              <span className="!text-4xl">🎯</span>
+              <span className="!text-3xl sm:!text-4xl">🎯</span>
               <div className="!text-left">
                 <div className="!font-bold">Quiz Game</div>
-                <div className="!text-sm">Jawab soal & dapat XP!</div>
+                <div className="!text-xs sm:!text-sm">Jawab soal & dapat XP!</div>
               </div>
             </button>
 
             <button
               onClick={handleLeaderboardClick}
-              className="!w-full !h-24 !text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-4 !px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
+              className="!w-full !h-20 sm:!h-24 !text-lg sm:!text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-3 sm:!gap-4 !px-4 sm:!px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
             >
-              <span className="!text-4xl">🏆</span>
+              <span className="!text-3xl sm:!text-4xl">🏆</span>
               <div className="!text-left">
                 <div className="!font-bold">Leaderboard</div>
-                <div className="!text-sm">Lihat peringkatmu!</div>
+                <div className="!text-xs sm:!text-sm">Lihat peringkatmu!</div>
               </div>
             </button>
           </div>
@@ -126,7 +126,7 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
           {/* Close */}
           <button
             onClick={onClose}
-            className="!mt-6 !w-full !py-3 !bg-white !text-black !border-2 !border-[#005AE1] !rounded-lg !font-semibold hover:!bg-[#E0F4FF]"
+            className="!mt-4 md:!mt-6 !w-full !py-2.5 md:!py-3 !bg-white !text-black !border-2 !border-[#005AE1] !rounded-lg !font-semibold hover:!bg-[#E0F4FF]"
           >
             Tutup
           </button>

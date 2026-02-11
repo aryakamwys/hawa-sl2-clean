@@ -24,6 +24,7 @@ const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminO
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>("account");
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch user role
   useEffect(() => {
@@ -77,9 +78,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       />
 
       {/* Dialog */}
-      <div className="relative mx-auto flex min-h-full items-center justify-center !p-6">
+      <div className="relative mx-auto flex min-h-full items-center justify-center !p-4 md:!p-6">
         <div className="w-full max-w-4xl">
-          <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl max-h-[90vh] flex flex-col">
             {/* Close button */}
             <button
               onClick={onClose}
@@ -89,9 +90,47 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <X size={18} />
             </button>
 
-            <div className="flex min-h-[560px]">
-              {/* Sidebar */}
-              <div className="w-52 border-r border-gray-100 bg-gray-50 !py-4 !px-3">
+            {/* Mobile Menu Toggle */}
+            <div className="lg:hidden !px-4 !py-3 border-b border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="flex items-center gap-2 text-sm font-medium text-gray-700"
+              >
+                <span>{menuItems.find((item) => item.id === activeTab)?.label}</span>
+                <svg className={`h-4 w-4 transition-transform ${mobileMenuOpen ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                </svg>
+              </button>
+              
+              {/* Mobile Dropdown Menu */}
+              {mobileMenuOpen && (
+                <div className="mt-2 space-y-1">
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 !px-3 !py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === item.id
+                          ? "bg-white text-gray-900 shadow-sm"
+                          : "text-gray-600 hover:bg-white/60 hover:text-gray-900"
+                      }`}
+                    >
+                      <span className={activeTab === item.id ? "text-gray-700" : "text-gray-400"}>
+                        {item.icon}
+                      </span>
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-1 min-h-0">
+              {/* Sidebar - Desktop Only */}
+              <div className="hidden lg:block w-52 border-r border-gray-100 bg-gray-50 !py-4 !px-3 overflow-y-auto">
                 <nav className="space-y-1">
                   {menuItems.map((item) => (
                     <button
@@ -113,8 +152,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* Content */}
-              <div className="flex-1 !p-6 overflow-y-auto">
-                <h2 className="text-lg font-semibold text-gray-900 !mb-6">
+              <div className="flex-1 !p-4 md:!p-6 overflow-y-auto">
+                <h2 className="text-base md:text-lg font-semibold text-gray-900 !mb-4 md:!mb-6">
                   {menuItems.find((item) => item.id === activeTab)?.label}
                 </h2>
 
