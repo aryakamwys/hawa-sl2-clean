@@ -132,7 +132,7 @@ export default function FlyingMascot() {
                 className="w-full h-full"
             >
                 <Image
-                    src="/flying mascott.png"
+                    src={targetPos ? "/flying mascot2.png" : "/flying mascott.png"}
                     alt="Flying Mascot"
                     width={200}
                     height={200}

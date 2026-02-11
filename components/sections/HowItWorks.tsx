@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/hooks/useLanguage";
+import SectionTransition from "@/components/SectionTransition";
 
 export default function HowItWorks() {
   const { t } = useLanguage();
@@ -32,7 +33,7 @@ export default function HowItWorks() {
     <section id="how-it-works" className="py-24 px-6 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <SectionTransition className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
             {t?.howItWorks?.badge || "Cara Kerja"}
           </div>
@@ -42,10 +43,10 @@ export default function HowItWorks() {
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
             {t?.howItWorks?.subtitle || "Empat langkah sederhana untuk udara yang lebih sehat"}
           </p>
-        </div>
+        </SectionTransition>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <SectionTransition className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" delay={0.2}>
           {steps.map((step, index) => (
             <div key={index} className="relative">
               <div className="p-6 bg-white rounded-2xl border border-gray-200 h-full hover:shadow-lg hover:border-[#005AE1]/20 transition-all duration-300">
@@ -66,13 +67,13 @@ export default function HowItWorks() {
               {index < steps.length - 1 && (
                 <div className="hidden lg:flex absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-300">
-                    <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               )}
             </div>
           ))}
-        </div>
+        </SectionTransition>
       </div>
     </section>
   );

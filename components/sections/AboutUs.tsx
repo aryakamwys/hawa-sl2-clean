@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SectionTransition from "@/components/SectionTransition";
 
 export default function AboutUs() {
   return (
@@ -6,7 +7,7 @@ export default function AboutUs() {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text Content */}
-          <div>
+          <SectionTransition>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
               Tentang Kami
             </div>
@@ -35,10 +36,10 @@ export default function AboutUs() {
                 <div className="text-xs text-gray-500 font-medium">Monitoring</div>
               </div>
             </div>
-          </div>
+          </SectionTransition>
 
           {/* Right: Mascot */}
-          <div className="flex justify-center">
+          <SectionTransition className="flex justify-center" delay={0.2}>
             <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
               <div className="absolute inset-0 rounded-3xl" style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 25%, #005AE1 75%)' }} />
               <Image
@@ -48,7 +49,7 @@ export default function AboutUs() {
                 className="object-contain p-8 drop-shadow-lg"
               />
             </div>
-          </div>
+          </SectionTransition>
         </div>
       </div>
     </section>

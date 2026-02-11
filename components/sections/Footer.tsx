@@ -3,13 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/hooks/useLanguage";
+import SectionTransition from "@/components/SectionTransition";
 
 export default function Footer() {
   const { t } = useLanguage();
 
   return (
     <footer className="text-white pt-16 pb-8 px-6">
-      <div className="max-w-6xl mx-auto">
+      <SectionTransition className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
@@ -70,7 +71,7 @@ export default function Footer() {
         <div className="border-t border-white/20 pt-6 text-center text-xs text-blue-100">
           {t?.footer?.rights || "© 2026 HAWA. All rights reserved."}
         </div>
-      </div>
+      </SectionTransition>
     </footer>
   );
 }

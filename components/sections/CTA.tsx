@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SectionTransition from "@/components/SectionTransition";
 
 export default function CTA() {
   return (
@@ -10,7 +11,7 @@ export default function CTA() {
         backgroundSize: '40px 40px',
       }} />
 
-      <div className="relative z-10 max-w-3xl mx-auto text-center">
+      <SectionTransition className="relative z-10 max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 tracking-tight">
           Siap Lindungi Keluarga Anda?
         </h2>
@@ -29,7 +30,7 @@ export default function CTA() {
             </svg>
           </Link>
         </div>
-      </div>
+      </SectionTransition>
     </section>
   );
 }

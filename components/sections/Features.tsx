@@ -3,6 +3,7 @@
 import { Map, Brain, Wifi, Target, Trophy, Newspaper } from "lucide-react";
 import MetaIcon from "@/components/MetaIcon";
 import { useLanguage } from "@/hooks/useLanguage";
+import SectionTransition from "@/components/SectionTransition";
 
 export default function Features() {
   const { t } = useLanguage();
@@ -44,7 +45,7 @@ export default function Features() {
     <section id="features" className="py-24 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <SectionTransition className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
             {t?.features?.badge || "Fitur Utama"}
           </div>
@@ -58,10 +59,10 @@ export default function Features() {
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
             {t?.features?.description || "Platform lengkap untuk memantau, memahami, dan bertindak berdasarkan kondisi kualitas udara di sekitar Anda."}
           </p>
-        </div>
+        </SectionTransition>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <SectionTransition className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" delay={0.2}>
           {features.map((feature, index) => (
             <div
               key={index}
@@ -78,7 +79,7 @@ export default function Features() {
               </p>
             </div>
           ))}
-        </div>
+        </SectionTransition>
       </div>
     </section>
   );

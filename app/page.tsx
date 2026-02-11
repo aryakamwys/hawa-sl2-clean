@@ -22,17 +22,24 @@ export default function HomePage() {
 
       <div className={`min-h-screen transition-opacity duration-1000 ${showSplash ? "opacity-0" : "opacity-100"}`}>
         <Navbar />
+
         <div id="hero">
           <HeroSection />
         </div>
+
         <Features />
+
         <DemoShowcase />
+
         <HowItWorks />
+
         <AboutUs />
+
         <div style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 41%, #005AE1 100%)' }}>
           <CTA />
           <Footer />
         </div>
+
         <FlyingMascot />
       </div>
     </>
