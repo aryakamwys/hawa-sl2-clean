@@ -12,23 +12,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user profile to check age group
-    const profile = await prisma.userProfile.findUnique({
-      where: { userId: session.userId },
-    });
+    const [profile, user] = await Promise.all([
+      prisma.userProfile.findUnique({
+        where: { userId: session.userId },
+      }),
+      prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { language: true },
+      }),
+    ]);
 
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // Get query params
     const { searchParams } = new URL(request.url);
     const difficulty = (searchParams.get("difficulty") || "MEDIUM") as "EASY" | "MEDIUM" | "HARD";
+    const language = (user?.language as "EN" | "ID") || "EN";
 
-    // Generate 10 quiz questions based on user's age group
-    const questions = await generateBulkFillInTheBlank(difficulty, profile.ageGroup);
-
-    // Calculate total XP
+    const questions = await generateBulkFillInTheBlank({ difficulty, ageGroup: profile.ageGroup, language });
     const totalXP = questions.reduce((sum, q) => sum + q.xpReward, 0);
 
     return NextResponse.json({
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
       totalXP,
       ageGroup: profile.ageGroup,
       difficulty,
+      language,
     });
   } catch (error) {
     console.error("[Bulk Quiz API] Error:", error);

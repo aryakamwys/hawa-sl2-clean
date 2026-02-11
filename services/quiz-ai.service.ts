@@ -110,7 +110,8 @@ PENTING:
 
 export async function generateQuiz(
   difficulty: Difficulty = "MEDIUM",
-  ageGroup: AgeGroup = "REMAJA"
+  ageGroup: AgeGroup = "REMAJA",
+  language: "EN" | "ID" = "ID"
 ): Promise<QuizQuestion> {
   try {
     const prompt = getQuizPrompt(difficulty, ageGroup);
@@ -205,10 +206,15 @@ export function getQuizTimeLimit(difficulty: Difficulty): number {
 }
 
 // Generate 10 fill-in-the-blank questions at once
-export async function generateBulkFillInTheBlank(
-  difficulty: Difficulty = "MEDIUM",
-  ageGroup: AgeGroup = "REMAJA"
-): Promise<FillInTheBlankQuestion[]> {
+export async function generateBulkFillInTheBlank({
+  difficulty = "MEDIUM",
+  ageGroup = "REMAJA",
+  language = "ID"
+}: {
+  difficulty?: Difficulty;
+  ageGroup?: AgeGroup;
+  language?: "EN" | "ID";
+}): Promise<FillInTheBlankQuestion[]> {
   try {
     const ageGroupGuides: Record<AgeGroup, string> = {
       ANAK: "Anak-anak usia 6-12 tahun. Gunakan bahasa SEDERHANA, menyenangkan, hindari istilah teknis.",
@@ -259,22 +265,22 @@ PENTING:
 - Bahasa Indonesia
 - Edukatif dan tidak menakut-nakuti`;
 
-      const completion = await groq.chat.completions.create({
-        model: GROQ_MODEL,
-        messages: [
-          {
-            role: "system",
-            content: prompt, // Use the local 'prompt' variable for fill-in-the-blank
-          },
-          {
-            role: "user",
-            content: "Generate 10 fill-in-the-blank questions NOW. Return ONLY valid JSON array, no markdown, no explanation.",
-          },
-        ],
-        temperature: 0.3, // Lower temperature for faster, more deterministic responses
-        max_tokens: 2000, // Reduced from default to speed up generation
-        response_format: { type: "json_object" },
-      });
+    const completion = await groq.chat.completions.create({
+      model: GROQ_MODEL,
+      messages: [
+        {
+          role: "system",
+          content: prompt, // Use the local 'prompt' variable for fill-in-the-blank
+        },
+        {
+          role: "user",
+          content: "Generate 10 fill-in-the-blank questions NOW. Return ONLY valid JSON array, no markdown, no explanation.",
+        },
+      ],
+      temperature: 0.3, // Lower temperature for faster, more deterministic responses
+      max_tokens: 2000, // Reduced from default to speed up generation
+      response_format: { type: "json_object" },
+    });
     const content = completion.choices[0]?.message?.content || "[]";
     const quizData = JSON.parse(content);
 
@@ -286,7 +292,7 @@ PENTING:
     const questions: FillInTheBlankQuestion[] = quizData.slice(0, 10).map((q, index) => {
       const correctAnswers = Array.isArray(q.correctAnswers) ? q.correctAnswers : [q.correctAnswers];
       const distractors = Array.isArray(q.distractors) ? q.distractors : [];
-      
+
       // Combine correct answers and distractors, then shuffle
       const allOptions = [...correctAnswers, ...distractors].sort(() => Math.random() - 0.5);
 
@@ -355,4 +361,3 @@ function generateFallbackFillInTheBlank(index: number, difficulty: Difficulty): 
     xpReward: getQuizXP(difficulty),
   };
 }
-

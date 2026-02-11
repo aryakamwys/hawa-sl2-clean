@@ -12,10 +12,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user profile to check age group
-    const profile = await prisma.userProfile.findUnique({
-      where: { userId: session.userId },
-    });
+    // Get user profile with language
+    const [profile, user] = await Promise.all([
+      prisma.userProfile.findUnique({
+        where: { userId: session.userId },
+      }),
+      prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { language: true },
+      }),
+    ]);
 
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
@@ -24,9 +30,10 @@ export async function POST(request: Request) {
     // Get query params
     const { searchParams } = new URL(request.url);
     const difficulty = (searchParams.get("difficulty") || "MEDIUM") as "EASY" | "MEDIUM" | "HARD";
+    const language = (user?.language as "EN" | "ID") || "EN";
 
-    // Generate quiz based on user's age group
-    const quiz = await generateQuiz(difficulty, profile.ageGroup);
+    // Generate quiz based on user's age group and language
+    const quiz = await generateQuiz(difficulty, profile.ageGroup, language);
 
     return NextResponse.json({
       question: quiz.question,
@@ -38,6 +45,7 @@ export async function POST(request: Request) {
       xpReward: getQuizXP(difficulty),
       timeLimit: getQuizTimeLimit(difficulty),
       ageGroup: profile.ageGroup,
+      language,
     });
   } catch (error) {
     console.error("[Quiz API] Error:", error);

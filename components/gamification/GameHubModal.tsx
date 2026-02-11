@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ProfileCheckModal from "./ProfileCheckModal";
 import QuizModal from "./QuizModal";
 import LeaderboardModal from "./LeaderboardModal";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface UserLevel {
   xp: number;
@@ -21,6 +22,7 @@ interface GameHubModalProps {
 }
 
 export default function GameHubModal({ onClose }: GameHubModalProps) {
+  const { t } = useLanguage();
   const [userLevel, setUserLevel] = useState<UserLevel | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showProfileCheck, setShowProfileCheck] = useState(false);
@@ -70,13 +72,13 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
           {/* Header */}
           <div className="!text-center !mb-6 md:!mb-8">
             <h2 className="!text-2xl sm:!text-3xl !font-bold !text-black">
-              Point Quiz
+              {t?.game?.title || "Point Quiz"}
             </h2>
             <div className="!mt-3 md:!mt-4">
               {userLevel && (
                 <div className="!flex !items-center !justify-center !gap-3 sm:!gap-4">
                   <div className="!text-center">
-                    <div className="!text-xs sm:!text-sm !text-gray-600">Level</div>
+                    <div className="!text-xs sm:!text-sm !text-gray-600">{t?.game?.level || "Level"}</div>
                     <div className="!text-lg sm:!text-xl !font-bold !text-black">
                       {userLevel.level}
                     </div>
@@ -88,7 +90,7 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
                     </div>
                   </div>
                   <div className="!text-center">
-                    <div className="!text-xs sm:!text-sm !text-gray-600">Streak</div>
+                    <div className="!text-xs sm:!text-sm !text-gray-600">{t?.game?.streak || "Streak"}</div>
                     <div className="!text-lg sm:!text-xl !font-bold !text-black">
                       🔥 {userLevel.streak}
                     </div>
@@ -106,8 +108,8 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
             >
               <span className="!text-3xl sm:!text-4xl">🎯</span>
               <div className="!text-left">
-                <div className="!font-bold">Quiz Game</div>
-                <div className="!text-xs sm:!text-sm">Jawab soal & dapat XP!</div>
+                <div className="!font-bold">{t?.game?.quizGame || "Quiz Game"}</div>
+                <div className="!text-xs sm:!text-sm">{t?.game?.quizDesc || "Answer questions & earn XP!"}</div>
               </div>
             </button>
 
@@ -117,8 +119,8 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
             >
               <span className="!text-3xl sm:!text-4xl">🏆</span>
               <div className="!text-left">
-                <div className="!font-bold">Leaderboard</div>
-                <div className="!text-xs sm:!text-sm">Lihat peringkatmu!</div>
+                <div className="!font-bold">{t?.game?.leaderboard || "Leaderboard"}</div>
+                <div className="!text-xs sm:!text-sm">{t?.game?.leaderboardDesc || "View your rankings!"}</div>
               </div>
             </button>
           </div>
@@ -128,7 +130,7 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
             onClick={onClose}
             className="!mt-4 md:!mt-6 !w-full !py-2.5 md:!py-3 !bg-white !text-black !border-2 !border-[#005AE1] !rounded-lg !font-semibold hover:!bg-[#E0F4FF]"
           >
-            Tutup
+            {t?.game?.close || "Close"}
           </button>
         </div>
       </div>

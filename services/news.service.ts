@@ -27,8 +27,8 @@ interface RawNewsItem {
 
 // Cache
 const CACHE_DURATION = 30 * 60 * 1000; // 30 min
-let cachedNews: NewsItem[] | null = null;
-let cacheTimestamp = 0;
+let cachedNews: Record<string, NewsItem[]> = {} as Record<string, NewsItem[]>;
+let cacheTimestamp: Record<string, number> = {} as Record<string, number>;
 
 // Keywords for scraping
 const SEARCH_QUERIES = [
@@ -188,9 +188,23 @@ function deduplicateNews(items: RawNewsItem[]): RawNewsItem[] {
 /**
  * Summarize all news items with Groq AI  
  */
-async function summarizeNews(items: RawNewsItem[]): Promise<NewsItem[]> {
-  console.log(`[News] Summarizing ${items.length} items with Groq AI...`);
+async function summarizeNews(
+  items: RawNewsItem[],
+  language: "EN" | "ID" = "ID"
+): Promise<NewsItem[]> {
+  console.log(`[News] Summarizing ${items.length} items with Groq AI (${language})...`);
   const results: NewsItem[] = [];
+
+  const systemPrompt = language === "EN"
+    ? "You are an environmental news editor. Create a brief 1-2 sentence summary (max 80 words) in English. Output ONLY summary text."
+    : "Kamu editor berita lingkungan. Buat rangkuman 1-2 kalimat singkat (maks 80 kata) dalam bahasa Indonesia. Output HANYA teks rangkuman.";
+
+  const userPromptPrefix = language === "EN"
+    ? "Summarize this news:\nTitle: "
+    : "Rangkum berita ini:\nJudul: ";
+  const userPromptSuffix = language === "EN"
+    ? "\nSource: "
+    : "\nSumber: ";
 
   for (const item of items) {
     try {
@@ -198,11 +212,11 @@ async function summarizeNews(items: RawNewsItem[]): Promise<NewsItem[]> {
         messages: [
           {
             role: "system",
-            content: "Kamu editor berita lingkungan. Buat rangkuman 1-2 kalimat singkat (maks 80 kata) dalam bahasa Indonesia. Output HANYA teks rangkuman.",
+            content: systemPrompt,
           },
           {
             role: "user",
-            content: `Rangkum berita ini:\nJudul: ${item.title}\nSumber: ${item.source}`,
+            content: userPromptPrefix + item.title + userPromptSuffix + item.source,
           },
         ],
         model: GROQ_MODEL,
@@ -213,7 +227,7 @@ async function summarizeNews(items: RawNewsItem[]): Promise<NewsItem[]> {
       const summary = completion.choices[0]?.message?.content?.trim() || item.title;
 
       results.push({
-        id: Buffer.from(`${item.source}-${item.title}`).toString("base64").substring(0, 40),
+        id: Buffer.from(`${item.source}-${item.title}-${language}`).toString("base64").substring(0, 40),
         title: item.title,
         summary,
         imageUrl: null,
@@ -225,7 +239,7 @@ async function summarizeNews(items: RawNewsItem[]): Promise<NewsItem[]> {
     } catch (err) {
       console.error("[News] Groq error for item:", err);
       results.push({
-        id: Buffer.from(`${item.source}-${item.title}`).toString("base64").substring(0, 40),
+        id: Buffer.from(`${item.source}-${item.title}-${language}`).toString("base64").substring(0, 40),
         title: item.title,
         summary: item.title,
         imageUrl: null,
@@ -243,17 +257,23 @@ async function summarizeNews(items: RawNewsItem[]): Promise<NewsItem[]> {
 /**
  * Get all news (cached)
  */
-export async function getAllNews(forceRefresh = false): Promise<NewsItem[]> {
+export async function getAllNews(
+  forceRefresh = false,
+  language: "EN" | "ID" = "ID"
+): Promise<NewsItem[]> {
+  const cacheKey = language === "EN" ? "news_EN" : "news_ID";
+  const cachedNewsEntry = cachedNews[cacheKey];
+  const cachedTimestampEntry = cacheTimestamp[cacheKey];
   const now = Date.now();
-  if (!forceRefresh && cachedNews && now - cacheTimestamp < CACHE_DURATION) {
-    console.log("[News] Returning cached news");
-    return cachedNews;
+
+  if (!forceRefresh && cachedNewsEntry && cachedTimestampEntry && now - cachedTimestampEntry < CACHE_DURATION) {
+    console.log(`[News] Returning cached news (${language})`);
+    return cachedNewsEntry;
   }
 
-  console.log("[News] Fetching fresh news from all sources...");
+  console.log(`[News] Fetching fresh news from all sources (${language})...`);
 
   try {
-    // Fetch from multiple sources concurrently
     const fetchPromises = [
       ...SEARCH_QUERIES.map((q) => fetchGoogleNewsRSS(q)),
       fetchBMKGNews(),
@@ -271,24 +291,22 @@ export async function getAllNews(forceRefresh = false): Promise<NewsItem[]> {
 
     console.log(`[News] Total raw items: ${allRaw.length}`);
 
-    // Deduplicate and limit to 10
     const unique = deduplicateNews(allRaw).slice(0, 10);
     console.log(`[News] After dedup: ${unique.length}`);
 
-    // Summarize with AI
-    const summarized = await summarizeNews(unique);
+    const summarized = await summarizeNews(unique, language);
 
-    // Sort by date
     summarized.sort((a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
-    cachedNews = summarized;
-    cacheTimestamp = now;
+    cachedNews[cacheKey] = summarized;
+    cacheTimestamp[cacheKey] = now;
     return summarized;
   } catch (error) {
     console.error("[News] Error:", error);
-    if (cachedNews) return cachedNews;
+    const fallback = cachedNews[cacheKey];
+    if (fallback) return fallback;
     throw error;
   }
 }
@@ -296,7 +314,12 @@ export async function getAllNews(forceRefresh = false): Promise<NewsItem[]> {
 /**
  * Clear cache
  */
-export function clearNewsCache(): void {
-  cachedNews = null;
-  cacheTimestamp = 0;
+export function clearNewsCache(language?: "EN" | "ID"): void {
+  if (language) {
+    delete cachedNews[language === "EN" ? "news_EN" : "news_ID"];
+    delete cacheTimestamp[language === "EN" ? "news_EN" : "news_ID"];
+  } else {
+    cachedNews = {} as Record<string, NewsItem[]>;
+    cacheTimestamp = {} as Record<string, number>;
+  }
 }

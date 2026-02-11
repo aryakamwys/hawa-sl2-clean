@@ -132,12 +132,12 @@ export default function Navbar() {
             </details>
 
             {isLoading ? (
-              <div className="!mr-4 text-sm text-gray-500">Loading...</div>
+              <div className="!mr-4 text-sm text-gray-500">{t.common.loading}</div>
             ) : user ? (
               <button
                 onClick={handleLogout}
                 className="!mr-4 btn btn-sm btn-circle bg-[#005AE1] hover:bg-[#004BB8] text-white border-none"
-                title="Keluar"
+                title={t.nav.logout}
               >
                 <LogOut size={16} />
               </button>
@@ -150,7 +150,7 @@ export default function Navbar() {
                   }}
                   className="btn rounded-full !px-4 !py-1 text-base font-semibold bg-transparent text-[#005AE1] border border-[#005AE1] hover:bg-[#005AE1] hover:text-white transition-all duration-200"
                 >
-                  Masuk
+                  {t.nav.login}
                 </button>
                 <button
                   onClick={() => {
@@ -159,7 +159,7 @@ export default function Navbar() {
                   }}
                   className="!mr-4 btn rounded-full !px-7 !py-2 text-base font-semibold bg-[#005AE1] text-white hover:bg-[#004BB8] transition-all duration-200 border-none"
                 >
-                  Daftar
+                  {t.nav.register}
                 </button>
               </>
             )}
@@ -228,14 +228,14 @@ export default function Navbar() {
 
                   {/* Auth Buttons */}
                   {isLoading ? (
-                    <div className="text-sm text-gray-500">Loading...</div>
+                    <div className="text-sm text-gray-500">{t.common.loading}</div>
                   ) : user ? (
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
                     >
                       <LogOut size={18} />
-                      Keluar
+                      {t.nav.logout}
                     </button>
                   ) : (
                     <div className="flex gap-2">
@@ -247,7 +247,7 @@ export default function Navbar() {
                         }}
                         className="flex-1 py-2 px-4 border border-[#005AE1] text-[#005AE1] rounded-lg font-medium hover:bg-[#005AE1] hover:text-white transition-colors"
                       >
-                        Masuk
+                        {t.nav.login}
                       </button>
                       <button
                         onClick={() => {
@@ -257,7 +257,7 @@ export default function Navbar() {
                         }}
                         className="flex-1 py-2 px-4 bg-[#005AE1] text-white rounded-lg font-medium hover:bg-[#004BB8] transition-colors"
                       >
-                        Daftar
+                        {t.nav.register}
                       </button>
                     </div>
                   )}

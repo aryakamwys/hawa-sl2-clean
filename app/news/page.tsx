@@ -19,7 +19,7 @@ interface NewsItem {
 }
 
 export default function NewsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +54,7 @@ export default function NewsPage() {
 
   useEffect(() => {
     fetchNews();
-  }, []);
+  }, [language]);
 
   const handleRefresh = () => {
     fetchNews(true);

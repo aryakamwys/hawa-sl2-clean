@@ -5,6 +5,7 @@ import { X, RefreshCw, AlertCircle } from "lucide-react";
 import LottieLoader from "@/components/LottieLoader";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ForecastPrediction {
   timestamp: string;
@@ -32,6 +33,7 @@ interface ForecastModalProps {
 }
 
 export default function ForecastModal({ onClose }: ForecastModalProps) {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [forecastData, setForecastData] = useState<ForecastData | null>(null);
@@ -105,9 +107,9 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
         {/* Header */}
         <div className="!flex !items-center !justify-between !px-6 !py-4 !border-b !border-gray-200">
           <div>
-            <h2 className="!text-2xl !font-bold !text-gray-900 !m-0">48-Hour Air Quality Forecast</h2>
+            <h2 className="!text-2xl !font-bold !text-gray-900 !m-0">{t?.forecast?.title || "48-Hour Air Quality Forecast"}</h2>
             <p className="!text-sm !text-gray-600 !mt-1 !m-0">
-              Prediksi kualitas udara untuk 2 hari ke depan
+              {t?.forecast?.subtitle || "Air quality prediction for the next 2 days"}
             </p>
           </div>
           <div className="!flex !items-center !gap-2">
@@ -132,8 +134,8 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
         <div className="!flex-1 !overflow-y-auto !p-6">
           {loading && (
             <div className="!flex !flex-col !items-center !justify-center !py-16">
-              <LottieLoader size={120} text="Generating forecast..." />
-              <p className="!text-gray-500 !text-sm !mt-2">Analyzing historical data and predicting trends</p>
+              <LottieLoader size={120} text={t?.forecast?.generating || "Generating forecast..."} />
+              <p className="!text-gray-500 !text-sm !mt-2">{t?.forecast?.analyzing || "Analyzing historical data and predicting trends"}</p>
             </div>
           )}
 
@@ -142,13 +144,13 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
               <div className="!w-16 !h-16 !bg-red-100 !rounded-full !flex !items-center !justify-center !mb-4">
                 <AlertCircle className="!text-red-600" size={32} />
               </div>
-              <h3 className="!text-xl !font-bold !text-gray-900 !mb-2">Failed to Generate Forecast</h3>
+              <h3 className="!text-xl !font-bold !text-gray-900 !mb-2">{t?.forecast?.failedTitle || "Failed to Generate Forecast"}</h3>
               <p className="!text-gray-600 !text-center !max-w-md">{error}</p>
               <button
                 onClick={fetchForecast}
                 className="!mt-6 !px-6 !py-3 !bg-[#005AE1] !text-white !rounded-xl !font-semibold hover:!bg-[#004BB8] !transition-colors !border-none !cursor-pointer"
               >
-                Try Again
+                {t?.forecast?.tryAgain || "Try Again"}
               </button>
             </div>
           )}
@@ -158,28 +160,28 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
               {/* Metadata */}
               <div className="!grid !grid-cols-1 md:!grid-cols-3 !gap-4">
                 <div className="!p-4 !bg-gray-50 !rounded-xl !border !border-gray-200">
-                  <div className="!text-sm !text-gray-600 !mb-1">Generated At</div>
+                  <div className="!text-sm !text-gray-600 !mb-1">{t?.forecast?.generatedAt || "Generated At"}</div>
                   <div className="!text-lg !font-bold !text-gray-900">
                     {format(new Date(forecastData.metadata.generatedAt), "dd MMM yyyy, HH:mm")}
                   </div>
                 </div>
                 <div className="!p-4 !bg-gray-50 !rounded-xl !border !border-gray-200">
-                  <div className="!text-sm !text-gray-600 !mb-1">Historical Data</div>
+                  <div className="!text-sm !text-gray-600 !mb-1">{t?.forecast?.historicalData || "Historical Data"}</div>
                   <div className="!text-lg !font-bold !text-gray-900">
-                    {forecastData.metadata.historicalDataPoints} points
+                    {forecastData.metadata.historicalDataPoints} {t?.forecast?.points || "points"}
                   </div>
                 </div>
                 <div className="!p-4 !bg-gray-50 !rounded-xl !border !border-gray-200">
-                  <div className="!text-sm !text-gray-600 !mb-1">Predictions</div>
+                  <div className="!text-sm !text-gray-600 !mb-1">{t?.forecast?.predictions || "Predictions"}</div>
                   <div className="!text-lg !font-bold !text-gray-900">
-                    {forecastData.metadata.predictionCount} hours
+                    {forecastData.metadata.predictionCount} {t?.forecast?.hours || "hours"}
                   </div>
                 </div>
               </div>
 
               {/* PM2.5 Chart */}
               <div className="!p-6 !bg-white !border !border-gray-200 !rounded-xl">
-                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">PM2.5 Forecast (μg/m³)</h3>
+                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">{t?.forecast?.pm25Forecast || "PM2.5 Forecast (μg/m³)"}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -194,7 +196,7 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
 
               {/* PM10 Chart */}
               <div className="!p-6 !bg-white !border !border-gray-200 !rounded-xl">
-                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">PM10 Forecast (μg/m³)</h3>
+                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">{t?.forecast?.pm10Forecast || "PM10 Forecast (μg/m³)"}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -209,7 +211,7 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
 
               {/* ISPU Chart */}
               <div className="!p-6 !bg-white !border !border-gray-200 !rounded-xl">
-                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">ISPU Forecast</h3>
+                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">{t?.forecast?.ispuForecast || "ISPU Forecast"}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -224,16 +226,16 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
 
               {/* Hourly Breakdown */}
               <div className="!p-6 !bg-white !border !border-gray-200 !rounded-xl">
-                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">Hourly Breakdown</h3>
+                <h3 className="!text-lg !font-bold !text-gray-900 !mb-4 !m-0">{t?.forecast?.hourlyBreakdown || "Hourly Breakdown"}</h3>
                 <div className="!max-h-96 !overflow-y-auto">
                   <table className="!w-full !text-sm">
                     <thead className="!bg-gray-50 !sticky !top-0">
                       <tr>
-                        <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">Time</th>
+                        <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">{t?.forecast?.time || "Time"}</th>
                         <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">PM2.5</th>
                         <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">PM10</th>
                         <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">ISPU</th>
-                        <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">Category</th>
+                        <th className="!px-4 !py-3 !text-left !font-semibold !text-gray-700">{t?.forecast?.category || "Category"}</th>
                       </tr>
                     </thead>
                     <tbody>
