@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="text-white pt-16 pb-8 px-6" style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 25%, #005AE1 75%)' }}>
+    <footer className="text-white pt-16 pb-8 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}

@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function CTA() {
   return (
-    <section className="py-24 px-6 relative overflow-hidden">
+    <section id="cta-section" className="py-24 px-6 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#005AE1] to-[#003FA3]" />
+
       <div className="absolute inset-0 opacity-5" style={{
         backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
@@ -20,6 +20,7 @@ export default function CTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/map"
+            id="cta-button"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#005AE1] rounded-full font-bold text-base hover:bg-gray-100 transition-all duration-200 shadow-xl hover:scale-105"
           >
             Mulai Sekarang
@@ -27,12 +28,6 @@ export default function CTA() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
-          <a
-            href="#features"
-            className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white rounded-full font-semibold text-base border border-white/20 hover:bg-white/20 transition-all duration-200"
-          >
-            Pelajari Lebih Lanjut
-          </a>
         </div>
       </div>
     </section>

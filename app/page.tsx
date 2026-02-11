@@ -9,6 +9,9 @@ import HowItWorks from "@/components/sections/HowItWorks";
 import AboutUs from "@/components/sections/AboutUs";
 import Footer from "@/components/sections/Footer";
 import SplashScreen from "@/components/SplashScreen";
+import FlyingMascot from "@/components/FlyingMascot";
+
+import CTA from "@/components/sections/CTA";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
@@ -16,7 +19,7 @@ export default function HomePage() {
   return (
     <>
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
-      
+
       <div className={`min-h-screen transition-opacity duration-1000 ${showSplash ? "opacity-0" : "opacity-100"}`}>
         <Navbar
           nav={[
@@ -35,7 +38,11 @@ export default function HomePage() {
         <DemoShowcase />
         <HowItWorks />
         <AboutUs />
-        <Footer />
+        <div style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 41%, #005AE1 100%)' }}>
+          <CTA />
+          <Footer />
+        </div>
+        <FlyingMascot />
       </div>
     </>
   );
