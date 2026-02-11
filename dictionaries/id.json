@@ -1,0 +1,181 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "features": "Fitur",
+    "howItWorks": "Cara Kerja",
+    "aboutUs": "Tentang Kami",
+    "map": "Peta Interaktif",
+    "news": "Berita",
+    "login": "Masuk",
+    "register": "Daftar",
+    "logout": "Keluar",
+    "language": "Bahasa"
+  },
+  "hero": {
+    "badge": "Platform IoT & AI Kualitas Udara",
+    "headline": "Pantau Kualitas Udara",
+    "headlineHighlight": "Secara Cerdas",
+    "subtitle": "Data real-time dari sensor IoT, analisis AI dari Meta Llama 4, dan rekomendasi yang dipersonalisasi untuk masyarakat Bandung.",
+    "ctaStart": "Mulai Sekarang",
+    "ctaFeatures": "Lihat Fitur"
+  },
+  "features": {
+    "badge": "Fitur Utama",
+    "headline": "Semua yang Anda Butuhkan untuk",
+    "headlineHighlight": "Udara Lebih Sehat",
+    "description": "Platform lengkap untuk memantau, memahami, dan bertindak berdasarkan kondisi kualitas udara di sekitar Anda.",
+    "realtimeIoT": "Data Real-time IoT",
+    "realtimeIoTDesc": "Sensor HAWA IoT tersebar di titik-titik strategis Bandung, mengirim data PM2.5, PM10, suhu, dan kelembaban secara langsung.",
+    "metaAI": "Analisis Meta AI",
+    "metaAIDesc": "AI dari Meta Llama 4 menganalisis data sensor dan memberikan rekomendasi kesehatan yang mudah dipahami oleh warga.",
+    "interactiveMap": "Peta Interaktif",
+    "interactiveMapDesc": "Visualisasi kualitas udara di seluruh kecamatan Bandung. Klik untuk melihat prediksi dan data iklim.",
+    "personalRec": "Rekomendasi Personal",
+    "personalRecDesc": "Saran aktivitas disesuaikan dengan usia, kondisi kesehatan, dan tingkat kualitas udara saat ini.",
+    "gamification": "Gamification & Quiz",
+    "gamificationDesc": "Dapatkan poin, naik level, dan jawab quiz tentang kualitas udara untuk meningkatkan kesadaran lingkungan.",
+    "newsAI": "Berita & Ringkasan AI",
+    "newsAIDesc": "Berita kualitas udara terkini dari berbagai sumber, dengan ringkasan otomatis dari Meta AI."
+  },
+  "howItWorks": {
+    "badge": "Cara Kerja",
+    "headline": "Dari Sensor ke Rekomendasi",
+    "subtitle": "Empat langkah sederhana untuk udara yang lebih sehat",
+    "step1Title": "Sensor Mengumpulkan Data",
+    "step1Desc": "Sensor HAWA IoT yang terpasang di Bandung mengukur PM2.5, PM10, suhu, dan kelembaban setiap detik secara otomatis.",
+    "step2Title": "AI Menganalisis Kondisi",
+    "step2Desc": "Data dikirim ke Meta Llama 4 yang mengolah dan memberikan analisis kondisi udara beserta tingkat risikonya.",
+    "step3Title": "Visualisasi di Peta",
+    "step3Desc": "Hasil ditampilkan di peta interaktif Bandung lengkap dengan prediksi iklim per kecamatan dan grafik tren.",
+    "step4Title": "Rekomendasi untuk Anda",
+    "step4Desc": "Dapatkan saran aktivitas, notifikasi WhatsApp, dan tips keamanan berdasarkan data terkini di area Anda."
+  },
+  "aboutUs": {
+    "badge": "Tentang Kami",
+    "headline": "Melindungi Masyarakat Bandung dengan Data & AI",
+    "desc1": "HAWA adalah platform monitoring kualitas udara berbasis IoT dan AI yang dirancang khusus untuk membantu warga Bandung memahami dan merespons kondisi udara di lingkungan mereka.",
+    "desc2": "Dengan sensor yang tersebar di berbagai titik strategis dan analisis AI dari Meta, kami memberikan informasi real-time yang akurat dan mudah dipahami.",
+    "statSensors": "Sensor IoT",
+    "statDistricts": "Kecamatan",
+    "statMonitoring": "Monitoring"
+  },
+  "footer": {
+    "desc": "Platform monitoring kualitas udara berbasis IoT dan AI untuk masyarakat Bandung.",
+    "product": "Produk",
+    "company": "Perusahaan",
+    "contact": "Kontak",
+    "privacy": "Kebijakan Privasi",
+    "terms": "Syarat & Ketentuan",
+    "rights": "© 2026 HAWA by sl2"
+  },
+  "auth": {
+    "welcome": "Selamat Datang",
+    "createAccount": "Buat Akun",
+    "loginSubtitle": "Masuk untuk melanjutkan ke HAWA.",
+    "registerSubtitle": "Daftar untuk mulai memantau kualitas udara.",
+    "fullName": "Nama Lengkap",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Memuat...",
+    "login": "Masuk",
+    "register": "Daftar",
+    "noAccount": "Belum punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "registerFree": "Daftar Gratis",
+    "termsNote": "Dengan melanjutkan, kamu menyetujui kebijakan dan ketentuan HAWA.",
+    "loginFailed": "Login gagal.",
+    "registerFailed": "Daftar gagal.",
+    "networkError": "Terjadi kesalahan jaringan. Coba lagi.",
+    "closeModalBackdrop": "Tutup modal",
+    "close": "Tutup",
+    "fullNamePlaceholder": "Masukkan nama lengkap",
+    "emailPlaceholder": "nama@email.com",
+    "passwordPlaceholder": "Minimal 6 karakter"
+  },
+  "map": {
+    "search": "Cari lokasi...",
+    "startTutorial": "Mulai Tutorial",
+    "loginRequired": "Login Diperlukan",
+    "loginRequiredDesc": "Anda perlu login terlebih dahulu untuk mengakses pengaturan.",
+    "cancel": "Batal",
+    "analysisTitle": "Analisis Meta AI",
+    "meaning": "Apa Artinya Buat Warga",
+    "action": "Yang Harus Dilakukan Sekarang",
+    "safety": "Langkah Keamanan",
+    "sendWhatsapp": "Kirim Rekomendasi ke WhatsApp",
+    "sending": "Mengirim...",
+    "whatsappDesc": "Dapatkan rekomendasi ini langsung di WhatsApp Anda",
+    "analyzing": "Menganalisis kualitas udara...",
+    "tour": {
+      "profileTitle": "Profil & Akun",
+      "profileDesc": "Login untuk akses fitur personalisasi dan notifikasi WhatsApp.",
+      "navTitle": "Menu Navigasi",
+      "navDesc": "Akses cepat ke Forecast, Game Hub, Info, dan Pengaturan.",
+      "interactionTitle": "Interaksi Peta",
+      "interactionDesc": "Klik wilayah kecamatan untuk data iklim, atau klik marker sensor untuk analisis AI."
+    }
+  },
+  "cta": {
+    "headline": "Siap Lindungi Keluarga Anda?",
+    "desc": "Mulai pantau kualitas udara di sekitar Anda sekarang juga. Gratis dan mudah digunakan.",
+    "button": "Mulai Sekarang"
+  },
+  "demo": {
+    "badge": "Fitur Lengkap",
+    "headline": "Semua dalam Satu Platform",
+    "subtitle": "Dari peta interaktif hingga game edukasi, HAWA punya semuanya.",
+    "map": {
+      "label": "Peta Interaktif",
+      "title": "Visualisasi Kualitas Udara di Peta Bandung",
+      "desc": "Klik kecamatan untuk melihat data iklim dan prediksi AI. Sensor IoT menampilkan data PM2.5 dan PM10 secara real-time dengan analisis dari Meta AI.",
+      "features": ["30 kecamatan Bandung", "Data iklim BPS", "Prediksi AI per wilayah", "Sensor IoT real-time"]
+    },
+    "ai": {
+      "label": "Analisis AI",
+      "title": "Analisis Cerdas dari Meta AI",
+      "desc": "Dapatkan rekomendasi kesehatan yang dipersonalisasi berdasarkan kondisi udara terkini. AI menganalisis data sensor dan memberikan saran aktivitas yang aman.",
+      "features": ["Rekomendasi personal", "Analisis PM2.5 & PM10", "Tips keamanan", "Kirim ke WhatsApp"]
+    },
+    "news": {
+      "label": "Berita AI",
+      "title": "Berita Kualitas Udara dengan Ringkasan AI",
+      "desc": "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Meta AI untuk kemudahan membaca.",
+      "features": ["Multi-sumber berita", "Ringkasan Meta AI", "Google News & BMKG", "Update harian"]
+    },
+    "quiz": {
+      "label": "Quiz & Game",
+      "title": "Belajar Sambil Bermain tentang Kualitas Udara",
+      "desc": "Jawab quiz interaktif, kumpulkan poin, dan naik level sambil meningkatkan pengetahuan tentang polusi udara dan cara melindungi diri.",
+      "features": ["Quiz interaktif AI", "Sistem poin & level", "Leaderboard", "Edukasi lingkungan"]
+    }
+  },
+  "news": {
+    "title": "Berita Kualitas Udara",
+    "subtitle": "Informasi terkini seputar kualitas udara dari berbagai sumber dunia",
+    "refresh": "Refresh",
+    "loading": "Memuat...",
+    "analyzing": "Menganalisis berita...",
+    "errorTitle": "Gagal Memuat Berita",
+    "retry": "Coba Lagi",
+    "noNews": "Belum Ada Berita",
+    "noNewsDesc": "Berita kualitas udara akan ditampilkan di sini",
+    "showingNews": "Menampilkan berita terkini",
+    "readMore": "Baca Disini",
+    "aiSummary": "Ringkasan Meta AI",
+    "closeSummary": "Tutup ringkasan AI",
+    "expandSummary": "Ringkasan Meta AI",
+    "failedSummary": "Gagal memuat rangkuman AI. Silakan coba lagi."
+  },
+  "region": {
+    "climateData": "Data Iklim",
+    "analyzing": "Menganalisis data iklim...",
+    "error": "Gagal memuat data forecast. Coba lagi.",
+    "retry": "Coba Lagi",
+    "sensorData": "Data Sensor Iklim",
+    "temperature": "Suhu",
+    "humidity": "Kelembaban",
+    "wind": "Angin",
+    "predictionTitle": "Prediksi Kualitas Udara",
+    "source": "Sumber data: BPS Kota Bandung — AI: Meta (Llama 4)"
+  }
+}

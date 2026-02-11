@@ -1,0 +1,181 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "howItWorks": "How it Works",
+    "aboutUs": "About Us",
+    "map": "Interactive Map",
+    "news": "News",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "language": "Language"
+  },
+  "hero": {
+    "badge": "Air Quality IoT & AI Platform",
+    "headline": "Monitor Air Quality",
+    "headlineHighlight": "Intelligently",
+    "subtitle": "Real-time data from IoT sensors, AI analysis from Meta Llama 4, and personalized recommendations for Bandung citizens.",
+    "ctaStart": "Start Now",
+    "ctaFeatures": "See Features"
+  },
+  "features": {
+    "badge": "Key Features",
+    "headline": "Everything You Need for",
+    "headlineHighlight": "Healthier Air",
+    "description": "Complete platform to monitor, understand, and act upon air quality conditions around you.",
+    "realtimeIoT": "Real-time IoT Data",
+    "realtimeIoTDesc": "HAWA IoT sensors deployed in strategic Bandung locations, sending PM2.5, PM10, temp, and humidity data instantly.",
+    "metaAI": "Meta AI Analysis",
+    "metaAIDesc": "AI from Meta Llama 4 analyzes sensor data and provides health recommendations that are easy to understand.",
+    "interactiveMap": "Interactive Map",
+    "interactiveMapDesc": "Visualize air quality across all Bandung districts. Click to see predictions and climate data.",
+    "personalRec": "Personal Recommendations",
+    "personalRecDesc": "Activity advice tailored to your age, health condition, and current air quality levels.",
+    "gamification": "Gamification & Quiz",
+    "gamificationDesc": "Earn points, level up, and answer quizzes about air quality to raise environmental awareness.",
+    "newsAI": "News & AI Summary",
+    "newsAIDesc": "Latest air quality news from various sources, with automatic summaries from Meta AI."
+  },
+  "howItWorks": {
+    "badge": "How It Works",
+    "headline": "From Sensor to Recommendation",
+    "subtitle": "Four simple steps for healthier air",
+    "step1Title": "Sensors Collect Data",
+    "step1Desc": "HAWA IoT sensors installed in Bandung measure PM2.5, PM10, temperature, and humidity every second automatically.",
+    "step2Title": "AI Analyzes Conditions",
+    "step2Desc": "Data is sent to Meta Llama 4 which processes and provides air condition analysis along with risk levels.",
+    "step3Title": "Map Visualization",
+    "step3Desc": "Results are displayed on an interactive Bandung map complete with district climate predictions and trend charts.",
+    "step4Title": "Recommendations for You",
+    "step4Desc": "Get activity advice, WhatsApp notifications, and safety tips based on current data in your area."
+  },
+  "aboutUs": {
+    "badge": "About Us",
+    "headline": "Protecting Bandung Citizens with Data & AI",
+    "desc1": "HAWA is an IoT and AI-based air quality monitoring platform designed specifically to help Bandung citizens understand and respond to air conditions in their environment.",
+    "desc2": "With sensors scattered in strategic points and AI analysis from Meta, we provide accurate and easy-to-understand real-time information.",
+    "statSensors": "IoT Sensors",
+    "statDistricts": "Districts",
+    "statMonitoring": "Monitoring"
+  },
+  "footer": {
+    "desc": "IoT and AI-based air quality monitoring platform for Bandung citizens.",
+    "product": "Product",
+    "company": "Company",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "© 2026 HAWA by SL2."
+  },
+  "auth": {
+    "welcome": "Welcome",
+    "createAccount": "Create Account",
+    "loginSubtitle": "Login to continue to HAWA.",
+    "registerSubtitle": "Register to start monitoring air quality.",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Loading...",
+    "login": "Login",
+    "register": "Register",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "registerFree": "Register Free",
+    "termsNote": "By continuing, you agree to HAWA's policies and terms.",
+    "loginFailed": "Login failed.",
+    "registerFailed": "Registration failed.",
+    "networkError": "Network error. Please try again.",
+    "closeModalBackdrop": "Close modal backdrop",
+    "close": "Close",
+    "fullNamePlaceholder": "Enter your full name",
+    "emailPlaceholder": "name@email.com",
+    "passwordPlaceholder": "Minimum 6 characters"
+  },
+  "map": {
+    "search": "Search location...",
+    "startTutorial": "Start Tutorial",
+    "loginRequired": "Login Required",
+    "loginRequiredDesc": "You need to login first to access settings.",
+    "cancel": "Cancel",
+    "analysisTitle": "Meta AI Analysis",
+    "meaning": "What it Means",
+    "action": "Action Required",
+    "safety": "Safety Steps",
+    "sendWhatsapp": "Send Recommendation to WhatsApp",
+    "sending": "Sending...",
+    "whatsappDesc": "Get this recommendation directly on your WhatsApp",
+    "analyzing": "Analyzing air quality...",
+    "tour": {
+      "profileTitle": "Profile & Account",
+      "profileDesc": "Login to access personalization and WhatsApp notifications.",
+      "navTitle": "Navigation Menu",
+      "navDesc": "Quick access to Forecast, Game Hub, Info, and Settings.",
+      "interactionTitle": "Map Interaction",
+      "interactionDesc": "Click districts for climate data, or sensor markers for AI analysis."
+    }
+  },
+  "cta": {
+    "headline": "Ready to Protect Your Family?",
+    "desc": "Start monitoring air quality around you right now. Free and easy to use.",
+    "button": "Start Now"
+  },
+  "demo": {
+    "badge": "Complete Features",
+    "headline": "All in One Platform",
+    "subtitle": "From interactive map to educational games, HAWA has it all.",
+    "map": {
+      "label": "Interactive Map",
+      "title": "Air Quality Visualization on Bandung Map",
+      "desc": "Click districts to see climate data and AI predictions. IoT sensors show real-time PM2.5 and PM10 data with analysis from Meta AI.",
+      "features": ["30 Bandung districts", "BPS Climate Data", "AI Prediction per region", "Real-time IoT Sensors"]
+    },
+    "ai": {
+      "label": "AI Analysis",
+      "title": "Smart Analysis from Meta AI",
+      "desc": "Get personalized health recommendations based on current air conditions. AI analyzes sensor data and provides safe activity advice.",
+      "features": ["Personal recommendations", "PM2.5 & PM10 Analysis", "Safety tips", "Send to WhatsApp"]
+    },
+    "news": {
+      "label": "AI News",
+      "title": "Air Quality News with AI Summary",
+      "desc": "Latest news from various sources regarding air quality, equipped with automatic summaries from Meta AI for easy reading.",
+      "features": ["Multi-source news", "Meta AI Summary", "Google News & BMKG", "Daily updates"]
+    },
+    "quiz": {
+      "label": "Quiz & Game",
+      "title": "Learn While Playing about Air Quality",
+      "desc": "Answer interactive quizzes, collect points, and level up while improving knowledge about air pollution and how to protect yourself.",
+      "features": ["Interactive AI Quiz", "Points & Level System", "Leaderboard", "Environmental Education"]
+    }
+  },
+  "news": {
+    "title": "Air Quality News",
+    "subtitle": "Latest information on air quality from global sources",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "analyzing": "Analyzing news...",
+    "errorTitle": "Failed to Load News",
+    "retry": "Try Again",
+    "noNews": "No News Yet",
+    "noNewsDesc": "Air quality news will be displayed here",
+    "showingNews": "Showing latest news",
+    "readMore": "Read Here",
+    "aiSummary": "Meta AI Summary",
+    "closeSummary": "Close AI Summary",
+    "expandSummary": "Meta AI Summary",
+    "failedSummary": "Failed to load AI summary. Please try again."
+  },
+  "region": {
+    "climateData": "Climate Data",
+    "analyzing": "Analyzing climate data...",
+    "error": "Failed to load forecast data. Try again.",
+    "retry": "Try Again",
+    "sensorData": "Climate Sensor Data",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "predictionTitle": "Air Quality Prediction",
+    "source": "Data source: BPS Bandung City — AI: Meta (Llama 4)"
+  }
+}

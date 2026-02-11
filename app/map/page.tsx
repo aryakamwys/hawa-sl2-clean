@@ -11,9 +11,11 @@ import RegionForecastModal from "@/components/map/RegionForecastModal";
 import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import LottieLoader from "@/components/LottieLoader";
-import GroqIcon from "@/components/GroqIcon";
+import MetaIcon from "@/components/MetaIcon";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { useLanguage } from "@/hooks/useLanguage";
+
 
 
 
@@ -45,8 +47,10 @@ interface AIAnalysis {
 }
 
 export default function MapPage() {
+  const { t, language } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const layerGroupRef = useRef<L.LayerGroup | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -104,7 +108,8 @@ export default function MapPage() {
           humidity: parseFloat(latestData.humidity),
           pressure: parseFloat(latestData.pressure),
           deviceId: latestData.deviceId,
-          location: "Jalan Cisirung, Bandung"
+          location: "Jalan Cisirung, Bandung",
+          language // Pass language to API
         }),
       });
 
@@ -278,7 +283,7 @@ export default function MapPage() {
                     onmouseout="this.style.opacity='1'"
                   >
                     <svg width='16' height='16' viewBox='0 0 1981.58 562.32' fill='white' xmlns='http://www.w3.org/2000/svg'><path d='M1378.01.31h-.04c-109.6 0-198.78 89.18-198.78 198.78s89.18 198.78 198.78 198.78 198.78-89.18 198.78-198.81C1576.56 89.66 1487.4.5 1378.01.31m93.33 198.78c0 51.49-41.88 93.36-93.36 93.36s-93.36-41.88-93.36-93.36 41.88-93.36 93.36-93.36 93.36 41.87 93.36 93.36M908.86 180.75c.43-11.74 1.43-23.13 3.67-34.68l.05-.23c2.83-13.62 7.15-26.73 12.81-38.99 11.8-25.1 29.21-47.21 50.41-64.03 20.78-16.39 45.11-28.6 70.38-35.33 12.4-3.45 25.23-5.67 38.18-6.6 28.63-2.05 56.94 1.15 83.9 11.24 9.98 3.74 19.95 8.47 29.26 13.87l15.78 9.17-50.61 88.04-15.8-8.8c-10.95-6.1-22.78-9.84-35.16-11.11-12.97-1.17-26.36 0-38.93 3.43-11.9 3.18-23.24 8.94-32.86 16.64-9 7.25-16.26 16.51-20.96 26.71-5.08 11.01-6.98 23.13-6.98 35.17v199.17H908.85V180.75ZM873.03 187.44c-1.25-50.37-21.77-97.51-57.79-132.72C779.25 19.54 731.74.1 681.47 0h-1.63C574.85 0 488.97 85.15 488.05 190.59c-.45 51.35 19.07 99.82 54.95 136.49 35.9 36.68 83.86 57.12 135.2 57.57h58.51V282.78h-55.55c-24.09.33-46.84-8.87-64.06-25.73-17.24-16.87-26.88-39.48-27.14-63.68-.55-49.87 39.38-90.9 89.04-91.5h2.39c49.58 0 90.14 40.58 90.42 90.37v177.83c0 49.22-40.06 89.74-89.31 90.37-23.59-.18-45.76-9.55-62.43-26.43l-12.93-13.07-.05.05-51.98 91.8c34.69 31.66 79.12 49.17 126.28 49.52h2.59c50.55-.72 97.97-20.94 133.54-56.97 35.54-36.02 55.27-83.78 55.53-134.6V187.46H873v-.02ZM1790.21.29c-51.34 0-99.58 20.01-135.85 56.38-36.21 36.3-56.11 84.53-56.01 135.76 0 105.86 86.07 191.97 191.87 191.97h54.41V282.67h-54.41c-49.74 0-90.19-40.48-90.19-90.24s40.45-90.24 90.19-90.24c22.6 0 44.23 8.44 60.92 23.76 16.11 14.8 28.77 34.62 28.77 56.46v367.66h101.67V192.43c0-105.94-85.85-192.14-191.37-192.14M165.98 342.21H0L272.4 1.5l-68.75 220.11H369.6L97.23 562.32z'/></svg>
-                    Analisis Groq
+                    ${t?.map?.analysisTitle || "Meta AI Analysis"}
                   </button>
                 </div>
               `, { className: 'leaflet-popup-transparent' })
@@ -343,7 +348,7 @@ export default function MapPage() {
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [language]); // Re-run when language changes
 
   // Driver.js Tour
   const startTour = () => {
@@ -353,8 +358,8 @@ export default function MapPage() {
         { 
           element: '#user-profile-card', 
           popover: { 
-            title: 'Profil & Akun', 
-            description: 'Login untuk akses fitur personalisasi dan notifikasi WhatsApp.', 
+            title: t?.map?.tour?.profileTitle || "Profil & Akun", 
+            description: t?.map?.tour?.profileDesc || "Login untuk akses fitur personalisasi dan notifikasi WhatsApp.", 
             side: "left", 
             align: 'start' 
           } 
@@ -362,16 +367,16 @@ export default function MapPage() {
         { 
           element: '#dock-container', 
           popover: { 
-            title: 'Menu Navigasi', 
-            description: 'Akses cepat ke Forecast, Game Hub, Info, dan Pengaturan.', 
+            title: t?.map?.tour?.navTitle || "Menu Navigasi", 
+            description: t?.map?.tour?.navDesc || "Akses cepat ke Forecast, Game Hub, Info, dan Pengaturan.", 
             side: "top", 
             align: 'center' 
           } 
         },
         { 
           popover: { 
-            title: 'Interaksi Peta', 
-            description: 'Klik wilayah kecamatan untuk data iklim, atau klik marker sensor untuk analisis AI.', 
+            title: t?.map?.tour?.interactionTitle || "Interaksi Peta", 
+            description: t?.map?.tour?.interactionDesc || "Klik wilayah kecamatan untuk data iklim, atau klik marker sensor untuk analisis AI.", 
           } 
         }
       ]
@@ -387,7 +392,7 @@ export default function MapPage() {
         localStorage.setItem('hawa_map_tour_seen', 'true');
       }, 2000);
     }
-  }, []);
+  }, [language]);
 
   return (
     <>
@@ -405,7 +410,7 @@ export default function MapPage() {
           id="tutorial-btn"
           onClick={startTour}
           className="p-3 bg-white/90 backdrop-blur-md text-[#005AE1] hover:bg-white rounded-2xl shadow-lg border border-white/50 transition-all active:scale-95"
-          title="Mulai Tutorial"
+          title={t?.map?.startTutorial || "Mulai Tutorial"}
         >
           <HelpCircle size={20} />
         </button>
@@ -443,7 +448,7 @@ export default function MapPage() {
                   className="w-full flex items-center gap-2 !px-2 !py-1 text-sm text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <LogOut size={16} />
-                  Logout
+                  {t?.nav?.logout || "Logout"}
                 </button>
               </div>
             )}
@@ -454,7 +459,7 @@ export default function MapPage() {
             className="flex items-center gap-2 bg-white-500/10 hover:bg-blue-500/20 text-blue-800 backdrop-blur-md border border-blue-500/20 rounded-xl !px-4 !py-2.5 shadow-lg hover:shadow-xl transition-all duration-200 font-medium text-sm"
           >
             <User size={18} />
-            Login
+            {t?.nav?.login || "Login"}
           </a>
         )}
       </div>
@@ -494,14 +499,14 @@ export default function MapPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] flex items-center justify-center">
           <div className="bg-white rounded-2xl shadow-2xl !p-6 max-w-sm w-full !mx-4 animate-in fade-in zoom-in duration-200">
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 !mb-2">Login Required</h3>
-              <p className="text-gray-600 !mb-6">You need to login first to access settings.</p>
+              <h3 className="text-xl font-semibold text-gray-900 !mb-2">{t?.map?.loginRequired || "Login Required"}</h3>
+              <p className="text-gray-600 !mb-6">{t?.map?.loginRequiredDesc || "You need to login first to access settings."}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLoginRequired(false)}
                   className="flex-1 !px-4 !py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                 >
-                  Cancel
+                  {t?.map?.cancel || "Cancel"}
                 </button>
                 <button
                   onClick={() => {
@@ -510,7 +515,7 @@ export default function MapPage() {
                   }}
                   className="flex-1 !px-4 !py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
                 >
-                  Login
+                  {t?.nav?.login || "Login"}
                 </button>
               </div>
             </div>
@@ -526,8 +531,8 @@ export default function MapPage() {
             <div className="flex items-start justify-between !mb-5">
               <div>
                 <div className="flex items-center gap-2.5 !mb-2">
-                  <GroqIcon size={22} className="text-[#F55036]" />
-                  <h3 className="text-xl font-bold text-gray-900">Analisis Groq AI</h3>
+                  <MetaIcon size={22} className="text-[#0081FB]" />
+                  <h3 className="text-xl font-bold text-gray-900">{t?.map?.analysisTitle || "Meta AI Analysis"}</h3>
                 </div>
                 <div className={`inline-flex !px-3 !py-1 rounded-full text-sm font-semibold ${
                   aiResult.status === "AMAN" ? "bg-green-50 text-green-700 border border-green-200" :
@@ -555,17 +560,17 @@ export default function MapPage() {
             {/* Analysis Sections */}
             <div className="space-y-3">
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Apa Artinya Buat Warga</h4>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>{t?.map?.meaning || "Meaning for Citizens"}</h4>
                 <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.meaningForCitizens}</p>
               </div>
 
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Yang Harus Dilakukan Sekarang</h4>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>{t?.map?.action || "Action Required"}</h4>
                 <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.actionRequired}</p>
               </div>
 
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Langkah Keamanan</h4>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>{t?.map?.safety || "Safety Steps"}</h4>
                 <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.safetySteps}</p>
               </div>
             </div>
@@ -580,17 +585,17 @@ export default function MapPage() {
                 {sendingWhatsApp ? (
                   <>
                     <Loader2 className="animate-spin" size={18} />
-                    Mengirim...
+                    {t?.map?.sending || "Sending..."}
                   </>
                 ) : (
                   <>
                     <Send size={18} />
-                    Kirim Rekomendasi ke WhatsApp
+                    {t?.map?.sendWhatsapp || "Send Recommendation to WhatsApp"}
                   </>
                 )}
               </button>
               <p className="text-xs text-gray-500 text-center !mt-2">
-                Dapatkan rekomendasi ini langsung di WhatsApp Anda
+                {t?.map?.whatsappDesc || "Get this recommendation directly on your WhatsApp"}
               </p>
             </div>
 
@@ -612,7 +617,7 @@ export default function MapPage() {
       {analyzingDevice && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl !p-6 flex flex-col items-center gap-3">
-            <LottieLoader size={80} text="Menganalisis kualitas udara..." />
+            <LottieLoader size={80} text={t?.map?.analyzing || "Analyzing..."} />
           </div>
         </div>
       )}

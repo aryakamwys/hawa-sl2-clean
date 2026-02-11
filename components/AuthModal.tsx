@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Mail, Lock, User } from "lucide-react";
+import { X, Mail, Lock, User, Loader2, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type AuthMode = "login" | "register";
 
@@ -13,19 +14,24 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "login" }: AuthModalProps) {
+  const { t } = useLanguage();
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Reset mode when opened with a different initialMode
+  // Reset mode and form data when opened with a different initialMode
   useEffect(() => {
     if (isOpen) {
       setMode(initialMode);
+      setFormData({ name: "", email: "", password: "" });
+      setError("");
     }
   }, [isOpen, initialMode]);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   // UX: ESC close + lock scroll
   useEffect(() => {
@@ -53,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
     setError("");
     setLoading(true);
 
-    const body = mode === "login" ? { email, password } : { name, email, password };
+    const body = mode === "login" ? { email: formData.email, password: formData.password } : formData;
 
     try {
       const res = await fetch(endpoint, {
@@ -65,18 +71,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError(data?.error || (mode === "login" ? "Login gagal." : "Daftar gagal."));
+        setError(data?.error || (mode === "login" ? t?.auth?.loginFailed : t?.auth?.registerFailed));
         return;
       }
 
       onSuccess?.();
       onClose();
 
-      setEmail("");
-      setPassword("");
-      setName("");
+      setFormData({ name: "", email: "", password: "" });
     } catch {
-      setError("Terjadi kesalahan jaringan. Coba lagi.");
+      setError(t?.auth?.networkError || "Terjadi kesalahan jaringan. Coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -87,17 +91,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
     setMode((prev) => (prev === "login" ? "register" : "login"));
   };
 
-  const title = mode === "login" ? "Selamat Datang" : "Buat Akun";
+  const title = mode === "login" ? t?.auth?.welcome : t?.auth?.createAccount;
   const subtitle =
     mode === "login"
-      ? "Masuk untuk melanjutkan ke HAWA."
-      : "Daftar untuk mulai memantau kualitas udara.";
+      ? t?.auth?.loginSubtitle
+      : t?.auth?.registerSubtitle;
 
   return (
     <div className="fixed inset-0 z-[9999]">
       {/* Backdrop */}
       <button
-        aria-label="Close modal backdrop"
+        aria-label={t?.auth?.closeModalBackdrop || "Close modal backdrop"}
         onClick={onClose}
         className="absolute inset-0 bg-black/35 backdrop-blur-[6px]"
       />
@@ -113,7 +117,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
             <button
               onClick={onClose}
               className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
-              aria-label="Close"
+              aria-label={t?.auth?.close || "Close"}
             >
               <X size={18} />
             </button>
@@ -126,61 +130,68 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
                 <p className="!mt-1 text-sm text-gray-600">{subtitle}</p>
 
                 {error && (
-                  <div className="!mt-4 rounded-xl border border-red-200 bg-red-50 !px-4 !py-3 text-sm text-red-700">
+                  <div className="!mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 !px-4 !py-3 text-sm text-red-700">
+                    <AlertCircle size={18} />
                     {error}
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="!mt-5 space-y-4">
                   {mode === "register" && (
-                    <Field
-                      label="Nama Lengkap"
-                      icon={<User size={18} className="text-gray-400" />}
-                      input={
+                    <div>
+                      <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.fullName}</label>
+                      <div className="relative">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
+                          <User size={18} className="text-gray-400" />
+                        </div>
                         <input
                           type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Masukkan nama lengkap"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder={t?.auth?.fullNamePlaceholder || "Masukkan nama lengkap"}
                           required
                           className={inputClass}
                         />
-                      }
-                    />
+                      </div>
+                    </div>
                   )}
 
-                  <Field
-                    label="Email"
-                    icon={<Mail size={18} className="text-gray-400" />}
-                    input={
+                  <div>
+                    <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.email}</label>
+                    <div className="relative">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
+                        <Mail size={18} className="text-gray-400" />
+                      </div>
                       <input
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="nama@email.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder={t?.auth?.emailPlaceholder || "nama@email.com"}
                         required
                         autoComplete="email"
                         className={inputClass}
                       />
-                    }
-                  />
+                    </div>
+                  </div>
 
-                  <Field
-                    label="Password"
-                    icon={<Lock size={18} className="text-gray-400" />}
-                    input={
+                  <div>
+                    <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.password}</label>
+                    <div className="relative">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
+                        <Lock size={18} className="text-gray-400" />
+                      </div>
                       <input
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Minimal 6 karakter"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        placeholder={t?.auth?.passwordPlaceholder || "Minimal 6 karakter"}
                         required
                         minLength={6}
                         autoComplete={mode === "login" ? "current-password" : "new-password"}
                         className={inputClass}
                       />
-                    }
-                  />
+                    </div>
+                  </div>
 
                   <button
                     type="submit"
@@ -189,24 +200,24 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
                   >
                     {loading ? (
                       <span className="inline-flex items-center gap-2">
-                        <span className="loading loading-spinner loading-sm" />
-                        Memuat...
+                        <Loader2 size={20} className="animate-spin" />
+                        {t?.auth?.loading || "Memuat..."}
                       </span>
                     ) : mode === "login" ? (
-                      "Masuk"
+                      t?.auth?.login || "Masuk"
                     ) : (
-                      "Daftar"
+                      t?.auth?.register || "Daftar"
                     )}
                   </button>
 
                   <p className="!pt-2 text-center text-sm text-gray-600">
-                    {mode === "login" ? "Belum punya akun?" : "Sudah punya akun?"}{" "}
+                    {mode === "login" ? t?.auth?.noAccount : t?.auth?.hasAccount}{" "}
                     <button
                       type="button"
                       onClick={switchMode}
                       className="font-semibold text-[#005AE1] hover:text-[#004BB8]"
                     >
-                      {mode === "login" ? "Daftar Gratis" : "Masuk"}
+                      {mode === "login" ? t?.auth?.registerFree : t?.auth?.login}
                     </button>
                   </p>
                 </form>

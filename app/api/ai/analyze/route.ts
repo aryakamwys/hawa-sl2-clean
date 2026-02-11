@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       pressure: body.pressure,
       deviceId: body.deviceId,
       location: body.location || "Bandung, Indonesia",
+      language: body.language || "ID",
     };
 
     // Analyze with AI

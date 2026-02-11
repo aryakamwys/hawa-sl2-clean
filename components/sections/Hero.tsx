@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function HeroSection() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden">
       {/* Gradient Background */}
@@ -17,20 +22,20 @@ export default function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full text-sm font-medium text-gray-700 mb-8 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          Platform IoT & AI Kualitas Udara
+          {t?.hero?.badge || "Platform IoT & AI Kualitas Udara"}
         </div>
 
         {/* Headline */}
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6 tracking-tight">
-          Pantau Kualitas Udara{" "}
+          {t?.hero?.headline || "Pantau Kualitas Udara"}{" "}
           <span className="bg-gradient-to-r from-[#005AE1] to-[#4D9EFF] bg-clip-text text-transparent">
-            Secara Cerdas
+            {t?.hero?.headlineHighlight || "Secara Cerdas"}
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Data real-time dari sensor IoT, analisis AI dari Groq, dan rekomendasi yang dipersonalisasi untuk masyarakat Bandung.
+          {t?.hero?.subtitle || "Data real-time dari sensor IoT, analisis AI dari Meta Llama 4, dan rekomendasi yang dipersonalisasi untuk masyarakat Bandung."}
         </p>
 
         {/* CTA Buttons */}
@@ -39,7 +44,7 @@ export default function HeroSection() {
             href="/map"
             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#005AE1] text-white rounded-full font-semibold text-base hover:bg-[#004BB8] transition-all duration-200 shadow-lg shadow-[#005AE1]/25 hover:shadow-xl hover:shadow-[#005AE1]/30"
           >
-            Mulai Sekarang
+            {t?.hero?.ctaStart || "Mulai Sekarang"}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -48,7 +53,7 @@ export default function HeroSection() {
             href="#features"
             className="inline-flex items-center justify-center px-7 py-3.5 bg-white text-gray-700 rounded-full font-semibold text-base border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
           >
-            Lihat Fitur
+            {t?.hero?.ctaFeatures || "Lihat Fitur"}
           </a>
         </div>
 
@@ -56,7 +61,7 @@ export default function HeroSection() {
           <div className="relative mx-auto max-w-5xl mt-8">
             <div className="rounded-xl overflow-hidden shadow-2xl shadow-[#005AE1]/20 border border-gray-200/60 bg-white p-2">
               <img
-                src="https://aicdn.picsart.com/cd96b7b7-2aae-4b22-bbb2-38cef0f82087.png"
+                src="https://aicdn.picsart.com/4d68d399-f7bf-41bc-bcf8-c3d56a2f98f3.png"
                 alt="HAWA Platform Interface"
                 className="w-full h-auto rounded-lg"
               />

@@ -1,37 +1,42 @@
+"use client";
+
 import { Map, Brain, Wifi, Target, Trophy, Newspaper } from "lucide-react";
-import GroqIcon from "@/components/GroqIcon";
+import MetaIcon from "@/components/MetaIcon";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function Features() {
+  const { t } = useLanguage();
+
   const features = [
     {
       icon: <Wifi size={22} className="text-[#005AE1]" />,
-      title: "Data Real-time IoT",
-      description: "Sensor HAWA IoT tersebar di titik-titik strategis Bandung, mengirim data PM2.5, PM10, suhu, dan kelembaban secara langsung.",
+      title: t?.features?.realtimeIoT || "Data Real-time IoT",
+      description: t?.features?.realtimeIoTDesc || "Sensor HAWA IoT tersebar di titik-titik strategis Bandung, mengirim data PM2.5, PM10, suhu, dan kelembaban secara langsung.",
     },
     {
-      icon: <GroqIcon size={22} className="text-[#F55036]" />,
-      title: "Analisis Groq AI",
-      description: "AI dari Groq menganalisis data sensor dan memberikan rekomendasi kesehatan yang mudah dipahami oleh warga.",
+      icon: <MetaIcon size={22} className="text-[#F55036]" />,
+      title: t?.features?.metaAI || "Analisis Meta AI",
+      description: t?.features?.metaAIDesc || "AI dari Meta Llama 4 menganalisis data sensor dan memberikan rekomendasi kesehatan yang mudah dipahami oleh warga.",
     },
     {
       icon: <Map size={22} className="text-[#005AE1]" />,
-      title: "Peta Interaktif",
-      description: "Visualisasi kualitas udara di seluruh kecamatan Bandung. Klik untuk melihat prediksi dan data iklim.",
+      title: t?.features?.interactiveMap || "Peta Interaktif",
+      description: t?.features?.interactiveMapDesc || "Visualisasi kualitas udara di seluruh kecamatan Bandung. Klik untuk melihat prediksi dan data iklim.",
     },
     {
       icon: <Target size={22} className="text-[#005AE1]" />,
-      title: "Rekomendasi Personal",
-      description: "Saran aktivitas disesuaikan dengan usia, kondisi kesehatan, dan tingkat kualitas udara saat ini.",
+      title: t?.features?.personalRec || "Rekomendasi Personal",
+      description: t?.features?.personalRecDesc || "Saran aktivitas disesuaikan dengan usia, kondisi kesehatan, dan tingkat kualitas udara saat ini.",
     },
     {
       icon: <Trophy size={22} className="text-amber-500" />,
-      title: "Gamifikasi & Quiz",
-      description: "Dapatkan poin, naik level, dan jawab quiz tentang kualitas udara untuk meningkatkan kesadaran lingkungan.",
+      title: t?.features?.gamification || "Gamifikasi & Quiz",
+      description: t?.features?.gamificationDesc || "Dapatkan poin, naik level, dan jawab quiz tentang kualitas udara untuk meningkatkan kesadaran lingkungan.",
     },
     {
       icon: <Newspaper size={22} className="text-[#005AE1]" />,
-      title: "Berita & Ringkasan AI",
-      description: "Berita kualitas udara terkini dari berbagai sumber, dengan ringkasan otomatis dari Groq AI.",
+      title: t?.features?.newsAI || "Berita & Ringkasan AI",
+      description: t?.features?.newsAIDesc || "Berita kualitas udara terkini dari berbagai sumber, dengan ringkasan otomatis dari Meta AI.",
     },
   ];
 
@@ -41,17 +46,17 @@ export default function Features() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-            Fitur Utama
+            {t?.features?.badge || "Fitur Utama"}
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
-            Semua yang Anda Butuhkan untuk{" "}
+            {t?.features?.headline || "Semua yang Anda Butuhkan untuk"}{" "}
             <br className="hidden md:block" />
             <span className="bg-gradient-to-r from-[#005AE1] to-[#4D9EFF] bg-clip-text text-transparent">
-              Udara Lebih Sehat
+              {t?.features?.headlineHighlight || "Udara Lebih Sehat"}
             </span>
           </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Platform lengkap untuk memantau, memahami, dan bertindak berdasarkan kondisi kualitas udara di sekitar Anda.
+            {t?.features?.description || "Platform lengkap untuk memantau, memahami, dan bertindak berdasarkan kondisi kualitas udara di sekitar Anda."}
           </p>
         </div>
 

@@ -545,7 +545,7 @@ function AIConsumeContent() {
 
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Monitor penggunaan AI dan biaya (real-time dari Groq)</p>
+      <p className="text-sm text-gray-500 !mb-4">Monitor penggunaan AI dan biaya (real-time dari Meta AI)</p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-3 !mb-4">

@@ -42,7 +42,7 @@ const KECAMATAN_INFO: Record<string, { name: string; elevation: string; characte
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { regionId, regionName } = body;
+    const { regionId, regionName, language = "ID" } = body;
 
     if (!regionId || !regionName) {
       return NextResponse.json(
@@ -83,33 +83,49 @@ export async function POST(request: Request) {
     // Generate AI prediction with Groq
     console.log(`[Region Forecast] Generating AI prediction for ${regionName}...`);
 
-    const prompt = `Kamu adalah pakar kualitas udara dan lingkungan di Bandung. Berdasarkan data iklim BPS berikut untuk bulan ${current.month} 2024:
+    const promptSystem = language === "EN" 
+      ? "You are an air quality and environmental expert in Bandung. Provide a short and accurate prediction."
+      : "Kamu adalah pakar kualitas udara dan lingkungan di Bandung. Berikan prediksi singkat dan akurat.";
 
-- Suhu: Min ${current.temperature.min}°C, Maks ${current.temperature.max}°C, Rata-rata ${current.temperature.avg}°C
-- Kelembaban: Min ${current.humidity.min}%, Maks ${current.humidity.max}%, Rata-rata ${current.humidity.avg}%
-- Kecepatan Angin: Min ${current.wind.min} knot, Maks ${current.wind.max} knot, Rata-rata ${current.wind.avg} knot
+    const prompt = language === "EN" 
+      ? `Based on the following BPS climate data for ${current.month} 2024:
+        - Temperature: Min ${current.temperature.min}°C, Max ${current.temperature.max}°C, Avg ${current.temperature.avg}°C
+        - Humidity: Min ${current.humidity.min}%, Max ${current.humidity.max}%, Avg ${current.humidity.avg}%
+        - Wind Speed: Min ${current.wind.min} knots, Max ${current.wind.max} knots, Avg ${current.wind.avg} knots
 
-Daerah: ${kecInfo.name}
-Elevasi: ${kecInfo.elevation}
-Karakteristik: ${kecInfo.characteristics}
+        Region: ${kecInfo.name}
+        Elevation: ${kecInfo.elevation}
+        Characteristics: ${kecInfo.characteristics}
 
-Tulis prediksi kualitas udara dan polusi untuk daerah ${kecInfo.name} dalam 1 paragraf singkat (3-4 kalimat). Jelaskan bagaimana kondisi iklim mempengaruhi kualitas udara di daerah ini. Gunakan bahasa Indonesia yang mudah dipahami. Langsung tulis paragrafnya tanpa judul.`;
+        Write a short paragraph (3-4 sentences) predicting air quality and pollution for ${kecInfo.name}. Explain how climate conditions affect air quality in this area. Use easy-to-understand English. Just write the paragraph without a title.`
+      : `Kamu adalah pakar kualitas udara dan lingkungan di Bandung. Berdasarkan data iklim BPS berikut untuk bulan ${current.month} 2024:
+        - Suhu: Min ${current.temperature.min}°C, Maks ${current.temperature.max}°C, Rata-rata ${current.temperature.avg}°C
+        - Kelembaban: Min ${current.humidity.min}%, Maks ${current.humidity.max}%, Rata-rata ${current.humidity.avg}%
+        - Kecepatan Angin: Min ${current.wind.min} knot, Maks ${current.wind.max} knot, Rata-rata ${current.wind.avg} knot
+
+        Daerah: ${kecInfo.name}
+        Elevasi: ${kecInfo.elevation}
+        Karakteristik: ${kecInfo.characteristics}
+
+        Tulis prediksi kualitas udara dan polusi untuk daerah ${kecInfo.name} dalam 1 paragraf singkat (3-4 kalimat). Jelaskan bagaimana kondisi iklim mempengaruhi kualitas udara di daerah ini. Gunakan bahasa Indonesia yang mudah dipahami. Langsung tulis paragrafnya tanpa judul.`;
 
     let aiPrediction = "";
     try {
       const completion = await groq.chat.completions.create({
         messages: [
-          { role: "system", content: "Kamu adalah pakar kualitas udara Bandung. Berikan prediksi singkat dan akurat." },
+          { role: "system", content: promptSystem },
           { role: "user", content: prompt },
         ],
         model: GROQ_MODEL,
         temperature: 0.5,
         max_tokens: 300,
       });
-      aiPrediction = completion.choices[0]?.message?.content || "Prediksi tidak tersedia.";
+      aiPrediction = completion.choices[0]?.message?.content || (language === "EN" ? "Prediction unavailable." : "Prediksi tidak tersedia.");
     } catch (aiErr) {
       console.error("[Region Forecast] Groq AI failed:", aiErr);
-      aiPrediction = `Berdasarkan data iklim bulan ${current.month}, daerah ${kecInfo.name} dengan karakteristik ${kecInfo.characteristics} dan elevasi ${kecInfo.elevation} memiliki suhu rata-rata ${current.temperature.avg}°C dengan kelembaban ${current.humidity.avg}%. Kondisi ini secara umum menunjukkan kualitas udara yang perlu dipantau, terutama pada jam-jam sibuk lalu lintas.`;
+      aiPrediction = language === "EN"
+        ? `Based on climate data for ${current.month}, ${kecInfo.name} with characteristics ${kecInfo.characteristics} and elevation ${kecInfo.elevation} has an average temperature of ${current.temperature.avg}°C with humidity ${current.humidity.avg}%. This condition generally indicates air quality that needs monitoring, especially during peak traffic hours.`
+        : `Berdasarkan data iklim bulan ${current.month}, daerah ${kecInfo.name} dengan karakteristik ${kecInfo.characteristics} dan elevasi ${kecInfo.elevation} memiliki suhu rata-rata ${current.temperature.avg}°C dengan kelembaban ${current.humidity.avg}%. Kondisi ini secara umum menunjukkan kualitas udara yang perlu dipantau, terutama pada jam-jam sibuk lalu lintas.`;
     }
 
     return NextResponse.json({

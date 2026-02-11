@@ -31,6 +31,7 @@ model User {
   passwordHash String        @map("password_hash") @db.VarChar(255)
   role         UserRole      @default(USER)
   isActive     Boolean       @default(true) @map("is_active")
+  language     String        @default("EN") @db.VarChar(2)
   createdAt    DateTime      @default(now()) @map("created_at")
   aiUsageLogs  AIUsageLog[]
   profile      UserProfile?

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ExternalLink, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import LottieLoader from "./LottieLoader";
-import GroqIcon from "./GroqIcon";
+import MetaIcon from "./MetaIcon";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface NewsCardProps {
   title: string;
@@ -21,11 +22,12 @@ export default function NewsCard({
   sourceUrl,
   publishedAt,
 }: NewsCardProps) {
+  const { t, language } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const [aiSummary, setAiSummary] = useState("");
   const [loadingSummary, setLoadingSummary] = useState(false);
 
-  // Format date to Indonesian
+  // Format date based on language
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -34,7 +36,7 @@ export default function NewsCard({
         month: "long",
         day: "numeric",
       };
-      return date.toLocaleDateString("id-ID", options);
+      return date.toLocaleDateString(language === "ID" ? "id-ID" : "en-US", options);
     } catch {
       return dateString;
     }
@@ -55,16 +57,16 @@ export default function NewsCard({
         const res = await fetch("/api/news/summarize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, sourceUrl, content: summary }),
+          body: JSON.stringify({ title, sourceUrl, content: summary, language }), // added language
         });
         if (res.ok) {
           const data = await res.json();
           setAiSummary(data.summary);
         } else {
-          setAiSummary("Gagal memuat rangkuman AI. Silakan coba lagi.");
+          setAiSummary(t?.news?.failedSummary || "Gagal memuat rangkuman AI. Silakan coba lagi.");
         }
       } catch {
-        setAiSummary("Gagal memuat rangkuman AI. Silakan coba lagi.");
+        setAiSummary(t?.news?.failedSummary || "Gagal memuat rangkuman AI. Silakan coba lagi.");
       } finally {
         setLoadingSummary(false);
       }
@@ -106,20 +108,20 @@ export default function NewsCard({
           onClick={handleExpandClick}
           className="flex items-center gap-1.5 text-xs text-[#F55036] hover:text-[#E8380D] mt-3 mb-2 font-medium transition-colors"
         >
-          <GroqIcon size={13} />
+          <MetaIcon size={13} />
           {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-          <span>{expanded ? "Tutup ringkasan AI" : "Ringkasan Groq AI"}</span>
+          <span>{expanded ? (t?.news?.closeSummary || "Tutup ringkasan AI") : (t?.news?.expandSummary || "Ringkasan Meta AI")}</span>
         </button>
 
         {/* AI Summary Section */}
         {expanded && (
           <div className="mb-3 bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-200 transition-all">
             <div className="flex items-center gap-2 mb-2">
-              <GroqIcon size={14} className="text-[#F55036]" />
-              <span className="text-xs font-bold text-gray-800">Ringkasan Groq AI</span>
+              <MetaIcon size={14} className="text-[#F55036]" />
+              <span className="text-xs font-bold text-gray-800">{t?.news?.aiSummary || "Ringkasan Meta AI"}</span>
             </div>
             {loadingSummary ? (
-              <LottieLoader size={64} text="Menganalisis berita..." />
+              <LottieLoader size={64} text={t?.news?.analyzing || "Menganalisis berita..."} />
             ) : (
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
                 {aiSummary}
@@ -135,7 +137,7 @@ export default function NewsCard({
             className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-[#005AE1] rounded-xl hover:bg-[#004BB8] active:scale-95 transition-all duration-200 shadow-sm"
           >
             <ExternalLink size={14} />
-            Baca Disini
+            {t?.news?.readMore || "Baca Disini"}
           </button>
         </div>
       </div>

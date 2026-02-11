@@ -2,45 +2,48 @@
 
 import { useState } from "react";
 import { Map, Brain, Newspaper, Trophy } from "lucide-react";
-import GroqIcon from "@/components/GroqIcon";
-
-const demos = [
-  {
-    id: "map",
-    label: "Peta Interaktif",
-    icon: <Map size={16} />,
-    title: "Visualisasi Kualitas Udara di Peta Bandung",
-    description: "Klik kecamatan untuk melihat data iklim dan prediksi AI. Sensor IoT menampilkan data PM2.5 dan PM10 secara real-time dengan analisis dari Groq AI.",
-    features: ["30 kecamatan Bandung", "Data iklim BPS", "Prediksi AI per wilayah", "Sensor IoT real-time"],
-  },
-  {
-    id: "ai",
-    label: "Analisis AI",
-    icon: <GroqIcon size={16} />,
-    title: "Analisis Cerdas dari Groq AI",
-    description: "Dapatkan rekomendasi kesehatan yang dipersonalisasi berdasarkan kondisi udara terkini. AI menganalisis data sensor dan memberikan saran aktivitas yang aman.",
-    features: ["Rekomendasi personal", "Analisis PM2.5 & PM10", "Tips keamanan", "Kirim ke WhatsApp"],
-  },
-  {
-    id: "news",
-    label: "Berita AI",
-    icon: <Newspaper size={16} />,
-    title: "Berita Kualitas Udara dengan Ringkasan AI",
-    description: "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Groq AI untuk kemudahan membaca.",
-    features: ["Multi-sumber berita", "Ringkasan Groq AI", "Google News & BMKG", "Update harian"],
-  },
-  {
-    id: "quiz",
-    label: "Quiz & Game",
-    icon: <Trophy size={16} />,
-    title: "Belajar Sambil Bermain tentang Kualitas Udara",
-    description: "Jawab quiz interaktif, kumpulkan poin, dan naik level sambil meningkatkan pengetahuan tentang polusi udara dan cara melindungi diri.",
-    features: ["Quiz interaktif AI", "Sistem poin & level", "Leaderboard", "Edukasi lingkungan"],
-  },
-];
+import MetaIcon from "@/components/MetaIcon";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function DemoShowcase() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("map");
+
+  const demos = [
+    {
+      id: "map",
+      label: t?.demo?.map?.label || "Peta Interaktif",
+      icon: <Map size={16} />,
+      title: t?.demo?.map?.title || "Visualisasi Kualitas Udara di Peta Bandung",
+      description: t?.demo?.map?.desc || "Klik kecamatan untuk melihat data iklim dan prediksi AI. Sensor IoT menampilkan data PM2.5 dan PM10 secara real-time dengan analisis dari Meta AI.",
+      features: t?.demo?.map?.features || ["30 kecamatan Bandung", "Data iklim BPS", "Prediksi AI per wilayah", "Sensor IoT real-time"],
+    },
+    {
+      id: "ai",
+      label: t?.demo?.ai?.label || "Analisis AI",
+      icon: <MetaIcon size={16} />,
+      title: t?.demo?.ai?.title || "Analisis Cerdas dari Meta AI",
+      description: t?.demo?.ai?.desc || "Dapatkan rekomendasi kesehatan yang dipersonalisasi berdasarkan kondisi udara terkini. AI menganalisis data sensor dan memberikan saran aktivitas yang aman.",
+      features: t?.demo?.ai?.features || ["Rekomendasi personal", "Analisis PM2.5 & PM10", "Tips keamanan", "Kirim ke WhatsApp"],
+    },
+    {
+      id: "news",
+      label: t?.demo?.news?.label || "Berita AI",
+      icon: <Newspaper size={16} />,
+      title: t?.demo?.news?.title || "Berita Kualitas Udara dengan Ringkasan AI",
+      description: t?.demo?.news?.desc || "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Meta AI untuk kemudahan membaca.",
+      features: t?.demo?.news?.features || ["Multi-sumber berita", "Ringkasan Meta AI", "Google News & BMKG", "Update harian"],
+    },
+    {
+      id: "quiz",
+      label: t?.demo?.quiz?.label || "Quiz & Game",
+      icon: <Trophy size={16} />,
+      title: t?.demo?.quiz?.title || "Belajar Sambil Bermain tentang Kualitas Udara",
+      description: t?.demo?.quiz?.desc || "Jawab quiz interaktif, kumpulkan poin, dan naik level sambil meningkatkan pengetahuan tentang polusi udara dan cara melindungi diri.",
+      features: t?.demo?.quiz?.features || ["Quiz interaktif AI", "Sistem poin & level", "Leaderboard", "Edukasi lingkungan"],
+    },
+  ];
+
   const activeDemo = demos.find((d) => d.id === activeTab)!;
 
   return (
@@ -49,13 +52,13 @@ export default function DemoShowcase() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-            Fitur Lengkap
+            {t?.demo?.badge || "Fitur Lengkap"}
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
-            Semua dalam Satu Platform
+            {t?.demo?.headline || "Semua dalam Satu Platform"}
           </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Dari peta interaktif hingga game edukasi, HAWA punya semuanya.
+            {t?.demo?.subtitle || "Dari peta interaktif hingga game edukasi, HAWA punya semuanya."}
           </p>
         </div>
 
@@ -127,8 +130,8 @@ export default function DemoShowcase() {
                   {activeTab === "ai" && (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 mb-2">
-                        <GroqIcon size={16} className="text-[#F55036]" />
-                        <span className="text-sm font-bold text-gray-800">Analisis Groq AI</span>
+                        <MetaIcon size={16} className="text-[#F55036]" />
+                        <span className="text-sm font-bold text-gray-800">{t?.map?.analysisTitle || "Analisis Meta AI"}</span>
                       </div>
                       <div className="h-3 bg-gray-100 rounded-full w-full" />
                       <div className="h-3 bg-gray-100 rounded-full w-4/5" />

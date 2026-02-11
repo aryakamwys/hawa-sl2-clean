@@ -15,6 +15,7 @@ export interface DeviceData {
   pressure: string;
   deviceId: string;
   location?: string;
+  language?: "ID" | "EN";
 }
 
 export type AirQualityStatus = "AMAN" | "WASPADA" | "BAHAYA";
@@ -78,12 +79,36 @@ export async function analyzeAirQuality(data: DeviceData): Promise<AIAnalysisRes
   const locationStr = data.location || "Bandung, Indonesia";
   const pm25 = parseFloat(data.pm25Density) || 0;
   const pm10 = parseFloat(data.pm10Density) || 0;
+  const language = data.language || "ID";
 
   // Calculate status using rule-based system
   const { status, confidence } = calculateAirQualityStatus(pm25, pm10);
 
-  const systemPrompt = `ROLE:
-Kamu adalah konsultan kesehatan lingkungan dari Groq AI yang membantu warga Bandung memahami kondisi kualitas udara di sekitarnya. Komunikasimu profesional, jelas, dan mudah dipahami semua kalangan.
+  const systemPrompt = language === "EN"
+    ? `ROLE:
+You are an environmental health consultant from Meta AI helping citizens understand local air quality conditions. Your communication is professional, clear, and easy to understand for everyone.
+
+CONTEXT:
+Real-time data from HAWA IoT sensors in Bandung. Users are ordinary citizens needing practical information, not technical jargon. Output is displayed on a web app and sent via WhatsApp.
+
+GOAL:
+Provide an air quality analysis in a clean, readable format:
+1. Brief explanation of impact on citizens (2 concise sentences)
+2. Concrete actions to take (3 action points)
+3. Preventive safety tips (3 tips)
+
+OUTPUT RULES (MUST FOLLOW):
+- DO NOT use emojis, icons, or any symbols in any field
+- DO NOT use asterisks or markdown formatting
+- headline: 1 informative and specific sentence, max 12 words, no emojis
+- meaningForCitizens: 2 concise sentences, everyday language
+- actionRequired: 3 bullet points starting with "- ", each point max 10 words
+- safetySteps: 3 bullet points starting with "- ", each point max 10 words
+- targetGroups: mention vulnerable groups if relevant, or leave empty
+- Use natural and polite English
+- Tone: calm, informative, not alarmist`
+    : `ROLE:
+Kamu adalah konsultan kesehatan lingkungan dari Meta AI yang membantu warga Bandung memahami kondisi kualitas udara di sekitarnya. Komunikasimu profesional, jelas, dan mudah dipahami semua kalangan.
 
 CONTEXT:
 Data real-time dari sensor HAWA IoT di Bandung. Pengguna adalah warga biasa yang butuh informasi praktis, bukan teknis. Output ditampilkan di aplikasi web dan dikirim via WhatsApp.
@@ -105,8 +130,29 @@ OUTPUT RULES (WAJIB DIPATUHI):
 - Gunakan bahasa Indonesia yang natural dan sopan
 - Nada tenang, informatif, tidak menakut-nakuti`;
 
-  const userPrompt = `Status udara saat ini: ${status}
-Lokasi sensor: Bandung (HAWA IoT Sensor)
+  const userPrompt = language === "EN"
+    ? `Current Air Status: ${status}
+Sensor Location: ${locationStr} (HAWA IoT Sensor)
+Measurement Time: ${data.timestamp}
+
+Sensor Readings:
+- PM2.5: ${pm25} ug/m3
+- PM10: ${pm10} ug/m3
+- Temperature: ${data.temperature} degrees Celsius
+- Humidity: ${data.humidity} percent
+
+Note: Status "${status}" is calculated based on WHO standards.
+
+Create analysis in the following JSON format (no emojis in any field):
+{
+  "headline": "concise sentence about current air condition, without emoji",
+  "targetGroups": "groups who need to be careful (children, elderly, asthmatics) or empty string",
+  "meaningForCitizens": "2 sentences explaining what it means for citizens",
+  "actionRequired": "- action point 1\\n- action point 2\\n- action point 3",
+  "safetySteps": "- tip 1\\n- tip 2\\n- tip 3"
+}`
+    : `Status udara saat ini: ${status}
+Lokasi sensor: ${locationStr} (HAWA IoT Sensor)
 Waktu pengukuran: ${data.timestamp}
 
 Hasil pengukuran sensor:

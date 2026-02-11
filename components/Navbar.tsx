@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import { LogOut, Menu, X } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type NavItem = { label: string; href: string };
 
@@ -15,21 +16,21 @@ interface User {
   role: "USER" | "ADMIN";
 }
 
-export default function Navbar({
-  nav,
-  lang = "ID",
-  onLangChange,
-}: {
-  nav: NavItem[];
-  lang?: "ID" | "EN" | "SU";
-  onLangChange?: (v: "ID" | "EN" | "SU") => void;
-}) {
+export default function Navbar() {
+  const { t, language, changeLanguage, mounted } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = [
+    { label: t?.nav?.home || "Home", href: "/" },
+    { label: t?.nav?.features || "Features", href: "/#features" },
+    { label: t?.nav?.howItWorks || "How It Works", href: "/#how-it-works" },
+    { label: t?.nav?.aboutUs || "About Us", href: "/#about-us" },
+  ];
 
   // Fetch user session on mount
   useEffect(() => {
@@ -54,12 +55,15 @@ export default function Navbar({
     setMobileMenuOpen(false);
   };
 
+  // Handle scroll effect
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -86,14 +90,14 @@ export default function Navbar({
           <div className="h-6 w-px bg-gray-200" />
 
           <ul className={`flex items-center text-sm font-medium text-gray-700 transition-all duration-300 ${scrolled ? "gap-8" : "gap-6"}`}>
-            {nav.map((it) => (
+            {navItems.map((it) => (
               <li key={it.href}>
-                <a
+                <Link
                   href={it.href}
                   className="hover:text-[#005AE1] transition-colors duration-200"
                 >
                   {it.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -103,7 +107,7 @@ export default function Navbar({
           <div className="flex items-center gap-4">
             <details className="dropdown dropdown-end">
               <summary className="flex items-center gap-1 cursor-pointer text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors">
-                {lang}
+                {language}
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path
                     fillRule="evenodd"
@@ -113,12 +117,12 @@ export default function Navbar({
                 </svg>
               </summary>
               <ul className="menu dropdown-content mt-3 w-28 rounded-xl bg-white p-2 shadow-lg">
-                {(["ID", "EN", "SU"] as const).map((v) => (
+                {(["EN", "ID"] as const).map((v) => (
                   <li key={v}>
                     <button
                       type="button"
-                      onClick={() => onLangChange?.(v)}
-                      className={`text-base ${v === lang ? "text-[#005AE1] font-semibold" : "text-gray-700"}`}
+                      onClick={() => changeLanguage(v)}
+                      className={`text-base ${v === language ? "text-[#005AE1] font-semibold" : "text-gray-700"}`}
                     >
                       {v}
                     </button>
@@ -188,30 +192,30 @@ export default function Navbar({
             <div className="border-t border-gray-200 bg-white">
               <div className="px-4 py-3 space-y-3">
                 {/* Nav Links */}
-                {nav.map((it) => (
-                  <a
+                {navItems.map((it) => (
+                  <Link
                     key={it.href}
                     href={it.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className="block py-2 text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors"
                   >
                     {it.label}
-                  </a>
+                  </Link>
                 ))}
 
                 <div className="border-t border-gray-200 pt-3 mt-3">
                   {/* Language Selector */}
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">Bahasa:</span>
+                    <span className="text-sm text-gray-600">{t.nav.language}:</span>
                     <div className="flex gap-2">
-                      {(["ID", "EN", "SU"] as const).map((v) => (
+                      {(["EN", "ID"] as const).map((v) => (
                         <button
                           key={v}
                           onClick={() => {
-                            onLangChange?.(v);
+                            changeLanguage(v);
                             setMobileMenuOpen(false);
                           }}
-                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === lang
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === language
                             ? "bg-[#005AE1] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}

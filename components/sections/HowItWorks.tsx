@@ -1,24 +1,30 @@
+"use client";
+
+import { useLanguage } from "@/hooks/useLanguage";
+
 export default function HowItWorks() {
+  const { t } = useLanguage();
+
   const steps = [
     {
       number: "01",
-      title: "Sensor Mengumpulkan Data",
-      description: "Sensor HAWA IoT yang terpasang di Bandung mengukur PM2.5, PM10, suhu, dan kelembaban setiap detik secara otomatis.",
+      title: t?.howItWorks?.step1Title || "Sensor Mengumpulkan Data",
+      description: t?.howItWorks?.step1Desc || "Sensor HAWA IoT yang terpasang di Bandung mengukur PM2.5, PM10, suhu, dan kelembaban setiap detik secara otomatis.",
     },
     {
       number: "02",
-      title: "AI Menganalisis Kondisi",
-      description: "Data dikirim ke Groq AI yang mengolah dan memberikan analisis kondisi udara beserta tingkat risikonya.",
+      title: t?.howItWorks?.step2Title || "AI Menganalisis Kondisi",
+      description: t?.howItWorks?.step2Desc || "Data dikirim ke Meta Llama 4 yang mengolah dan memberikan analisis kondisi udara beserta tingkat risikonya.",
     },
     {
       number: "03",
-      title: "Visualisasi di Peta",
-      description: "Hasil ditampilkan di peta interaktif Bandung lengkap dengan prediksi iklim per kecamatan dan grafik tren.",
+      title: t?.howItWorks?.step3Title || "Visualisasi di Peta",
+      description: t?.howItWorks?.step3Desc || "Hasil ditampilkan di peta interaktif Bandung lengkap dengan prediksi iklim per kecamatan dan grafik tren.",
     },
     {
       number: "04",
-      title: "Rekomendasi untuk Anda",
-      description: "Dapatkan saran aktivitas, notifikasi WhatsApp, dan tips keamanan berdasarkan data terkini di area Anda.",
+      title: t?.howItWorks?.step4Title || "Rekomendasi untuk Anda",
+      description: t?.howItWorks?.step4Desc || "Dapatkan saran aktivitas, notifikasi WhatsApp, dan tips keamanan berdasarkan data terkini di area Anda.",
     },
   ];
 
@@ -28,13 +34,13 @@ export default function HowItWorks() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-            Cara Kerja
+            {t?.howItWorks?.badge || "Cara Kerja"}
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
-            Dari Sensor ke Rekomendasi
+            {t?.howItWorks?.headline || "Dari Sensor ke Rekomendasi"}
           </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Empat langkah sederhana untuk udara yang lebih sehat
+            {t?.howItWorks?.subtitle || "Empat langkah sederhana untuk udara yang lebih sehat"}
           </p>
         </div>
 

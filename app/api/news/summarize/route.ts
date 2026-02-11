@@ -6,7 +6,7 @@ const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
 export async function POST(request: Request) {
   try {
-    const { title, sourceUrl, content } = await request.json();
+    const { title, sourceUrl, content, language = "ID" } = await request.json();
 
     if (!title) {
       return NextResponse.json(
@@ -17,6 +17,11 @@ export async function POST(request: Request) {
 
     // Try to fetch full article content if URL provided
     let articleContent = content || title;
+    // ... fetching logic (unchanged) ...
+    // Note: I cannot easily skip lines here without providing the whole fetching block, so I will stick to what I can do safely.
+    // I'll assume I need to provide the fetching logic again or just target the prompt section if I can.
+    // Actually, I can replace lines 9-61.
+
     if (sourceUrl && !content) {
       try {
         console.log(`[News Summarize] Fetching article: ${sourceUrl}`);
@@ -45,7 +50,26 @@ export async function POST(request: Request) {
     // Generate AI summary with Groq
     console.log(`[News Summarize] Generating summary for: ${title}`);
 
-    const prompt = `Kamu adalah jurnalis dan editor berita yang berpengalaman. Buat rangkuman berita ini dalam 2 paragraf bahasa Indonesia yang informatif.
+    const promptSystem = language === "EN" 
+      ? "You are an environmental news editor. Provide an informative summary." 
+      : "Kamu adalah editor berita lingkungan Indonesia. Berikan rangkuman informatif.";
+
+    const prompt = language === "EN"
+      ? `You are an experienced journalist and news editor. Summarize this news in 2 informative paragraphs in English.
+
+Title: ${title}
+Source: ${sourceUrl || "N/A"}
+
+Content:
+${articleContent.substring(0, 3000)}
+
+Instructions:
+- Paragraph 1: Core summary (what, who, where, when, why)
+- Paragraph 2: Impact and relevance to air quality/environment in Bandung/Indonesia
+- Use easy-to-understand English
+- Each paragraph 2-3 sentences
+- Write the paragraphs directly, without title or other markers`
+      : `Kamu adalah jurnalis dan editor berita yang berpengalaman. Buat rangkuman berita ini dalam 2 paragraf bahasa Indonesia yang informatif.
 
 Judul: ${title}
 Sumber: ${sourceUrl || "N/A"}
@@ -62,7 +86,7 @@ Instruksi:
 
     const completion = await groq.chat.completions.create({
       messages: [
-        { role: "system", content: "Kamu adalah editor berita lingkungan Indonesia. Berikan rangkuman informatif." },
+        { role: "system", content: promptSystem },
         { role: "user", content: prompt },
       ],
       model: GROQ_MODEL,

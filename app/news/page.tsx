@@ -5,6 +5,7 @@ import { RefreshCw, Newspaper, AlertCircle } from "lucide-react";
 import NewsCard from "@/components/NewsCard";
 import Navbar from "@/components/Navbar";
 import LottieLoader from "@/components/LottieLoader";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface NewsItem {
   id: string;
@@ -18,6 +19,7 @@ interface NewsItem {
 }
 
 export default function NewsPage() {
+  const { t } = useLanguage();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,27 +62,17 @@ export default function NewsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar
-        nav={[
-          { label: "Home", href: "/" },
-          { label: "Feature", href: "/feature" },
-          { label: "How it work", href: "/how-it-works" },
-          { label: "About Us", href: "/about-us" },
-          { label: "Info", href: "/news" },
-        ]}
-        lang="ID"
-        onLangChange={(v) => console.log(v)}
-      />
+      <Navbar />
 
       <main className="pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
-              Berita Kualitas Udara
+              {t?.news?.title || "Berita Kualitas Udara"}
             </h1>
             <p className="text-lg text-gray-600">
-              Informasi terkini seputar kualitas udara dari berbagai sumber dunia
+              {t?.news?.subtitle || "Informasi terkini seputar kualitas udara dari berbagai sumber dunia"}
             </p>
           </div>
 
@@ -92,20 +84,20 @@ export default function NewsPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-              {refreshing ? "Memuat..." : "Refresh"}
+              {refreshing ? (t?.news?.loading || "Memuat...") : (t?.news?.refresh || "Refresh")}
             </button>
           </div>
 
           {/* Content */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <LottieLoader size={160} text="Memuat berita kualitas udara..." />
+              <LottieLoader size={160} text={t?.news?.loading || "Memuat berita kualitas udara..."} />
             </div>
           ) : error ? (
             <div className="text-center py-16">
               <AlertCircle size={48} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Gagal Memuat Berita
+                {t?.news?.errorTitle || "Gagal Memuat Berita"}
               </h3>
               <p className="text-gray-600 mb-6">{error}</p>
               <button
@@ -113,31 +105,31 @@ export default function NewsPage() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#005AE1] text-white font-semibold hover:bg-[#004BB8] transition-colors"
               >
                 <RefreshCw size={16} />
-                Coba Lagi
+                {t?.news?.retry || "Coba Lagi"}
               </button>
             </div>
           ) : news.length === 0 ? (
             <div className="text-center py-16">
               <Newspaper size={64} className="mx-auto text-gray-300 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Belum Ada Berita
+                {t?.news?.noNews || "Belum Ada Berita"}
               </h3>
               <p className="text-gray-600 mb-6">
-                Berita kualitas udara akan ditampilkan di sini
+                {t?.news?.noNewsDesc || "Berita kualitas udara akan ditampilkan di sini"}
               </p>
               <button
                 onClick={handleRefresh}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#005AE1] text-white font-semibold hover:bg-[#004BB8] transition-colors"
               >
                 <RefreshCw size={16} />
-                Muat Ulang
+                {t?.news?.retry || "Muat Ulang"}
               </button>
             </div>
           ) : (
             <>
               {/* News Count */}
               <div className="mb-6 text-sm text-gray-500">
-                Menampilkan <span className="font-semibold text-gray-900">{news.length}</span> berita terkini
+                {(t?.news?.showingNews || "Menampilkan {count} berita terkini").replace("{count}", news.length.toString())}
               </div>
 
               {/* News Grid */}

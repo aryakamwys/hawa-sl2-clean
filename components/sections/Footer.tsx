@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="text-white pt-16 pb-8 px-6">
       <div className="max-w-6xl mx-auto">
@@ -13,34 +18,34 @@ export default function Footer() {
               <h3 className="text-xl font-bold">HAWA</h3>
             </div>
             <p className="text-sm text-blue-50 leading-relaxed">
-              Platform monitoring kualitas udara berbasis IoT dan AI untuk masyarakat Bandung.
+              {t?.footer?.desc || "Platform monitoring kualitas udara berbasis IoT dan AI untuk masyarakat Bandung."}
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>Product</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>{t?.footer?.product || "Product"}</h4>
             <ul className="space-y-2.5">
-              <li><a href="#features" className="text-sm text-blue-50 hover:text-white transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="text-sm text-blue-50 hover:text-white transition-colors">How It Works</a></li>
-              <li><Link href="/map" className="text-sm text-blue-50 hover:text-white transition-colors">Interactive Map</Link></li>
-              <li><Link href="/news" className="text-sm text-blue-50 hover:text-white transition-colors">News</Link></li>
+              <li><a href="#features" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.nav?.features || "Features"}</a></li>
+              <li><a href="#how-it-works" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.nav?.howItWorks || "How It Works"}</a></li>
+              <li><Link href="/map" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.nav?.map || "Interactive Map"}</Link></li>
+              <li><Link href="/news" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.nav?.news || "News"}</Link></li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>Company</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>{t?.footer?.company || "Company"}</h4>
             <ul className="space-y-2.5">
-              <li><a href="#about-us" className="text-sm text-blue-50 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-sm text-blue-50 hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-sm text-blue-50 hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#about-us" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.nav?.aboutUs || "About Us"}</a></li>
+              <li><a href="#" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.footer?.privacy || "Privacy Policy"}</a></li>
+              <li><a href="#" className="text-sm text-blue-50 hover:text-white transition-colors">{t?.footer?.terms || "Terms of Service"}</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>Contact</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider" style={{ fontSize: '11px', letterSpacing: '0.08em' }}>{t?.footer?.contact || "Contact"}</h4>
             <ul className="space-y-2.5">
               <li className="text-sm text-blue-50">
                 <a href="mailto:hawaairinfo@gmail.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">hawaairinfo@gmail.com</a>
@@ -63,7 +68,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/20 pt-6 text-center text-xs text-blue-100">
-          © 2026 HAWA. All rights reserved.
+          {t?.footer?.rights || "© 2026 HAWA. All rights reserved."}
         </div>
       </div>
     </footer>
