@@ -40,7 +40,7 @@ export default function AboutUs() {
           {/* Right: Mascot */}
           <div className="flex justify-center">
             <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#E0F4FF] to-[#d0e8ff] rounded-3xl" />
+              <div className="absolute inset-0 rounded-3xl" style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 25%, #005AE1 75%)' }} />
               <Image
                 src="/maskot.png"
                 alt="HAWA Mascot"

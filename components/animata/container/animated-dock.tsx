@@ -102,15 +102,15 @@ function DockIcon({
     <Link href={href} onClick={handleClick}>
       <motion.div
         ref={ref}
-        style={{ width, height }}
+        style={{ width, height } as any}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={cn(
           "relative flex items-center justify-center rounded-full transition-all duration-200",
-          active 
-            ? "bg-[#005AE1]/15 text-[#005AE1] border-2 border-[#005AE1]" 
+          active
+            ? "bg-[#005AE1]/15 text-[#005AE1] border-2 border-[#005AE1]"
             : "bg-gray-100/80 text-gray-500 hover:bg-white hover:border-2 hover:border-[#005AE1] hover:text-[#005AE1]",
           !active && "border-2 border-transparent"
         )}
@@ -185,8 +185,8 @@ const SmallDock = ({
                   className={cn(
                     "flex h-12 w-12 items-center justify-center rounded-full shadow-md transition-all duration-200",
                     "bg-white/80 backdrop-blur-xl border border-white/50",
-                    item.active 
-                      ? "text-[#005AE1]" 
+                    item.active
+                      ? "text-[#005AE1]"
                       : "text-gray-500 hover:text-[#005AE1]"
                   )}
                 >

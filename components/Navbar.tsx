@@ -67,12 +67,12 @@ export default function Navbar({
       <div className="fixed top-6 left-0 right-0 z-50 hidden lg:flex justify-center px-4">
         <nav
           className={[
-            "inline-flex items-center justify-center gap-8",
-            "rounded-full bg-white/90 backdrop-blur-md",
+            "inline-flex items-center justify-center",
+            "rounded-full bg-white/90 backdrop-blur-sm",
             "border-3 border-[#005AE1]/20",
             "shadow-lg shadow-[#005AE1]/20",
             "transition-all duration-300",
-            scrolled ? "py-2 px-10" : "py-3 px-12",
+            scrolled ? "py-2 px-10 gap-16" : "py-3 px-12 gap-8",
           ].join(" ")}
         >
           <Link
@@ -85,7 +85,7 @@ export default function Navbar({
 
           <div className="h-6 w-px bg-gray-200" />
 
-          <ul className="flex items-center gap-6 text-sm font-medium text-gray-700">
+          <ul className={`flex items-center text-sm font-medium text-gray-700 transition-all duration-300 ${scrolled ? "gap-8" : "gap-6"}`}>
             {nav.map((it) => (
               <li key={it.href}>
                 <a
@@ -211,11 +211,10 @@ export default function Navbar({
                             onLangChange?.(v);
                             setMobileMenuOpen(false);
                           }}
-                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                            v === lang
-                              ? "bg-[#005AE1] text-white"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === lang
+                            ? "bg-[#005AE1] text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
                         >
                           {v}
                         </button>
