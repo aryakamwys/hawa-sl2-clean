@@ -1,6 +1,9 @@
 "use client";
 
-import { ExternalLink, Calendar } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import LottieLoader from "./LottieLoader";
+import GroqIcon from "./GroqIcon";
 
 interface NewsCardProps {
   title: string;
@@ -14,11 +17,14 @@ interface NewsCardProps {
 export default function NewsCard({
   title,
   summary,
-  imageUrl,
   source,
   sourceUrl,
   publishedAt,
 }: NewsCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [aiSummary, setAiSummary] = useState("");
+  const [loadingSummary, setLoadingSummary] = useState(false);
+
   // Format date to Indonesian
   const formatDate = (dateString: string) => {
     try {
@@ -34,55 +40,103 @@ export default function NewsCard({
     }
   };
 
-  const handleClick = () => {
+  const handleExpandClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    setExpanded(true);
+
+    // Fetch AI summary if not already loaded
+    if (!aiSummary) {
+      setLoadingSummary(true);
+      try {
+        const res = await fetch("/api/news/summarize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, sourceUrl, content: summary }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAiSummary(data.summary);
+        } else {
+          setAiSummary("Gagal memuat rangkuman AI. Silakan coba lagi.");
+        }
+      } catch {
+        setAiSummary("Gagal memuat rangkuman AI. Silakan coba lagi.");
+      } finally {
+        setLoadingSummary(false);
+      }
+    }
+  };
+
+  const handleReadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     window.open(sourceUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <article
-      onClick={handleClick}
-      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
-    >
-      {/* (!) Card container: no padding, only border-radius and shadow */}
-      {/* Image */}
-      <div className="relative aspect-video bg-gradient-to-br from-[#005AE1]/10 to-[#70D8FF]/10 overflow-hidden">
-        {/* (!) No padding, only aspect ratio */}
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#005AE1]/20 to-[#70D8FF]/20">
-            <span className="text-4xl">📰</span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-
+    <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#005AE1]/20 transition-all duration-300 overflow-hidden flex flex-col">
       {/* Content */}
-      <div className="flex-1 flex flex-col p-4">{/* (!) p-4: card content padding */}
+      <div className="flex-1 flex flex-col p-5">
+        {/* Source badge */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-[#005AE1]/10 text-[#005AE1]">
+            {source}
+          </span>
+          <div className="flex items-center gap-1 text-xs text-gray-400">
+            <Calendar size={11} />
+            <span>{formatDate(publishedAt)}</span>
+          </div>
+        </div>
+
         {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#005AE1] transition-colors">{/* (!) mb-2: title margin-bottom */}
+        <h3 className="text-base font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#005AE1] transition-colors leading-snug">
           {title}
         </h3>
 
         {/* Summary */}
-        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-1">{/* (!) mb-4: summary margin-bottom */}
+        <p className={`text-sm text-gray-600 leading-relaxed flex-1 ${expanded ? "" : "line-clamp-3"}`}>
           {summary}
         </p>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">{/* (!) pt-3: footer padding-top */}
-          <div className="flex items-center gap-1.5">
-            <Calendar size={12} />
-            <span>{formatDate(publishedAt)}</span>
+        {/* AI Summary toggle */}
+        <button
+          onClick={handleExpandClick}
+          className="flex items-center gap-1.5 text-xs text-[#F55036] hover:text-[#E8380D] mt-3 mb-2 font-medium transition-colors"
+        >
+          <GroqIcon size={13} />
+          {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          <span>{expanded ? "Tutup ringkasan AI" : "Ringkasan Groq AI"}</span>
+        </button>
+
+        {/* AI Summary Section */}
+        {expanded && (
+          <div className="mb-3 bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-200 transition-all">
+            <div className="flex items-center gap-2 mb-2">
+              <GroqIcon size={14} className="text-[#F55036]" />
+              <span className="text-xs font-bold text-gray-800">Ringkasan Groq AI</span>
+            </div>
+            {loadingSummary ? (
+              <LottieLoader size={64} text="Menganalisis berita..." />
+            ) : (
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                {aiSummary}
+              </p>
+            )}
           </div>
-          <div className="flex items-center gap-1.5 text-[#005AE1]">
-            <ExternalLink size={12} />
-            <span>{source}</span>
-          </div>
+        )}
+
+        {/* Footer with Baca Disini button */}
+        <div className="flex items-center justify-end pt-3 border-t border-gray-100">
+          <button
+            onClick={handleReadClick}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-[#005AE1] rounded-xl hover:bg-[#004BB8] active:scale-95 transition-all duration-200 shadow-sm"
+          >
+            <ExternalLink size={14} />
+            Baca Disini
+          </button>
         </div>
       </div>
     </article>

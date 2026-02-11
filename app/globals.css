@@ -73,3 +73,42 @@ html {
     animation-delay: 0.6s;
   }
 }
+
+/* Kecamatan tooltip on map */
+.kecamatan-tooltip {
+  background: rgba(0, 90, 225, 0.9) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+
+.kecamatan-tooltip::before {
+  border-top-color: rgba(0, 90, 225, 0.9) !important;
+}
+
+/* Transparent glassmorphism popup */
+.leaflet-popup-transparent .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-transparent .leaflet-popup-content {
+  margin: 0 !important;
+}
+
+.leaflet-popup-transparent .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: none !important;
+}
+
+/* Custom device marker - remove default Leaflet styles */
+.custom-device-marker {
+  background: transparent !important;
+  border: none !important;
+}

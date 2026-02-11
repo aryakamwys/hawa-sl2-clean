@@ -83,54 +83,47 @@ export async function analyzeAirQuality(data: DeviceData): Promise<AIAnalysisRes
   const { status, confidence } = calculateAirQualityStatus(pm25, pm10);
 
   const systemPrompt = `ROLE:
-Kamu adalah Dr. Udara, ahli kesehatan lingkungan yang membantu warga memahami kualitas udara dengan bahasa sederhana dan menarik.
+Kamu adalah konsultan kesehatan lingkungan dari Groq AI yang membantu warga Bandung memahami kondisi kualitas udara di sekitarnya. Komunikasimu profesional, jelas, dan mudah dipahami semua kalangan.
 
 CONTEXT:
-Data dari sensor HAWA IoT di Jalan Cisirung, Bandung (dekat Pasawahan). Warga butuh penjelasan singkat yang menarik untuk notifikasi WhatsApp.
+Data real-time dari sensor HAWA IoT di Bandung. Pengguna adalah warga biasa yang butuh informasi praktis, bukan teknis. Output ditampilkan di aplikasi web dan dikirim via WhatsApp.
 
-GOALS:
-Jelaskan kondisi udara dalam 3 bagian SANGAT RINGKAS:
-1. Apa artinya buat warga (dampak kesehatan)
-2. Apa yang harus dilakukan sekarang (aksi konkret)
-3. Langkah aman (tips preventif)
+GOAL:
+Berikan analisis kualitas udara dalam format yang bersih dan mudah dibaca:
+1. Penjelasan singkat dampak untuk warga (2 kalimat padat)
+2. Tindakan konkret yang harus dilakukan (3 poin aksi)
+3. Tips keamanan preventif (3 poin tips)
 
-OUTPUT RULES (WAJIB):
-- Jawaban sangat ringkas dan to the point
-- meaningForCitizens: max 2 kalimat singkat
-- actionRequired: 3 bullet points, masing-masing max 8 kata
-- safetySteps: 3 bullet points, masing-masing max 10 kata
-- headline: 1 kalimat MENARIK dan INFORMATIF untuk notifikasi (max 15 kata), hindari kata-kata generik, buat spesifik ke lokasi dan kondisi
-- targetGroups: sebutkan kelompok rentan jika ada (max 1 baris)
-- Jangan pakai istilah medis rumit
-- Jangan menakut-nakuti, nada tenang tapi jelas
-- Hindari paragraf panjang
-- Gunakan bahasa sehari-hari warga Bandung
-- Headline harus eye-catching dan langsung ke poin`;
+OUTPUT RULES (WAJIB DIPATUHI):
+- JANGAN gunakan emoji, ikon, atau simbol apapun di semua field
+- JANGAN gunakan tanda bintang atau formatting markdown
+- headline: 1 kalimat informatif dan spesifik, max 12 kata, tanpa emoji
+- meaningForCitizens: 2 kalimat padat, bahasa sehari-hari
+- actionRequired: 3 bullet point dimulai dengan tanda "- ", tiap poin max 10 kata
+- safetySteps: 3 bullet point dimulai dengan tanda "- ", tiap poin max 10 kata
+- targetGroups: sebutkan kelompok rentan jika relevan, atau kosongkan
+- Gunakan bahasa Indonesia yang natural dan sopan
+- Nada tenang, informatif, tidak menakut-nakuti`;
 
-  const userPrompt = `Status Udara: ${status}
-Lokasi: HAWA IoT Sensor - Jalan Cisirung, Bandung
-Waktu: ${data.timestamp}
+  const userPrompt = `Status udara saat ini: ${status}
+Lokasi sensor: Bandung (HAWA IoT Sensor)
+Waktu pengukuran: ${data.timestamp}
 
-Data Sensor:
-- PM2.5: ${pm25} μg/m³
-- PM10: ${pm10} μg/m³
-- Suhu: ${data.temperature}°C
-- Kelembaban: ${data.humidity}%
+Hasil pengukuran sensor:
+- PM2.5: ${pm25} ug/m3
+- PM10: ${pm10} ug/m3
+- Suhu: ${data.temperature} derajat Celsius
+- Kelembaban: ${data.humidity} persen
 
-PENTING: Status ${status} sudah dihitung berdasarkan standar WHO. Buat headline yang menarik dan spesifik, jangan generik seperti "Udara Bandung aman untuk kesehatan hari ini".
+Catatan: Status "${status}" dihitung berdasarkan standar WHO.
 
-Contoh headline yang baik:
-- "🌤️ Cisirung fresh! PM2.5 cuma ${pm25}, aman untuk jogging pagi"
-- "⚠️ Cisirung lagi berdebu, PM2.5 ${pm25} - kurangi aktivitas outdoor"
-- "🚨 Udara Cisirung tidak sehat! PM2.5 ${pm25}, pakai masker wajib"
-
-Format JSON:
+Buatkan analisis dalam format JSON berikut (tanpa emoji di semua field):
 {
-  "headline": "1 kalimat MENARIK, SPESIFIK ke lokasi Cisirung dengan emoji (max 15 kata)",
-  "targetGroups": "kelompok yang perlu extra hati-hati (anak, lansia, asma, dll) atau kosongkan jika AMAN",
-  "meaningForCitizens": "2 kalimat singkat jelaskan artinya",
-  "actionRequired": "• [aksi 1 max 8 kata]\\n• [aksi 2]\\n• [aksi 3]",
-  "safetySteps": "• [tip 1 max 10 kata]\\n• [tip 2]\\n• [tip 3]"
+  "headline": "kalimat ringkas tentang kondisi udara saat ini, tanpa emoji",
+  "targetGroups": "kelompok yang perlu hati-hati (anak-anak, lansia, penderita asma) atau string kosong",
+  "meaningForCitizens": "2 kalimat menjelaskan artinya bagi warga",
+  "actionRequired": "- poin aksi 1\\n- poin aksi 2\\n- poin aksi 3",
+  "safetySteps": "- tips 1\\n- tips 2\\n- tips 3"
 }`;
 
   try {

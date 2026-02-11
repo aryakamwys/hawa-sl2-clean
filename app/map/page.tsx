@@ -7,8 +7,14 @@ import SettingsModal from "@/components/SettingsModal";
 import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
 import ForecastModal from "@/components/forecast/ForecastModal";
-import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Sparkles, Loader2, X, TrendingUp, Send } from "lucide-react";
+import RegionForecastModal from "@/components/map/RegionForecastModal";
+import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
+import LottieLoader from "@/components/LottieLoader";
+import GroqIcon from "@/components/GroqIcon";
+
+
+
 
 interface UserData {
   id: string;
@@ -52,6 +58,7 @@ export default function MapPage() {
   const [showForecast, setShowForecast] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [latestDeviceData, setLatestDeviceData] = useState<any>(null);
+  const [selectedRegion, setSelectedRegion] = useState<{ id: string; name: string } | null>(null);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -220,20 +227,20 @@ export default function MapPage() {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(mapInstanceRef.current);
 
-        // Add marker for IoT device with factory.gif
+        // Add marker for IoT device with Lottie animation
         const deviceIcon = L.divIcon({
           className: 'custom-device-marker',
-          html: '<div style="width: 48px; height: 48px; background-image: url(/factory.gif); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>',
-          iconSize: [48, 48],
-          iconAnchor: [24, 24],
+          html: '<dotlottie-player src="https://lottie.host/c353be7e-e6ea-4b7c-9042-e6fb0acabf55/r1pijIcpRs.lottie" background="transparent" speed="1" style="width: 56px; height: 56px;" loop autoplay></dotlottie-player>',
+          iconSize: [56, 56],
+          iconAnchor: [28, 28],
         });
 
         // IoT Device locations in Bandung
         const iotDevices = [
-          { lat: -6.970145263211866, lng: 107.6167380802031, name: "HAWA IoT Sensor", deviceId: "10:B4:1D:E8:2E:E4" },
-          { lat: -6.9219, lng: 107.6102, name: "HAWA IoT Sensor 2", deviceId: "10:B4:1D:E8:2E:E5" },
-          { lat: -6.9035, lng: 107.6313, name: "HAWA IoT Sensor 3", deviceId: "10:B4:1D:E8:2E:E6" },
-          { lat: -6.9388, lng: 107.6084, name: "HAWA IoT Sensor 4", deviceId: "10:B4:1D:E8:2E:E7" },
+          { lat: -6.9311, lng: 107.6048, name: "HAWA IoT Sensor — Cicendo", deviceId: "10:B4:1D:E8:2E:E4" },
+          { lat: -6.9147, lng: 107.6189, name: "HAWA IoT Sensor — Coblong", deviceId: "10:B4:1D:E8:2E:E5" },
+          { lat: -6.9224, lng: 107.6378, name: "HAWA IoT Sensor — Cibeunying Kaler", deviceId: "10:B4:1D:E8:2E:E6" },
+          { lat: -6.9410, lng: 107.6317, name: "HAWA IoT Sensor — Batununggal", deviceId: "10:B4:1D:E8:2E:E7" },
         ];
 
         // Add markers for all IoT devices
@@ -243,15 +250,15 @@ export default function MapPage() {
             L.marker([device.lat, device.lng], { icon: deviceIcon })
               .addTo(map)
               .bindPopup(`
-                <div style="min-width: 220px;">
-                  <div style="font-weight: bold; margin-bottom: 8px;">${device.name}</div>
-                  <div style="font-size: 13px; color: #666; margin-bottom: 12px;">Device: ${device.deviceId}</div>
+                <div style="min-width: 240px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,90,225,0.1);">
+                  <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px; color: #111;">${device.name}</div>
+                  <div style="font-size: 12px; color: #888; margin-bottom: 14px; font-family: monospace;">${device.deviceId}</div>
                   <button
                     id="ask-ai-btn-${device.deviceId}"
                     style="
                       width: 100%;
-                      padding: 10px 16px;
-                      background: #005AE1;
+                      padding: 11px 16px;
+                      background: linear-gradient(135deg, #F55036, #E8380D);
                       color: white;
                       border: none;
                       border-radius: 12px;
@@ -263,15 +270,16 @@ export default function MapPage() {
                       justify-content: center;
                       gap: 8px;
                       transition: all 0.2s ease;
+                      box-shadow: 0 2px 8px rgba(245,80,54,0.3);
                     "
-                    onmouseover="this.style.background='#004BB8'"
-                    onmouseout="this.style.background='#005AE1'"
+                    onmouseover="this.style.opacity='0.9'"
+                    onmouseout="this.style.opacity='1'"
                   >
-                    <span style="font-size: 16px;">✨</span>
-                    Ask AI
+                    <svg width='16' height='16' viewBox='0 0 1981.58 562.32' fill='white' xmlns='http://www.w3.org/2000/svg'><path d='M1378.01.31h-.04c-109.6 0-198.78 89.18-198.78 198.78s89.18 198.78 198.78 198.78 198.78-89.18 198.78-198.81C1576.56 89.66 1487.4.5 1378.01.31m93.33 198.78c0 51.49-41.88 93.36-93.36 93.36s-93.36-41.88-93.36-93.36 41.88-93.36 93.36-93.36 93.36 41.87 93.36 93.36M908.86 180.75c.43-11.74 1.43-23.13 3.67-34.68l.05-.23c2.83-13.62 7.15-26.73 12.81-38.99 11.8-25.1 29.21-47.21 50.41-64.03 20.78-16.39 45.11-28.6 70.38-35.33 12.4-3.45 25.23-5.67 38.18-6.6 28.63-2.05 56.94 1.15 83.9 11.24 9.98 3.74 19.95 8.47 29.26 13.87l15.78 9.17-50.61 88.04-15.8-8.8c-10.95-6.1-22.78-9.84-35.16-11.11-12.97-1.17-26.36 0-38.93 3.43-11.9 3.18-23.24 8.94-32.86 16.64-9 7.25-16.26 16.51-20.96 26.71-5.08 11.01-6.98 23.13-6.98 35.17v199.17H908.85V180.75ZM873.03 187.44c-1.25-50.37-21.77-97.51-57.79-132.72C779.25 19.54 731.74.1 681.47 0h-1.63C574.85 0 488.97 85.15 488.05 190.59c-.45 51.35 19.07 99.82 54.95 136.49 35.9 36.68 83.86 57.12 135.2 57.57h58.51V282.78h-55.55c-24.09.33-46.84-8.87-64.06-25.73-17.24-16.87-26.88-39.48-27.14-63.68-.55-49.87 39.38-90.9 89.04-91.5h2.39c49.58 0 90.14 40.58 90.42 90.37v177.83c0 49.22-40.06 89.74-89.31 90.37-23.59-.18-45.76-9.55-62.43-26.43l-12.93-13.07-.05.05-51.98 91.8c34.69 31.66 79.12 49.17 126.28 49.52h2.59c50.55-.72 97.97-20.94 133.54-56.97 35.54-36.02 55.27-83.78 55.53-134.6V187.46H873v-.02ZM1790.21.29c-51.34 0-99.58 20.01-135.85 56.38-36.21 36.3-56.11 84.53-56.01 135.76 0 105.86 86.07 191.97 191.87 191.97h54.41V282.67h-54.41c-49.74 0-90.19-40.48-90.19-90.24s40.45-90.24 90.19-90.24c22.6 0 44.23 8.44 60.92 23.76 16.11 14.8 28.77 34.62 28.77 56.46v367.66h101.67V192.43c0-105.94-85.85-192.14-191.37-192.14M165.98 342.21H0L272.4 1.5l-68.75 220.11H369.6L97.23 562.32z'/></svg>
+                    Analisis Groq
                   </button>
                 </div>
-              `)
+              `, { className: 'leaflet-popup-transparent' })
               .on("popupopen", () => {
                 const btn = document.getElementById(`ask-ai-btn-${device.deviceId}`);
                 if (btn) {
@@ -280,10 +288,54 @@ export default function MapPage() {
               });
           });
         }
+        // Load GeoJSON kecamatan boundaries
+        if (mapInstanceRef.current) {
+          const map = mapInstanceRef.current;
+          fetch('/bandung-kecamatan.geojson')
+            .then(res => res.json())
+            .then(geojsonData => {
+              L.geoJSON(geojsonData, {
+                style: () => ({
+                  color: '#005AE1',
+                  weight: 0.8,
+                  opacity: 0.25,
+                  fillColor: 'transparent',
+                  fillOpacity: 0,
+                }),
+                onEachFeature: (feature, layer) => {
+                  const name = feature.properties?.nama_kecamatan || 'Unknown';
+                  const id = feature.properties?.id_kecamatan || '';
+                  layer.bindTooltip(name, {
+                    permanent: false,
+                    direction: 'center',
+                    className: 'kecamatan-tooltip',
+                  });
+                  layer.on('mouseover', () => {
+                    (layer as any).setStyle({ fillColor: '#005AE1', fillOpacity: 0.2, weight: 1.8, opacity: 0.7 });
+                  });
+                  layer.on('mouseout', () => {
+                    (layer as any).setStyle({ fillColor: 'transparent', fillOpacity: 0, weight: 0.8, opacity: 0.25 });
+                  });
+                  layer.on('click', () => {
+                    window.dispatchEvent(new CustomEvent('kecamatan-click', { detail: { id, name } }));
+                  });
+                },
+              }).addTo(map);
+            })
+            .catch(err => console.error('Failed to load GeoJSON:', err));
+        }
       }
     });
 
+    // Listen for kecamatan clicks
+    const handleKecClick = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setSelectedRegion({ id: detail.id, name: detail.name });
+    };
+    window.addEventListener('kecamatan-click', handleKecClick);
+
     return () => {
+      window.removeEventListener('kecamatan-click', handleKecClick);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -369,6 +421,15 @@ export default function MapPage() {
       {/* Forecast Modal */}
       {showForecast && <ForecastModal onClose={() => setShowForecast(false)} />}
 
+      {/* Region Forecast Modal */}
+      {selectedRegion && (
+        <RegionForecastModal
+          regionId={selectedRegion.id}
+          regionName={selectedRegion.name}
+          onClose={() => setSelectedRegion(null)}
+        />
+      )}
+
       {/* Login Required Modal */}
       {showLoginRequired && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] flex items-center justify-center">
@@ -400,56 +461,53 @@ export default function MapPage() {
 
       {/* AI Analysis Modal */}
       {showAiModal && aiResult && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl !p-6 max-w-2xl w-full !mx-4 max-h-[80vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl !p-6 max-w-2xl w-full !mx-4 max-h-[80vh] overflow-y-auto border border-gray-200/50">
             {/* Header */}
-            <div className="flex items-start justify-between !mb-4">
+            <div className="flex items-start justify-between !mb-5">
               <div>
-                <div className="flex items-center gap-2 !mb-2">
-                  <Sparkles className="text-purple-600" size={24} />
-                  <h3 className="text-xl font-semibold text-gray-900">AI Analysis</h3>
+                <div className="flex items-center gap-2.5 !mb-2">
+                  <GroqIcon size={22} className="text-[#F55036]" />
+                  <h3 className="text-xl font-bold text-gray-900">Analisis Groq AI</h3>
                 </div>
-                <div className={`inline-flex !px-3 !py-1 rounded-full text-sm font-medium ${
-                  aiResult.status === "AMAN" ? "bg-green-100 text-green-700" :
-                  aiResult.status === "WASPADA" ? "bg-amber-100 text-amber-700" :
-                  "bg-red-100 text-red-700"
+                <div className={`inline-flex !px-3 !py-1 rounded-full text-sm font-semibold ${
+                  aiResult.status === "AMAN" ? "bg-green-50 text-green-700 border border-green-200" :
+                  aiResult.status === "WASPADA" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                  "bg-red-50 text-red-700 border border-red-200"
                 }`}>
                   {aiResult.status}
                 </div>
               </div>
-              <button onClick={() => setShowAiModal(false)} className="text-gray-400 hover:text-gray-600">
-                <X size={24} />
+              <button onClick={() => setShowAiModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors">
+                <X size={22} />
               </button>
             </div>
 
             {/* Headline */}
-            <div className="!mb-4 !p-4 bg-white rounded-xl border border-gray-300">
-              <p className="text-lg font-semibold text-gray-900">{aiResult.headline}</p>
+            <div className="!mb-5 !p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border border-gray-200">
+              <p className="text-base font-semibold text-gray-900 leading-relaxed">{aiResult.headline}</p>
               {aiResult.targetGroups && (
                 <p className="text-sm text-gray-500 !mt-2">
-                  <span className="font-medium text-gray-700">Perhatian khusus:</span> {aiResult.targetGroups}
+                  <span className="font-semibold text-gray-700">Perhatian khusus:</span> {aiResult.targetGroups}
                 </p>
               )}
             </div>
 
             {/* Analysis Sections */}
             <div className="space-y-3">
-              {/* Meaning for Citizens */}
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-800 !mb-2">📊 Apa Artinya Buat Warga</h4>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.meaningForCitizens}</p>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Apa Artinya Buat Warga</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.meaningForCitizens}</p>
               </div>
 
-              {/* Action Required */}
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-800 !mb-2">⚡ Apa yang Harus Dilakukan Sekarang</h4>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.actionRequired}</p>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Yang Harus Dilakukan Sekarang</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.actionRequired}</p>
               </div>
 
-              {/* Safety Steps */}
               <div className="!p-4 bg-white rounded-xl border border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-800 !mb-2">🛡️ Langkah Aman</h4>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{aiResult.analysis.safetySteps}</p>
+                <h4 className="text-sm font-bold text-gray-800 !mb-2 tracking-wide uppercase" style={{fontSize: '11px', letterSpacing: '0.05em'}}>Langkah Keamanan</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{aiResult.analysis.safetySteps}</p>
               </div>
             </div>
 
@@ -495,8 +553,7 @@ export default function MapPage() {
       {analyzingDevice && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl !p-6 flex flex-col items-center gap-3">
-            <Loader2 className="animate-spin text-purple-600" size={32} />
-            <p className="text-sm text-gray-600">Analyzing air quality...</p>
+            <LottieLoader size={80} text="Menganalisis kualitas udara..." />
           </div>
         </div>
       )}

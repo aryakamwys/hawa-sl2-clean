@@ -28,9 +28,8 @@ function checkRateLimit(identifier: string): boolean {
 
 /**
  * GET /api/news
- * Get BMKG news articles
+ * Get air quality news from multiple sources
  * Query params:
- * - category: "bmkg" (only option now)
  * - refresh: "true" to force refresh cache
  */
 export async function GET(req: Request) {
@@ -47,8 +46,7 @@ export async function GET(req: Request) {
       );
     }
 
-    // Only BMKG is supported now
-    console.log(`[API /news] Fetching BMKG news - refresh: ${refresh}`);
+    console.log(`[API /news] Fetching air quality news - refresh: ${refresh}`);
 
     const news = await getAllNews(refresh);
 
@@ -57,7 +55,7 @@ export async function GET(req: Request) {
       news,
       count: news.length,
       cached: !refresh,
-      source: "BMKG",
+      source: "multi",
     });
   } catch (error) {
     console.error("[API /news] Error:", error);
@@ -65,7 +63,7 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch BMKG news",
+        error: error instanceof Error ? error.message : "Failed to fetch news",
         news: [],
       },
       { status: 500 }

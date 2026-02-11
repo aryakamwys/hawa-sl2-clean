@@ -10,6 +10,7 @@
     "create-admin": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/create-admin.ts"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.17.14",
     "@prisma/adapter-mariadb": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@prisma/config": "^7.3.0",

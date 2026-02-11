@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, RefreshCw, AlertCircle } from "lucide-react";
+import { X, RefreshCw, AlertCircle } from "lucide-react";
+import LottieLoader from "@/components/LottieLoader";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 
@@ -130,9 +131,8 @@ export default function ForecastModal({ onClose }: ForecastModalProps) {
         {/* Content */}
         <div className="!flex-1 !overflow-y-auto !p-6">
           {loading && (
-            <div className="!flex !flex-col !items-center !justify-center !py-20">
-              <Loader2 className="!animate-spin !text-[#005AE1] !mb-4" size={48} />
-              <p className="!text-gray-600 !text-base">Generating forecast...</p>
+            <div className="!flex !flex-col !items-center !justify-center !py-16">
+              <LottieLoader size={120} text="Generating forecast..." />
               <p className="!text-gray-500 !text-sm !mt-2">Analyzing historical data and predicting trends</p>
             </div>
           )}
