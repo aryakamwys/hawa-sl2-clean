@@ -57,7 +57,16 @@
     "desc2": "With sensors scattered in strategic points and AI analysis from Meta, we provide accurate and easy-to-understand real-time information.",
     "statSensors": "IoT Sensors",
     "statDistricts": "Districts",
-    "statMonitoring": "Monitoring"
+    "statMonitoring": "Monitoring",
+    "initiative": "HAWA was developed through the YDCT by SL2 program as an initiative to utilize data-based technology to create real solutions to urban environmental challenges."
+  },
+  "showcase": {
+    "badge": "3D Showcase",
+    "title": "Experience",
+    "titleHighlight": "HAWA",
+    "description": "Take a closer look at our innovative device. Click the button below to enter full 3D interactive mode and rotate the device 360 degrees.",
+    "button": "Open 3D Interactive Mode",
+    "preview": "Static Preview View"
   },
   "footer": {
     "desc": "IoT and AI-based air quality monitoring platform for Bandung citizens.",
