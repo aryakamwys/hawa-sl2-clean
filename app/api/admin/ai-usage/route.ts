@@ -78,7 +78,7 @@ export async function GET() {
         totalRequests,
         avgTokensPerRequest,
       },
-      dailyUsage: dailyUsage.map((row) => ({
+      dailyUsage: dailyUsage.map((row: any) => ({
         date: row.date,
         model: row.model,
         totalTokens: Number(row.total_tokens),

@@ -10,6 +10,12 @@ import AboutUs from "@/components/sections/AboutUs";
 import Footer from "@/components/sections/Footer";
 import SplashScreen from "@/components/SplashScreen";
 import FlyingMascot from "@/components/FlyingMascot";
+import dynamic from "next/dynamic";
+
+const Showcase3D = dynamic(() => import("@/components/sections/Showcase3D"), {
+  ssr: false,
+  loading: () => <div className="h-[600px] w-full bg-gray-50 animate-pulse" />
+});
 
 import CTA from "@/components/sections/CTA";
 
@@ -30,6 +36,10 @@ export default function HomePage() {
         <Features />
 
         <DemoShowcase />
+
+        <div className="relative z-20">
+          <Showcase3D />
+        </div>
 
         <HowItWorks />
 
