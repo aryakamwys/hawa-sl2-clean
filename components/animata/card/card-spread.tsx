@@ -32,13 +32,13 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
 
   return (
     <div className={cn("w-full py-12", className)}>
-      <div className="flex items-center justify-center gap-4 md:gap-8 overflow-x-auto pb-8">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 pb-8">
         {cards.map((card, index) => {
           const isExpanded = expandedIndex === index;
           const isDimmed = expandedIndex !== null && !isExpanded;
 
           return (
-            <div key={card.id} className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+            <div key={card.id} className="w-full md:w-auto flex flex-col md:flex-row items-center gap-3 md:gap-4 flex-shrink-0">
               <motion.div
                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
                 animate={{
@@ -58,7 +58,7 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
                 className="relative cursor-pointer"
               >
                 <div className={cn(
-                  "p-5 md:p-6 bg-white rounded-2xl border shadow-lg hover:shadow-xl transition-all duration-300 w-[220px] md:w-[260px]",
+                  "p-5 md:p-6 bg-white rounded-2xl border shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-[320px] md:w-[260px] md:max-w-none",
                   isExpanded
                     ? "border-[#005AE1] shadow-2xl shadow-[#005AE1]/20 ring-2 ring-[#005AE1]/10"
                     : "border-gray-200 hover:border-[#005AE1]/40"
@@ -127,7 +127,7 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
                   isDimmed ? "opacity-30" : "opacity-100"
                 )}>
                   <ChevronRight className={cn(
-                    "text-[#005AE1]/30",
+                    "text-[#005AE1]/30 rotate-90 md:rotate-0",
                     isDimmed && "grayscale"
                   )} size={18} strokeWidth={2} />
                 </div>
@@ -135,19 +135,21 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
             </div>
           );
         })}
-      </div>
+      </div >
 
       {/* Collapse button */}
-      {expandedIndex !== null && (
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          onClick={() => setExpandedIndex(null)}
-          className="mx-auto mt-6 px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-sm font-semibold transition-colors"
-        >
-          Show All Steps
-        </motion.button>
-      )}
-    </div>
+      {
+        expandedIndex !== null && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setExpandedIndex(null)}
+            className="mx-auto mt-6 px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-sm font-semibold transition-colors"
+          >
+            Show All Steps
+          </motion.button>
+        )
+      }
+    </div >
   );
 }
