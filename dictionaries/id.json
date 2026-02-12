@@ -123,7 +123,8 @@
   "demo": {
     "badge": "Fitur Lengkap",
     "headline": "Semua dalam Satu Platform",
-    "subtitle": "Dari peta interaktif hingga game edukasi, HAWA punya semuanya.",
+    "subtitle": "Klik tab mana saja untuk melihat penjelasan fitur secara detail",
+    "subtitleFull": "Dari peta interaktif hingga game edukasi, HAWA punya semuanya.",
     "map": {
       "label": "Peta Interaktif",
       "title": "Visualisasi Kualitas Udara di Peta Bandung",

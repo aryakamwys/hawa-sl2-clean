@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/hooks/useLanguage";
 import SectionTransition from "@/components/SectionTransition";
@@ -40,21 +39,25 @@ export default function HeroSection() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/map"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#005AE1] text-white rounded-full font-semibold text-base hover:bg-[#004BB8] transition-all duration-200 shadow-lg shadow-[#005AE1]/25 hover:shadow-xl hover:shadow-[#005AE1]/30"
+            className="group relative inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#005AE1] text-white rounded-full font-semibold text-base hover:bg-[#004BB8] transition-all duration-200 shadow-lg shadow-[#005AE1]/25 hover:shadow-xl hover:shadow-[#005AE1]/30"
           >
-            {t?.hero?.ctaStart || "Mulai Sekarang"}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="relative inline-block overflow-hidden">
+              <span className="relative z-10">{t?.hero?.ctaStart || "Mulai Sekarang"}</span>
+            </span>
+            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
           <a
             href="#features"
-            className="inline-flex items-center justify-center px-7 py-3.5 bg-white text-gray-700 rounded-full font-semibold text-base border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+            className="group relative inline-flex items-center justify-center px-7 py-3.5 bg-white text-[#005AE1] rounded-full font-semibold text-base border-2 border-[#005AE1] hover:bg-[#005AE1] hover:text-white transition-all duration-300 shadow-lg overflow-hidden"
           >
-            {t?.hero?.ctaFeatures || "Lihat Fitur"}
+            <span className="relative inline-block overflow-hidden">
+              <span className="relative z-10 group-hover:tracking-wider transition-all duration-300">{t?.hero?.ctaFeatures || "Lihat Fitur"}</span>
+            </span>
           </a>
         </div>
 

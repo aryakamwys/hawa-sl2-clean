@@ -123,7 +123,8 @@
   "demo": {
     "badge": "Complete Features",
     "headline": "All in One Platform",
-    "subtitle": "From interactive map to educational games, HAWA has it all.",
+    "subtitle": "Click any tab to see detailed feature explanations",
+    "subtitleFull": "From interactive map to educational games, HAWA has it all.",
     "map": {
       "label": "Interactive Map",
       "title": "Air Quality Visualization on Bandung Map",

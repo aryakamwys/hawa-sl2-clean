@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { MenuIcon } from "@/components/animated-icons";
 
 interface DockItem {
   title: string;
@@ -204,7 +205,7 @@ const SmallDock = ({
         {isOpen ? (
           <X className="h-6 w-6" />
         ) : (
-          <Menu className="h-6 w-6" />
+          <MenuIcon size={24} />
         )}
       </button>
     </div>

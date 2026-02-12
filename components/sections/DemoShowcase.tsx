@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Map, Brain, Newspaper, Trophy } from "lucide-react";
+import { Map, Newspaper, Trophy } from "lucide-react";
 import MetaIcon from "@/components/MetaIcon";
 import { useLanguage } from "@/hooks/useLanguage";
 import SectionTransition from "@/components/SectionTransition";
+import FluidTabs from "@/components/animata/card/fluid-tabs";
 
 export default function DemoShowcase() {
   const { t } = useLanguage();
@@ -14,7 +15,7 @@ export default function DemoShowcase() {
     {
       id: "map",
       label: t?.demo?.map?.label || "Peta Interaktif",
-      icon: <Map size={16} />,
+      icon: <Map size={18} />,
       title: t?.demo?.map?.title || "Visualisasi Kualitas Udara di Peta Bandung",
       description: t?.demo?.map?.desc || "Klik kecamatan untuk melihat data iklim dan prediksi AI. Sensor IoT menampilkan data PM2.5 dan PM10 secara real-time dengan analisis dari Meta AI.",
       features: t?.demo?.map?.features || ["30 kecamatan Bandung", "Data iklim BPS", "Prediksi AI per wilayah", "Sensor IoT real-time"],
@@ -22,7 +23,7 @@ export default function DemoShowcase() {
     {
       id: "ai",
       label: t?.demo?.ai?.label || "Analisis AI",
-      icon: <MetaIcon size={16} />,
+      icon: <MetaIcon size={18} />,
       title: t?.demo?.ai?.title || "Analisis Cerdas dari Meta AI",
       description: t?.demo?.ai?.desc || "Dapatkan rekomendasi kesehatan yang dipersonalisasi berdasarkan kondisi udara terkini. AI menganalisis data sensor dan memberikan saran aktivitas yang aman.",
       features: t?.demo?.ai?.features || ["Rekomendasi personal", "Analisis PM2.5 & PM10", "Tips keamanan", "Kirim ke WhatsApp"],
@@ -30,7 +31,7 @@ export default function DemoShowcase() {
     {
       id: "news",
       label: t?.demo?.news?.label || "Berita AI",
-      icon: <Newspaper size={16} />,
+      icon: <Newspaper size={18} />,
       title: t?.demo?.news?.title || "Berita Kualitas Udara dengan Ringkasan AI",
       description: t?.demo?.news?.desc || "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Meta AI untuk kemudahan membaca.",
       features: t?.demo?.news?.features || ["Multi-sumber berita", "Ringkasan Meta AI", "Google News & BMKG", "Update harian"],
@@ -38,7 +39,7 @@ export default function DemoShowcase() {
     {
       id: "quiz",
       label: t?.demo?.quiz?.label || "Quiz & Game",
-      icon: <Trophy size={16} />,
+      icon: <Trophy size={18} />,
       title: t?.demo?.quiz?.title || "Belajar Sambil Bermain tentang Kualitas Udara",
       description: t?.demo?.quiz?.desc || "Jawab quiz interaktif, kumpulkan poin, dan naik level sambil meningkatkan pengetahuan tentang polusi udara dan cara melindungi diri.",
       features: t?.demo?.quiz?.features || ["Quiz interaktif AI", "Sistem poin & level", "Leaderboard", "Edukasi lingkungan"],
@@ -59,25 +60,18 @@ export default function DemoShowcase() {
             {t?.demo?.headline || "Semua dalam Satu Platform"}
           </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            {t?.demo?.subtitle || "Dari peta interaktif hingga game edukasi, HAWA punya semuanya."}
+            {t?.demo?.subtitle || "Click any tab to see detailed feature explanations"}
           </p>
         </SectionTransition>
 
-        {/* Tabs */}
-        <SectionTransition className="flex flex-wrap justify-center gap-2 mb-10" delay={0.2}>
-          {demos.map((demo) => (
-            <button
-              key={demo.id}
-              onClick={() => setActiveTab(demo.id)}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${activeTab === demo.id
-                ? "bg-[#005AE1] text-white shadow-lg shadow-[#005AE1]/25"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-            >
-              {demo.icon}
-              {demo.label}
-            </button>
-          ))}
+        {/* Fluid Tabs */}
+        <SectionTransition delay={0.2}>
+          <FluidTabs
+            tabs={demos.map((d) => ({ id: d.id, label: d.label, icon: d.icon }))}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="mb-10"
+          />
         </SectionTransition>
 
         {/* Demo Content Card */}
@@ -129,17 +123,12 @@ export default function DemoShowcase() {
                       </div>
                     )}
                     {activeTab === "ai" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MetaIcon size={16} className="text-[#F55036]" />
-                          <span className="text-sm font-bold text-gray-800">{t?.map?.analysisTitle || "Analisis Meta AI"}</span>
-                        </div>
-                        <div className="h-3 bg-gray-100 rounded-full w-full" />
-                        <div className="h-3 bg-gray-100 rounded-full w-4/5" />
-                        <div className="h-3 bg-gray-100 rounded-full w-3/5" />
-                        <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                          <div className="text-xs font-semibold text-green-700">Status: AMAN</div>
-                        </div>
+                      <div className="rounded-lg overflow-hidden border border-gray-200/60 bg-white shadow-lg">
+                        <img
+                          src="https://aicdn.picsart.com/4d68d399-f7bf-41bc-bcf8-c3d56a2f98f3.png"
+                          alt="Meta AI Analysis Interface"
+                          className="w-full h-auto"
+                        />
                       </div>
                     )}
                     {activeTab === "news" && (

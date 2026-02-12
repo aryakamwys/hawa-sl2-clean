@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Mail, Lock, User, Loader2, AlertCircle } from "lucide-react";
+import { X, Loader2, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 
 type AuthMode = "login" | "register";
@@ -140,57 +140,42 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
                   {mode === "register" && (
                     <div>
                       <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.fullName}</label>
-                      <div className="relative">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
-                          <User size={18} className="text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder={t?.auth?.fullNamePlaceholder || "Masukkan nama lengkap"}
-                          required
-                          className={inputClass}
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder={t?.auth?.fullNamePlaceholder || "Masukkan nama lengkap"}
+                        required
+                        className={inputClass}
+                      />
                     </div>
                   )}
 
                   <div>
                     <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.email}</label>
-                    <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
-                        <Mail size={18} className="text-gray-400" />
-                      </div>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder={t?.auth?.emailPlaceholder || "nama@email.com"}
-                        required
-                        autoComplete="email"
-                        className={inputClass}
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder={t?.auth?.emailPlaceholder || "nama@email.com"}
+                      required
+                      autoComplete="email"
+                      className={inputClass}
+                    />
                   </div>
 
                   <div>
                     <label className="!mb-2 block text-sm font-semibold text-gray-800">{t?.auth?.password}</label>
-                    <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
-                        <Lock size={18} className="text-gray-400" />
-                      </div>
-                      <input
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        placeholder={t?.auth?.passwordPlaceholder || "Minimal 6 karakter"}
-                        required
-                        minLength={6}
-                        autoComplete={mode === "login" ? "current-password" : "new-password"}
-                        className={inputClass}
-                      />
-                    </div>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder={t?.auth?.passwordPlaceholder || "Minimal 6 karakter"}
+                      required
+                      minLength={6}
+                      autoComplete={mode === "login" ? "current-password" : "new-password"}
+                      className={inputClass}
+                    />
                   </div>
 
                   <button
@@ -236,27 +221,5 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = "l
 }
 
 const inputClass =
-  "w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 " +
+  "w-full rounded-xl bg-gray-50 !px-4 !py-3.5 text-[15px] text-gray-900 placeholder:text-gray-400 " +
   "outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition";
-
-function Field({
-  label,
-  icon,
-  input,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  input: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="!mb-2 block text-sm font-semibold text-gray-800">{label}</label>
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center !pl-4">
-          {icon}
-        </div>
-        <div className="!pl-10">{input}</div>
-      </div>
-    </div>
-  );
-}

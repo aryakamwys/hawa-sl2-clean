@@ -8,7 +8,9 @@ import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
 import ForecastModal from "@/components/forecast/ForecastModal";
 import RegionForecastModal from "@/components/map/RegionForecastModal";
-import { Home, Map, Info, Settings, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle } from "lucide-react";
+import { Home, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle } from "lucide-react";
+import { CogIcon, BookTextIcon, MapPinIcon } from "@/components/animated-icons";
+import { SimpleTutorialNotification } from "@/components/animata/card/tutorial-notification";
 import { useRouter } from "next/navigation";
 import LottieLoader from "@/components/LottieLoader";
 import MetaIcon from "@/components/MetaIcon";
@@ -50,7 +52,6 @@ export default function MapPage() {
   const { t, language } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const layerGroupRef = useRef<L.LayerGroup | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -65,6 +66,8 @@ export default function MapPage() {
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [latestDeviceData, setLatestDeviceData] = useState<any>(null);
   const [selectedRegion, setSelectedRegion] = useState<{ id: string; name: string } | null>(null);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const [tutorialStep, setTutorialStep] = useState(0);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -184,11 +187,11 @@ export default function MapPage() {
 
   const dockItems = [
     { title: "Home", icon: <Home size={22} />, href: "/", active: false },
-    { title: "Map", icon: <Map size={22} />, href: "/map", active: true },
+    { title: "Map", icon: <MapPinIcon size={22} />, href: "/map", active: true },
     { title: "Forecast", icon: <TrendingUp size={22} />, href: "#", active: false, onClick: () => setShowForecast(true) },
     { title: "Point", icon: <Gamepad2 size={22} />, href: "#", active: false, onClick: () => setShowGameHub(true) },
-    { title: "Info", icon: <Info size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
-    { title: "Settings", icon: <Settings size={22} />, href: "#", active: false, onClick: handleSettingsClick },
+    { title: "Info", icon: <BookTextIcon size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
+    { title: "Settings", icon: <CogIcon size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
 
   // Fetch user session
@@ -265,9 +268,9 @@ export default function MapPage() {
                     style="
                       width: 100%;
                       padding: 11px 16px;
-                      background: linear-gradient(135deg, #F55036, #E8380D);
-                      color: white;
-                      border: none;
+                      background: white;
+                      color: #005AE1;
+                      border: 2px solid #005AE1;
                       border-radius: 12px;
                       cursor: pointer;
                       font-size: 14px;
@@ -277,10 +280,10 @@ export default function MapPage() {
                       justify-content: center;
                       gap: 8px;
                       transition: all 0.2s ease;
-                      box-shadow: 0 2px 8px rgba(245,80,54,0.3);
+                      box-shadow: 0 2px 8px rgba(0,90,225,0.15);
                     "
-                    onmouseover="this.style.opacity='0.9'"
-                    onmouseout="this.style.opacity='1'"
+                    onmouseover="this.style.background='#005AE1'; this.style.color='white'; this.style.opacity='0.9'"
+                    onmouseout="this.style.background='white'; this.style.color='#005AE1'; this.style.opacity='1'"
                   >
                     <img src='https://static.xx.fbcdn.net/rsrc.php/y9/r/tL_v571NdZ0.svg' width='20' height='20' style='filter: brightness(0) invert(1);' />
                     ${t?.map?.analysisTitle || "Meta AI Analysis"}
@@ -393,6 +396,21 @@ export default function MapPage() {
       }, 2000);
     }
   }, [language]);
+
+  // Tutorial notification cycle
+  useEffect(() => {
+    if (!showTutorial) return;
+
+    const timer = setTimeout(() => {
+      if (tutorialStep < 2) {
+        setTutorialStep(tutorialStep + 1);
+      } else {
+        setShowTutorial(false);
+      }
+    }, 6000);
+
+    return () => clearTimeout(timer);
+  }, [tutorialStep, showTutorial]);
 
   return (
     <>
@@ -620,6 +638,59 @@ export default function MapPage() {
             <LottieLoader size={80} text={t?.map?.analyzing || "Analyzing..."} />
           </div>
         </div>
+      )}
+
+      {/* Tutorial Notification */}
+      {showTutorial && (
+        <SimpleTutorialNotification
+          isOpen={showTutorial}
+          onClose={() => setShowTutorial(false)}
+          icon={
+            tutorialStep === 0 ? (
+              <MapPinIcon size={20} />
+            ) : tutorialStep === 1 ? (
+              <BookTextIcon size={20} />
+            ) : (
+              <CogIcon size={20} />
+            )
+          }
+          title={
+            tutorialStep === 0
+              ? "Welcome to HAWA Map!"
+              : tutorialStep === 1
+              ? "Info & Tutorial Features"
+              : "Personal Settings"
+          }
+          description={
+            tutorialStep === 0
+              ? "Click the IoT sensor markers on the map to get AI analysis about air quality at that location. Markers animate when hovered!"
+              : tutorialStep === 1
+              ? "Open the Info menu to view news and complete tutorials on how to use the HAWA application."
+              : "Login to access personal settings and WhatsApp notifications for air quality recommendations."
+          }
+          detailedDescription={
+            tutorialStep === 0
+              ? "🗺️ Interactive Map Features:\n\n" +
+                "• IoT sensor markers show air quality sensor locations in Bandung\n" +
+                "• Hover on markers to see animations and location details\n" +
+                "• Click markers to open real-time air quality AI analysis\n" +
+                "• Click district areas to view climate forecast per region\n\n" +
+                "• Use zoom for more precise navigation"
+              : tutorialStep === 1
+              ? "📚 Information & Tutorial Center:\n\n" +
+                "• Latest news about air quality\n" +
+                "• Educational articles about pollution and health\n" +
+                "• Complete tutorials on using HAWA application\n" +
+                "• Health tips during high pollution"
+              : "⚙️ Personal Settings:\n\n" +
+                "• Set language preference (Indonesia/English)\n" +
+                "• Enable WhatsApp notifications for daily recommendations\n" +
+                "• Adjust air quality data update interval\n" +
+                "• Manage your profile and login session"
+          }
+          autoClose={tutorialStep < 2}
+          autoCloseDelay={6000}
+        />
       )}
     </>
   );

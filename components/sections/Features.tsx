@@ -3,7 +3,25 @@
 import { Map, Brain, Wifi, Target, Trophy, Newspaper } from "lucide-react";
 import MetaIcon from "@/components/MetaIcon";
 import { useLanguage } from "@/hooks/useLanguage";
-import SectionTransition from "@/components/SectionTransition";
+import { motion, Variants } from "framer-motion";
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
 
 export default function Features() {
   const { t } = useLanguage();
@@ -45,7 +63,13 @@ export default function Features() {
     <section id="features" className="py-24 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <SectionTransition className="text-center mb-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeInUp}
+          className="text-center mb-16"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
             {t?.features?.badge || "Fitur Utama"}
           </div>
@@ -59,13 +83,20 @@ export default function Features() {
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
             {t?.features?.description || "Platform lengkap untuk memantau, memahami, dan bertindak berdasarkan kondisi kualitas udara di sekitar Anda."}
           </p>
-        </SectionTransition>
+        </motion.div>
 
-        {/* Feature Grid */}
-        <SectionTransition className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" delay={0.2}>
+        {/* Feature Grid with Staggered Animation */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
           {features.map((feature, index) => (
-            <div
+            <motion.div
               key={index}
+              variants={fadeInUp}
               className="group p-6 bg-white border border-gray-200 rounded-2xl hover:shadow-xl hover:border-[#005AE1]/20 transition-all duration-300 hover:-translate-y-1"
             >
               <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#E0F4FF] transition-colors">
@@ -77,9 +108,9 @@ export default function Features() {
               <p className="text-sm text-gray-500 leading-relaxed">
                 {feature.description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </SectionTransition>
+        </motion.div>
       </div>
     </section>
   );
