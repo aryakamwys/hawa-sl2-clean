@@ -44,9 +44,9 @@ export default function PlaygroundPage() {
                     dpr={[1, 1.5]}
                     gl={{
                         antialias: true,
-                        powerPreference: "high-performance",
                         preserveDrawingBuffer: false, // Helps with memory
-                        alpha: true
+                        alpha: true,
+                        powerPreference: "default"
                     }}
                 >
                     <ambientLight intensity={0.5} />

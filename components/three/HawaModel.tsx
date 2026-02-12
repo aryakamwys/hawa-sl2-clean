@@ -8,14 +8,13 @@ import { SkeletonUtils } from "three-stdlib";
 
 export function HawaModel(props: any) {
     const { scene } = useGLTF("/models/hawa-optimized.glb", true);
-    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
-    const { nodes, materials } = useGraph(clone);
+    const { nodes, materials } = useGraph(scene);
     const modelRef = useRef<THREE.Group>(null);
 
     // Fix recurring "disappearing" issue by manually computing bounding sphere
     // and preventing frustum culling on all meshes
     React.useEffect(() => {
-        clone.traverse((child) => {
+        scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
                 child.frustumCulled = false;
                 if (child.geometry) {
@@ -23,27 +22,7 @@ export function HawaModel(props: any) {
                 }
             }
         });
-    }, [clone]);
-
-    // Proper cleanup when component unmounts to prevent memory leaks / context loss
-    React.useEffect(() => {
-        return () => {
-            clone.traverse((child) => {
-                if (child instanceof THREE.Mesh) {
-                    if (child.geometry) {
-                        child.geometry.dispose();
-                    }
-                    if (child.material) {
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach((m) => m.dispose());
-                        } else {
-                            child.material.dispose();
-                        }
-                    }
-                }
-            });
-        };
-    }, [clone]);
+    }, [scene]);
 
     // Add slow rotation for some life
     useFrame((state) => {
@@ -58,7 +37,7 @@ export function HawaModel(props: any) {
                 <Center>
                     <primitive
                         ref={modelRef}
-                        object={clone}
+                        object={scene}
                         scale={25}
                     />
                 </Center>
