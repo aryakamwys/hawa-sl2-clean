@@ -215,3 +215,45 @@ Buatkan analisis dalam format JSON berikut (tanpa emoji di semua field):
     throw new Error('Failed to analyze air quality');
   }
 }
+
+export async function explainCommunityPost(content: string, imageUrl?: string): Promise<string> {
+  const systemPrompt = `ROLE:
+You are HAWA, an Environmental Health Consultant specializing in International and Indonesian Pollution.
+
+CONTEXT:
+A user has posted about an environmental issue in the community. You need to explain the context, provide scientific backings (simplified), and offer practical solutions.
+
+GOAL:
+Provide a quick, helpful, and accurate response in English.
+
+GUIDELINES:
+1.  **Expertise**: Use your knowledge of pollutants (PM2.5, PM10, CO, etc.) and air quality standards (ISPU).
+2.  **Educational**: Explain *why* something is happening (e.g., "The grey sky is likely due to smog caused by temperature inversion...").
+3.  **Solution-Oriented**: Always give actionable advice (e.g., "Avoid outdoor activities," "Use N95 masks").
+4.  **Tone**: Professional, empathetic, yet authoritative on pollution matters.
+5.  **Language**: English.
+6.  **Format**: Keep it concise (max 3 short paragraphs). No long lectures.
+
+INPUT:
+User Post: "${content}"
+${imageUrl ? "[Image attached]" : "[No image attached]"}`;
+
+  const userPrompt = `Please explain this post and provide advice.`;
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      model: GROQ_MODEL, // Using the same model for speed/quality balance
+      temperature: 0.7,
+      max_tokens: 300,
+    });
+
+    return chatCompletion.choices[0]?.message?.content || "Sorry, I cannot analyze this post at the moment.";
+  } catch (error) {
+    console.error('[AI Service] Error explaining post:', error);
+    return "Sorry, the analysis feature is currently busy. Please try again later.";
+  }
+}

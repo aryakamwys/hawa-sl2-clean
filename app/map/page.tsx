@@ -8,7 +8,8 @@ import InfoModal from "@/components/InfoModal";
 import GameHubModal from "@/components/gamification/GameHubModal";
 import ForecastModal from "@/components/forecast/ForecastModal";
 import RegionForecastModal from "@/components/map/RegionForecastModal";
-import { Home, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle } from "lucide-react";
+import CommunityModal from "@/components/CommunityModal";
+import { Home, Gamepad2, User, LogOut, Loader2, X, TrendingUp, Send, HelpCircle, MessageSquare } from "lucide-react";
 import { CogIcon, BookTextIcon, MapPinIcon } from "@/components/animated-icons";
 import { SimpleTutorialNotification } from "@/components/animata/card/tutorial-notification";
 import { useRouter } from "next/navigation";
@@ -68,6 +69,7 @@ export default function MapPage() {
   const [selectedRegion, setSelectedRegion] = useState<{ id: string; name: string } | null>(null);
   const [showTutorial, setShowTutorial] = useState(true);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [showCommunityModal, setShowCommunityModal] = useState(false);
   const router = useRouter();
 
   const handleSettingsClick = () => {
@@ -192,6 +194,7 @@ export default function MapPage() {
     { title: "Point", icon: <Gamepad2 size={22} />, href: "#", active: false, onClick: () => setShowGameHub(true) },
     { title: "Info", icon: <BookTextIcon size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
     { title: "Settings", icon: <CogIcon size={22} />, href: "#", active: false, onClick: handleSettingsClick },
+    { title: "Community", icon: <MessageSquare size={22} />, href: "#", active: false, onClick: () => setShowCommunityModal(true) },
   ];
 
   // Fetch user session
@@ -497,6 +500,9 @@ export default function MapPage() {
       {/* Info Modal */}
       <InfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
 
+      {/* Community Modal */}
+      <CommunityModal isOpen={showCommunityModal} onClose={() => setShowCommunityModal(false)} />
+
       {/* Game Hub Modal */}
       {showGameHub && <GameHubModal onClose={() => setShowGameHub(false)} />}
 
@@ -645,15 +651,7 @@ export default function MapPage() {
         <SimpleTutorialNotification
           isOpen={showTutorial}
           onClose={() => setShowTutorial(false)}
-          icon={
-            tutorialStep === 0 ? (
-              <MapPinIcon size={20} />
-            ) : tutorialStep === 1 ? (
-              <BookTextIcon size={20} />
-            ) : (
-              <CogIcon size={20} />
-            )
-          }
+
           title={
             tutorialStep === 0
               ? "Welcome to HAWA Map!"

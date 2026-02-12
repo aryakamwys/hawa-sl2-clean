@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export interface FluidTab {
@@ -64,15 +64,16 @@ export default function FluidTabs({ tabs, activeTab, onTabChange, className = ""
         {tabs.map((tab) => (
           <motion.button
             key={tab.id}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-bold transition-colors duration-300 ${
+            className={`relative z-10 flex-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 px-1 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm font-bold transition-colors duration-300 ${
               activeTab === tab.id ? "text-black" : "text-gray-500"
             } ${touchedTab === tab.id ? "blur-sm" : ""}`}
             onClick={() => handleTabClick(tab.id)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {tab.icon}
-            {tab.label}
+            <span className="sm:hidden">{tab.icon}</span>
+            <span className="hidden sm:inline">{tab.icon}</span>
+            <span className="hidden sm:inline">{tab.label}</span>
           </motion.button>
         ))}
       </div>
