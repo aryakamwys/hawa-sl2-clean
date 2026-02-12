@@ -6,7 +6,7 @@ import SectionTransition from "@/components/SectionTransition";
 import { useLanguage } from "@/hooks/useLanguage";
 import Link from "next/link";
 import Image from "next/image";
-import { Maximize2 } from "lucide-react";
+import { Maximize2, Map } from "lucide-react";
 
 export default function Showcase3D() {
     const { t } = useLanguage();
@@ -14,16 +14,21 @@ export default function Showcase3D() {
     const isInView = useInView(ref, { amount: 0.1, margin: "0px 0px -100px 0px" });
 
     return (
-        <section ref={ref} className="py-24 px-6 bg-gradient-to-br from-gray-50 to-white relative overflow-visible">
+        <section ref={ref} className="pt-36 pb-24 px-6 relative overflow-visible">
+            {/* Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#d8e8ff] via-[#e8f0ff] to-white -z-10" />
+
+            {/* Grid Pattern Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] -z-10" style={{
+                backgroundImage: 'linear-gradient(rgba(0,90,225,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,90,225,1) 1px, transparent 1px)',
+                backgroundSize: '60px 60px',
+            }} />
             <div className="max-w-7xl mx-auto relative">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
 
                     {/* Left Column: Text */}
                     <div className="">
                         <SectionTransition>
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-                                {t?.showcase?.badge || "3D Showcase"}
-                            </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                                 {t?.showcase?.title || "Experience"}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#005AE1] to-[#60A5FA] ml-2">
@@ -34,10 +39,17 @@ export default function Showcase3D() {
                                 {t?.showcase?.description || "Lihat lebih dekat perangkat inovatif kami. Klik tombol di bawah untuk masuk ke mode interaktif 3D penuh dan memutar perangkat 360 derajat."}
                             </p>
 
-                            <Link href="/playground" className="inline-flex items-center gap-3 text-sm font-medium text-white bg-[#005AE1] hover:bg-[#004bb5] px-6 py-3 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
-                                <Maximize2 className="w-4 h-4" />
-                                <span>{t?.showcase?.button || "Buka Mode Interaktif 3D"}</span>
-                            </Link>
+<div className="flex flex-col sm:flex-row gap-4 mb-8">
+                                <Link href="/playground" className="inline-flex items-center justify-center gap-3 text-sm font-medium text-white bg-[#005AE1] hover:bg-[#004bb5] px-6 py-3 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                                    <Maximize2 className="w-4 h-4" />
+                                    <span>{t?.showcase?.button || "Buka Mode Interaktif 3D"}</span>
+                                </Link>
+
+                                <Link href="/map" className="inline-flex items-center justify-center gap-3 text-sm font-medium text-[#005AE1] bg-white border-2 border-[#005AE1] hover:bg-blue-50 px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                    <Map className="w-4 h-4" />
+                                    <span>Open Interactive Map</span>
+                                </Link>
+                            </div>
 
                             <div className="mt-4 flex items-center gap-3 text-sm text-gray-500 bg-white/50 p-3 rounded-lg border border-gray-100 w-fit">
                                 <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">

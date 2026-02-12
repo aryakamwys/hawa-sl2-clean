@@ -32,7 +32,7 @@ export default function LogoCarousel() {
   ];
 
   return (
-    <section className="py-10 bg-white border-y border-gray-100 overflow-hidden relative">
+    <section className="py-10 bg-white overflow-hidden relative">
       <div className="flex w-full">
         {/* First marquee container */}
         <div className="flex animate-marquee whitespace-nowrap min-w-full shrink-0 items-center justify-around gap-16 px-8 will-change-transform">

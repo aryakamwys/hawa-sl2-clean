@@ -6,14 +6,11 @@ export default function AboutUs() {
   const { t } = useLanguage();
 
   return (
-    <section id="about-us" className="py-24 px-6 bg-white">
+    <section id="about-us" className=" px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text Content */}
           <SectionTransition>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-              {t?.aboutUs?.badge || "Tentang Kami"}
-            </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
               {t?.aboutUs?.headline || "Melindungi Masyarakat Bandung dengan Data & AI"}
             </h2>
@@ -23,27 +20,12 @@ export default function AboutUs() {
             <p className="text-gray-500 mb-8 leading-relaxed text-justify">
               {t?.aboutUs?.initiative || "HAWA dikembangkan melalui program YDCT by SL2 sebagai inisiatif pemanfaatan teknologi berbasis data untuk menciptakan solusi nyata terhadap tantangan lingkungan perkotaan."}
             </p>
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="text-2xl font-bold text-[#005AE1] mb-1">4+</div>
-                <div className="text-xs text-gray-500 font-medium">{t?.aboutUs?.statSensors || "Sensor IoT"}</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="text-2xl font-bold text-[#005AE1] mb-1">30</div>
-                <div className="text-xs text-gray-500 font-medium">{t?.aboutUs?.statDistricts || "Kecamatan"}</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="text-2xl font-bold text-[#005AE1] mb-1">24/7</div>
-                <div className="text-xs text-gray-500 font-medium">{t?.aboutUs?.statMonitoring || "Monitoring"}</div>
-              </div>
-            </div>
           </SectionTransition>
 
           {/* Right: Mascot */}
           <SectionTransition className="flex justify-center" delay={0.2}>
             <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <div className="absolute inset-0 rounded-3xl" style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 25%, #005AE1 75%)' }} />
+              <div className="absolute inset-0 rounded-3xl" style={{ background: 'white' }} />
               <Image
                 src="/maskot.png"
                 alt="HAWA Mascot"
@@ -56,6 +38,7 @@ export default function AboutUs() {
                   src="/sl2.png"
                   alt=""
                   fill
+                  sizes="(max-width: 768px) 80px, 112px"
                   className="object-contain"
                 />
               </div>

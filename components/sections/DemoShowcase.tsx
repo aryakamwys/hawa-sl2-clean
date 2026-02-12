@@ -49,12 +49,12 @@ export default function DemoShowcase() {
   const activeDemo = demos.find((d) => d.id === activeTab)!;
 
   return (
-    <section className="py-24 px-6 bg-white">
+    <section className="px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <SectionTransition className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-            {t?.demo?.badge || "Fitur Lengkap"}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-sm font-semibold text-[#005AE1] mb-5">
+            {t?.demo?.badge}
           </div>
           <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
             {t?.demo?.headline || "Semua dalam Satu Platform"}

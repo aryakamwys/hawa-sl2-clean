@@ -113,7 +113,7 @@ export default function FlyingMascot() {
                         transition={{ delay: 0.2, type: "spring" }}
                         className="absolute -top-16 -left-10 md:-left-24 bg-white px-4 py-2.5 rounded-2xl shadow-xl border border-blue-100 whitespace-nowrap z-10"
                     >
-                        <p className="text-sm md:text-base font-bold text-[#005AE1]">Ayo coba sekarang!</p>
+                        <p className="text-sm md:text-base font-bold text-[#005AE1]">Let's try it now!</p>
                         {/* Tail */}
                         <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white transform rotate-45 border-r border-b border-blue-100/50"></div>
                     </motion.div>

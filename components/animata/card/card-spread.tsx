@@ -58,15 +58,15 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
                 className="relative cursor-pointer"
               >
                 <div className={cn(
-                  "p-5 md:p-6 bg-white rounded-2xl border shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-[320px] md:w-[260px] md:max-w-none",
+                  "p-5 md:p-6 bg-white rounded-2xl border border-blue-400 shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-[320px] md:w-[260px] md:max-w-none",
                   isExpanded
                     ? "border-[#005AE1] shadow-2xl shadow-[#005AE1]/20 ring-2 ring-[#005AE1]/10"
-                    : "border-gray-200 hover:border-[#005AE1]/40"
+                    : "border-blue-400 hover:border-blue-500"
                 )}>
                   {/* Number Badge */}
                   <div className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold mb-3 md:mb-4 transition-colors",
-                    isExpanded ? "bg-[#005AE1] text-white" : "bg-[#005AE1] text-white"
+                    isExpanded ? "bg-white text-blue-600" : "bg-white text-blue-600"
                   )}>
                     {card.number}
                   </div>
@@ -74,8 +74,7 @@ export default function CardSpread({ cards, className = "" }: CardSpreadProps) {
                   {/* Icon */}
                   {card.icon && (
                     <div className={cn(
-                      "w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-3 md:mb-4 transition-colors",
-                      isExpanded ? "bg-[#005AE1]/10" : "bg-[#E0F4FF]"
+                      "w-11 h-11 md:w-12 md:h-12 flex items-center justify-center mb-3 md:mb-4 transition-colors",
                     )}>
                       <div className={cn("transition-colors", isExpanded ? "text-[#005AE1]" : "text-[#005AE1]")}>
                         {card.icon}

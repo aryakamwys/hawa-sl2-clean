@@ -70,9 +70,6 @@ export default function Features() {
           variants={fadeInUp}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#E0F4FF] rounded-full text-sm font-semibold text-[#005AE1] mb-5">
-            {t?.features?.badge || "Fitur Utama"}
-          </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
             {t?.features?.headline || "Semua yang Anda Butuhkan untuk"}{" "}
             <br className="hidden md:block" />
@@ -99,7 +96,7 @@ export default function Features() {
               variants={fadeInUp}
               className="group p-6 bg-white border border-gray-200 rounded-2xl hover:shadow-xl hover:border-[#005AE1]/20 transition-all duration-300 hover:-translate-y-1"
             >
-              <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#E0F4FF] transition-colors">
+              <div className="w-12 h-12 flex items-center justify-center mb-4 transition-colors">
                 {feature.icon}
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">

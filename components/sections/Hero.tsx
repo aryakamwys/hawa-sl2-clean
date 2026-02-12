@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLanguage } from "@/hooks/useLanguage";
 import SectionTransition from "@/components/SectionTransition";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
   const { t } = useLanguage();
@@ -62,7 +63,13 @@ export default function HeroSection() {
         </div>
 
         {/* Hero Image — App Screenshot */}
-        <div className="relative mx-auto max-w-5xl mt-8">
+        <motion.div 
+          className="relative mx-auto max-w-5xl mt-8"
+          initial={{ y: 80, opacity: 0, scale: 0.95 }}
+          whileInView={{ y: 0, opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        >
           <div className="rounded-xl overflow-hidden shadow-2xl shadow-[#005AE1]/20 border border-gray-200/60 bg-white p-2">
             <img
               src="https://aicdn.picsart.com/4d68d399-f7bf-41bc-bcf8-c3d56a2f98f3.png"
@@ -72,7 +79,7 @@ export default function HeroSection() {
           </div>
           {/* Glow effect */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[#005AE1]/20 blur-[100px] -z-10 rounded-full opacity-50 pointer-events-none" />
-        </div>
+        </motion.div>
       </SectionTransition>
     </section>
   );

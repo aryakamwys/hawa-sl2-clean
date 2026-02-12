@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/sections/Hero";
+
 import LogoCarousel from "@/components/sections/LogoCarousel";
 import Features from "@/components/sections/Features";
 import DemoShowcase from "@/components/sections/DemoShowcase";
@@ -19,19 +19,25 @@ const Showcase3D = dynamic(() => import("@/components/sections/Showcase3D"), {
 });
 
 import CTA from "@/components/sections/CTA";
+import MediumModal from "@/components/MediumModal";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
+  const [showMediumModal, setShowMediumModal] = useState(false);
 
   return (
     <>
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {showSplash && <SplashScreen onFinish={() => {
+        setShowSplash(false);
+        // Show Medium modal after splash with a small delay for smooth transition
+        setTimeout(() => setShowMediumModal(true), 500);
+      }} />}
 
       <div className={`min-h-screen transition-opacity duration-1000 ${showSplash ? "opacity-0" : "opacity-100"}`}>
         <Navbar />
 
-        <div id="hero">
-          <HeroSection />
+        <div className="relative z-20 mb-6">
+          <Showcase3D />
         </div>
 
         <LogoCarousel />
@@ -39,10 +45,6 @@ export default function HomePage() {
         <Features />
 
         <DemoShowcase />
-
-        <div className="relative z-20">
-          <Showcase3D />
-        </div>
 
         <HowItWorks />
 
@@ -54,6 +56,8 @@ export default function HomePage() {
         </div>
 
         <FlyingMascot />
+        
+        <MediumModal isOpen={showMediumModal} onClose={() => setShowMediumModal(false)} />
       </div>
     </>
   );

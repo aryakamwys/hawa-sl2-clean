@@ -38,7 +38,6 @@
     "newsAIDesc": "Latest air quality news from various sources, with automatic summaries from Meta AI."
   },
   "howItWorks": {
-    "badge": "How It Works",
     "headline": "From Sensor to Recommendation",
     "subtitle": "Four simple steps for healthier air",
     "step1Title": "Sensors Collect Data",
@@ -61,7 +60,6 @@
     "initiative": "HAWA was developed through the YDCT by SL2 program as an initiative to utilize data-based technology to create real solutions to urban environmental challenges."
   },
   "showcase": {
-    "badge": "3D Showcase",
     "title": "Experience",
     "titleHighlight": "HAWA",
     "description": "Take a closer look at our innovative device. Click the button below to enter full 3D interactive mode and rotate the device 360 degrees.",
@@ -130,7 +128,6 @@
     "button": "Start Now"
   },
   "demo": {
-    "badge": "Complete Features",
     "headline": "All in One Platform",
     "subtitle": "Click any tab to see detailed feature explanations",
     "subtitleFull": "From interactive map to educational games, HAWA has it all.",

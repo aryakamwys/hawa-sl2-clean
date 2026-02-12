@@ -84,7 +84,7 @@ export default function Navbar() {
             className="!ml-2 flex items-center justify-center !w-12 !h-12 rounded-full bg-transparent hover:scale-105 transition-transform duration-200"
             aria-label="Hawa"
           >
-            <Image src="/logo.png" alt="Hawa" width={28} height={28} priority />
+            <Image src="/logo.png" alt="Hawa" width={28} height={28} priority style={{ width: 'auto', height: 'auto' }} />
           </Link>
 
           <div className="h-6 w-px bg-gray-200" />
@@ -173,7 +173,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between px-4 py-3">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="Hawa" width={32} height={32} priority />
+              <Image src="/logo.png" alt="Hawa" width={32} height={32} priority style={{ width: 'auto', height: 'auto' }} />
               <span className="text-xl font-bold text-[#005AE1]">Hawa</span>
             </Link>
 

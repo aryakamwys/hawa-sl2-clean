@@ -23,6 +23,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 
 
 
+
 interface UserData {
   id: string;
   name: string;
@@ -240,27 +241,36 @@ export default function MapPage() {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(mapInstanceRef.current);
 
-        // Add marker for IoT device with Lottie animation
-        const deviceIcon = L.divIcon({
-          className: 'custom-device-marker',
-          html: '<dotlottie-player src="https://lottie.host/c353be7e-e6ea-4b7c-9042-e6fb0acabf55/r1pijIcpRs.lottie" background="transparent" speed="1" style="width: 56px; height: 56px;" loop autoplay></dotlottie-player>',
-          iconSize: [56, 56],
-          iconAnchor: [28, 28],
+        // Create a custom DivIcon that renders the React ActivityIcon component
+        const deviceIcon = L.icon({
+          iconUrl: "/hawa-device.png",
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          className: "custom-device-marker",
         });
 
-        // IoT Device locations in Bandung
+        const gasIcon = L.icon({
+          iconUrl: "/dupe.png",
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          className: "custom-device-marker",
+        });
+
+        // IoT Device locations in Bandung (Gas & Particle)
         const iotDevices = [
-          { lat: -6.9311, lng: 107.6048, name: "HAWA IoT Sensor — Cicendo", deviceId: "10:B4:1D:E8:2E:E4" },
-          { lat: -6.9147, lng: 107.6189, name: "HAWA IoT Sensor — Coblong", deviceId: "10:B4:1D:E8:2E:E5" },
-          { lat: -6.9224, lng: 107.6378, name: "HAWA IoT Sensor — Cibeunying Kaler", deviceId: "10:B4:1D:E8:2E:E6" },
-          { lat: -6.9410, lng: 107.6317, name: "HAWA IoT Sensor — Batununggal", deviceId: "10:B4:1D:E8:2E:E7" },
+          { lat: -6.970717, lng: 107.617374, name: "HAWA IoT Sensor — Gas Pollutant 1", deviceId: "GAS-001" },
+          { lat: -6.973894, lng: 107.630857, name: "HAWA IoT Sensor — Gas Pollutant 2", deviceId: "GAS-002" },
+          { lat: -6.982779, lng: 107.621197, name: "HAWA IoT Sensor — Gas Pollutant 3", deviceId: "GAS-003" },
+          { lat: -6.966864, lng: 107.615715, name: "HAWA IoT Sensor — Gas Pollutant 4", deviceId: "GAS-004" },
+          { lat: -6.965525, lng: 107.617764, name: "HAWA IoT Sensor — Particle", deviceId: "PARTICLE-001" },
         ];
 
         // Add markers for all IoT devices
         if (mapInstanceRef.current) {
           const map = mapInstanceRef.current;
           iotDevices.forEach((device) => {
-            L.marker([device.lat, device.lng], { icon: deviceIcon })
+            const isGas = device.name.toLowerCase().includes('gas') || device.deviceId.includes('GAS');
+            L.marker([device.lat, device.lng], { icon: isGas ? gasIcon : deviceIcon })
               .addTo(map)
               .bindPopup(`
                 <div style="min-width: 240px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,90,225,0.1);">

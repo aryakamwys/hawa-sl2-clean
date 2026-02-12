@@ -2,19 +2,21 @@
 
 import React, { useRef } from "react";
 import { useGLTF, Float, Center } from "@react-three/drei";
-import { useFrame, useGraph } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { SkeletonUtils } from "three-stdlib";
 
 export function HawaModel(props: any) {
     const { scene } = useGLTF("/models/hawa-optimized.glb", true);
-    const { nodes, materials } = useGraph(scene);
-    const modelRef = useRef<THREE.Group>(null);
-
-    // Fix recurring "disappearing" issue by manually computing bounding sphere
-    // and preventing frustum culling on all meshes
-    React.useEffect(() => {
-        scene.traverse((child) => {
+    
+    // Clone the scene to avoid issues with modifying the cached scene directly
+    // and to handle mounting/unmounting correctly (Strict Mode)
+    const clone = React.useMemo(() => {
+        const clonedScene = SkeletonUtils.clone(scene);
+        
+        // Fix recurring "disappearing" issue by manually computing bounding sphere
+        // and preventing frustum culling on all meshes
+        clonedScene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
                 child.frustumCulled = false;
                 if (child.geometry) {
@@ -22,7 +24,11 @@ export function HawaModel(props: any) {
                 }
             }
         });
+        
+        return clonedScene;
     }, [scene]);
+
+    const modelRef = useRef<THREE.Group>(null);
 
     // Add slow rotation for some life
     useFrame((state) => {
@@ -32,12 +38,12 @@ export function HawaModel(props: any) {
     });
 
     return (
-        <group {...props} dispose={null}>
+        <group {...props}>
             <Float rotationIntensity={0.5} floatIntensity={0.5} speed={2}>
                 <Center>
                     <primitive
                         ref={modelRef}
-                        object={scene}
+                        object={clone}
                         scale={25}
                     />
                 </Center>
