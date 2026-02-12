@@ -11,20 +11,23 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
-const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminOnly?: boolean }[] = [
-  { id: "users", label: "User", icon: <Users size={18} />, adminOnly: true },
-  { id: "devices", label: "Device IoT", icon: <Cpu size={18} />, adminOnly: true },
-  { id: "ai-consume", label: "AI Consume", icon: <Brain size={18} />, adminOnly: true },
-  { id: "logs", label: "Log", icon: <ScrollText size={18} />, adminOnly: true },
-  { id: "profile", label: "Profile", icon: <UserCircle size={18} /> },
-  { id: "notifications", label: "Notifications", icon: <Bell size={18} /> },
-  { id: "account", label: "Account", icon: <UserCog size={18} /> },
-];
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>("account");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const allMenuItems: { id: AdminTab; label: string; icon: React.ReactNode; adminOnly?: boolean }[] = [
+    { id: "users", label: t.settings.tabs.users, icon: <Users size={18} />, adminOnly: true },
+    { id: "devices", label: t.settings.tabs.devices, icon: <Cpu size={18} />, adminOnly: true },
+    { id: "ai-consume", label: t.settings.tabs.aiConsume, icon: <Brain size={18} />, adminOnly: true },
+    { id: "logs", label: t.settings.tabs.logs, icon: <ScrollText size={18} />, adminOnly: true },
+    { id: "profile", label: t.settings.tabs.profile, icon: <UserCircle size={18} /> },
+    { id: "notifications", label: t.settings.tabs.notifications, icon: <Bell size={18} /> },
+    { id: "account", label: t.settings.tabs.account, icon: <UserCog size={18} /> },
+  ];
 
   // Fetch user role
   useEffect(() => {
@@ -232,11 +235,12 @@ interface User {
   name: string;
   email: string;
   role: string;
-  isActive: boolean;
-  createdAt: string;
+  language?: string;
+  isActive?: boolean;
 }
 
 function UsersContent() {
+  const { t } = useLanguage();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -327,10 +331,10 @@ function UsersContent() {
   return (
     <div>
       <div className="!mb-4">
-        <p className="text-sm text-gray-500">{users.length} users registered</p>
+        <p className="text-sm text-gray-500">{users.length} {t.settings.usersRegistered}</p>
       </div>
       {users.length === 0 ? (
-        <div className="text-center !py-8 text-sm text-gray-400">No users found</div>
+        <div className="text-center !py-8 text-sm text-gray-400">{t.settings.noUsers}</div>
       ) : (
         <DataTable 
           headers={["#", "Name", "Email", "Role", "Status", "Action"]} 
@@ -356,6 +360,7 @@ interface Device {
 }
 
 function DevicesContent() {
+  const { t } = useLanguage();
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -430,10 +435,10 @@ function DevicesContent() {
   return (
     <div>
       <div className="flex items-center justify-between !mb-4">
-        <p className="text-sm text-gray-500">{devices.length} records total</p>
+        <p className="text-sm text-gray-500">{devices.length} {t.settings.recordsTotal}</p>
       </div>
       {devices.length === 0 ? (
-        <div className="text-center !py-8 text-sm text-gray-400">No data found</div>
+        <div className="text-center !py-8 text-sm text-gray-400">{t.settings.noData}</div>
       ) : (
         <>
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto border border-gray-200 rounded-lg">
@@ -451,7 +456,7 @@ function DevicesContent() {
                 disabled={currentPage === 1}
                 className="!px-3 !py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Previous
+                {t.common.prev}
               </button>
               <span className="text-sm text-gray-600">
                 Page {currentPage} of {totalPages}
@@ -461,7 +466,7 @@ function DevicesContent() {
                 disabled={currentPage === totalPages}
                 className="!px-3 !py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Next
+                {t.common.next}
               </button>
             </div>
           )}
@@ -472,6 +477,7 @@ function DevicesContent() {
 }
 
 function AIConsumeContent() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({ tokensToday: 0, costMonth: 0, totalRequests: 0, avgTokensPerRequest: 0 });
@@ -545,32 +551,32 @@ function AIConsumeContent() {
 
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Monitor penggunaan AI dan biaya (real-time dari Meta AI)</p>
+      <p className="text-sm text-gray-500 !mb-4">{t.settings.aiMonitor}</p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-3 !mb-4">
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
           <p className="text-lg font-semibold text-gray-800">{stats.tokensToday.toLocaleString()}</p>
-          <p className="text-xs text-gray-500">Tokens Today</p>
+          <p className="text-xs text-gray-500">{t.settings.stats.tokensToday}</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
           <p className="text-lg font-semibold text-gray-800">${stats.costMonth.toFixed(4)}</p>
-          <p className="text-xs text-gray-500">Cost/Month</p>
+          <p className="text-xs text-gray-500">{t.settings.stats.costMonth}</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
           <p className="text-lg font-semibold text-gray-800">{stats.totalRequests.toLocaleString()}</p>
-          <p className="text-xs text-gray-500">Total Requests</p>
+          <p className="text-xs text-gray-500">{t.settings.stats.totalRequests}</p>
         </div>
         <div className="!p-3 bg-gray-50 rounded-lg border border-gray-100">
           <p className="text-lg font-semibold text-gray-800">{stats.avgTokensPerRequest}</p>
-          <p className="text-xs text-gray-500">Avg Tokens/Req</p>
+          <p className="text-xs text-gray-500">{t.settings.stats.avgTokens}</p>
         </div>
       </div>
 
       {/* Daily Usage */}
-      <h3 className="text-sm font-medium text-gray-700 !mb-3">Daily Usage</h3>
+      <h3 className="text-sm font-medium text-gray-700 !mb-3">{t.settings.headers.dailyUsage}</h3>
       {dailyData.length === 0 ? (
-        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg !mb-4">No usage data yet</div>
+        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg !mb-4">{t.settings.noUsage}</div>
       ) : (
         <div className="!mb-4">
           <div className="overflow-y-auto max-h-[280px]">
@@ -581,14 +587,14 @@ function AIConsumeContent() {
           </div>
           {dailyTotalPages > 1 && (
             <div className="flex items-center justify-between !mt-2 !px-1">
-              <p className="text-xs text-gray-400">{dailyData.length} total entries</p>
+              <p className="text-xs text-gray-400">{dailyData.length} {t.settings.totalEntries}</p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setDailyPage((p) => Math.max(1, p - 1))}
                   disabled={dailyPage === 1}
                   className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  Prev
+                  {t.common.prev}
                 </button>
                 <span className="text-xs text-gray-500">{dailyPage} / {dailyTotalPages}</span>
                 <button
@@ -596,7 +602,7 @@ function AIConsumeContent() {
                   disabled={dailyPage === dailyTotalPages}
                   className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  Next
+                  {t.common.next}
                 </button>
               </div>
             </div>
@@ -605,9 +611,9 @@ function AIConsumeContent() {
       )}
 
       {/* Recent Requests */}
-      <h3 className="text-sm font-medium text-gray-700 !mb-3">Recent Requests</h3>
+      <h3 className="text-sm font-medium text-gray-700 !mb-3">{t.settings.headers.recentRequests}</h3>
       {recentData.length === 0 ? (
-        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg">No requests yet</div>
+        <div className="text-center !py-6 text-sm text-gray-400 border border-gray-200 rounded-lg">{t.settings.noRequests}</div>
       ) : (
         <div>
           <div className="overflow-y-auto max-h-[280px]">
@@ -618,14 +624,14 @@ function AIConsumeContent() {
           </div>
           {recentTotalPages > 1 && (
             <div className="flex items-center justify-between !mt-2 !px-1">
-              <p className="text-xs text-gray-400">{recentData.length} total entries</p>
+              <p className="text-xs text-gray-400">{recentData.length} {t.settings.totalEntries}</p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
                   disabled={recentPage === 1}
                   className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  Prev
+                  {t.common.prev}
                 </button>
                 <span className="text-xs text-gray-500">{recentPage} / {recentTotalPages}</span>
                 <button
@@ -633,7 +639,7 @@ function AIConsumeContent() {
                   disabled={recentPage === recentTotalPages}
                   className="!px-2.5 !py-1 text-xs rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  Next
+                  {t.common.next}
                 </button>
               </div>
             </div>
@@ -645,6 +651,7 @@ function AIConsumeContent() {
 }
 
 function LogsContent() {
+  const { t } = useLanguage();
   const logs = [
     ["12:45:32", "INFO", "User login: arya@example.com", <StatusBadge key="1" status="Info" type="info" />],
     ["12:44:15", "SUCCESS", "Device DEV-001 synced", <StatusBadge key="2" status="Success" type="success" />],
@@ -657,17 +664,17 @@ function LogsContent() {
   return (
     <div>
       <div className="flex items-center justify-between !mb-4">
-        <p className="text-sm text-gray-500">System activity logs</p>
+        <p className="text-sm text-gray-500">{t.settings.logsDesc}</p>
         <div className="flex gap-2">
           <select className="!px-2 !py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white">
-            <option>All Levels</option>
+            <option>{t.settings.allLevels}</option>
             <option>Info</option>
             <option>Success</option>
             <option>Warning</option>
             <option>Error</option>
           </select>
           <button className="!px-3 !py-1.5 text-gray-600 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-            Export
+            {t.settings.export}
           </button>
         </div>
       </div>
@@ -680,6 +687,7 @@ function LogsContent() {
 }
 
 function ProfileContent() {
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -720,7 +728,7 @@ function ProfileContent() {
         setDistrict(profileData.profile.district || "");
       }
     } catch {
-      setError("Gagal memuat data");
+      setError(t.common.error);
     } finally {
       setLoading(false);
     }
@@ -733,7 +741,7 @@ function ProfileContent() {
     setSaving(true);
 
     if (!ageGroup || !gender) {
-      setError("Kelompok usia dan jenis kelamin wajib diisi.");
+      setError(t.settings.profileError);
       setSaving(false);
       return;
     }
@@ -760,7 +768,7 @@ function ProfileContent() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError(data?.error || "Terjadi kesalahan.");
+        setError(data?.error || t.common.error);
         return;
       }
 
@@ -768,7 +776,7 @@ function ProfileContent() {
       setProfile(data.profile);
       setTimeout(() => setSuccess(false), 3000);
     } catch {
-      setError("Terjadi kesalahan jaringan.");
+      setError(t.common.networkError);
     } finally {
       setSaving(false);
     }
@@ -784,12 +792,12 @@ function ProfileContent() {
 
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Lengkapi profil kamu untuk rekomendasi yang lebih personal</p>
+      <p className="text-sm text-gray-500 !mb-4">{t.settings.profileDesc}</p>
 
       {success && (
         <div className="!mb-4 rounded-xl border border-green-200 bg-green-50 !px-4 !py-3 text-sm text-green-700 flex items-center gap-2">
           <CheckCircle2 size={16} />
-          Profil berhasil disimpan!
+          {t.settings.profileSuccess}
         </div>
       )}
 
@@ -821,8 +829,8 @@ function ProfileContent() {
         <div>
           <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
             <Phone size={16} className="text-gray-400" />
-            Nomor WhatsApp
-            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+            {t.settings.form.phoneNumber}
+            <span className="text-xs font-normal text-gray-400">{t.settings.form.optional}</span>
           </label>
           <input
             type="tel"
@@ -836,7 +844,7 @@ function ProfileContent() {
         {/* Age Group */}
         <div>
           <label className="!mb-2 block text-sm font-semibold text-gray-800">
-            Kelompok Usia <span className="text-red-500">*</span>
+            {t.settings.form.ageGroup} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-4 gap-2">
             {[
@@ -864,7 +872,7 @@ function ProfileContent() {
         {/* Gender */}
         <div>
           <label className="!mb-2 block text-sm font-semibold text-gray-800">
-            Jenis Kelamin <span className="text-red-500">*</span>
+            {t.settings.form.gender} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
@@ -892,14 +900,14 @@ function ProfileContent() {
         <div>
           <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
             <MapPin size={16} className="text-gray-400" />
-            Kecamatan/Domisili
-            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+            {t.settings.form.district}
+            <span className="text-xs font-normal text-gray-400">{t.settings.form.optional}</span>
           </label>
           <input
             type="text"
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
-            placeholder="Contoh: Tebet, Jakarta Selatan"
+            placeholder={t.settings.form.districtPlaceholder}
             className="w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition"
           />
         </div>
@@ -908,18 +916,18 @@ function ProfileContent() {
         <div>
           <label className="!mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
             <FileText size={16} className="text-gray-400" />
-            Catatan Kesehatan
-            <span className="text-xs font-normal text-gray-400">(Opsional)</span>
+            {t.settings.form.healthNotes}
+            <span className="text-xs font-normal text-gray-400">{t.settings.form.optional}</span>
           </label>
           <textarea
             value={customNotes}
             onChange={(e) => setCustomNotes(e.target.value)}
-            placeholder="Contoh: Saya punya asma, ingin saran khusus saat PM2.5 tinggi"
+            placeholder={t.settings.form.healthNotesPlaceholder}
             rows={3}
             className="w-full rounded-xl bg-gray-50 !px-4 !py-3 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-[#005AE1]/25 focus:bg-white transition resize-none"
           />
           <p className="!mt-1 text-xs text-gray-500">
-            Bantu kami memberikan rekomendasi yang lebih sesuai.
+            {t.settings.form.healthNotesDesc}
           </p>
         </div>
 
@@ -930,8 +938,8 @@ function ProfileContent() {
               <Bell size={18} className="text-[#005AE1]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-800">Notifikasi</p>
-              <p className="text-xs text-gray-500">Dapatkan peringatan kualitas udara</p>
+              <p className="text-sm font-semibold text-gray-800">{t.settings.form.notifications}</p>
+              <p className="text-xs text-gray-500">{t.settings.form.notificationsDesc}</p>
             </div>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
@@ -954,12 +962,12 @@ function ProfileContent() {
           {saving ? (
             <span className="inline-flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" />
-              Menyimpan...
+              {t.settings.form.saving}
             </span>
           ) : profile ? (
-            "Update Profil"
+            t.settings.form.updateProfile
           ) : (
-            "Simpan Profil"
+            t.settings.form.saveProfile
           )}
         </button>
       </form>
@@ -998,8 +1006,12 @@ function NotificationsContent() {
 }
 
 function AccountContent() {
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<"EN" | "ID">("EN");
+  const [savingLanguage, setSavingLanguage] = useState(false);
+  const [languageMessage, setLanguageMessage] = useState<{type: "success" | "error", text: string} | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -1007,6 +1019,7 @@ function AccountContent() {
         const res = await fetch("/api/auth/me");
         const data = await res.json();
         setUser(data.user);
+        setLanguage(data.user?.language || "EN");
       } catch {
         setUser(null);
       } finally {
@@ -1015,6 +1028,31 @@ function AccountContent() {
     };
     fetchUserData();
   }, []);
+
+  const handleLanguageChange = async (newLang: "EN" | "ID") => {
+    setSavingLanguage(true);
+    setLanguageMessage(null);
+    try {
+      const res = await fetch("/api/user/language", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: newLang }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setLanguage(newLang);
+        if (user) setUser({ ...user, language: newLang });
+        setLanguageMessage({ type: "success", text: t.settings.languageUpdateSuccess });
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        setLanguageMessage({ type: "error", text: data.error || t.settings.languageUpdateFailed });
+      }
+    } catch {
+      setLanguageMessage({ type: "error", text: t.settings.languageUpdateFailed });
+    } finally {
+      setSavingLanguage(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -1026,9 +1064,51 @@ function AccountContent() {
 
   return (
     <div>
-      <p className="text-sm text-gray-500 !mb-4">Manage your account settings</p>
+      <p className="text-sm text-gray-500 !mb-4">{t.settings.form.manageAccount}</p>
 
       <div className="space-y-4">
+        {/* Language Selector */}
+        <div className="!p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white">
+              <UserCog size={18} className="text-[#005AE1]" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-800">{t.settings.language}</p>
+              <p className="text-xs text-gray-500">{t.settings.languageDescription}</p>
+            </div>
+          </div>
+          <div className="!mt-3 flex gap-2">
+            <button
+              onClick={() => !savingLanguage && handleLanguageChange("EN")}
+              disabled={savingLanguage}
+              className={`flex-1 !px-4 !py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                language === "EN"
+                  ? "bg-[#005AE1] text-white border-2 border-[#005AE1]"
+                  : "bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              🇺🇸 {t.settings.english}
+            </button>
+            <button
+              onClick={() => !savingLanguage && handleLanguageChange("ID")}
+              disabled={savingLanguage}
+              className={`flex-1 !px-4 !py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                language === "ID"
+                  ? "bg-[#005AE1] text-white border-2 border-[#005AE1]"
+                  : "bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              🇮🇩 {t.settings.indonesian}
+            </button>
+          </div>
+          {languageMessage && (
+            <div className={`!mt-2 text-xs ${languageMessage.type === "success" ? "text-green-600" : "text-red-600"}`}>
+              {languageMessage.text}
+            </div>
+          )}
+        </div>
+
         {/* Profile Section */}
         <div className="!p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center gap-4">
@@ -1038,20 +1118,20 @@ function AccountContent() {
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400">Name</label>
+                  <label className="text-xs text-gray-400">{t.settings.form.name}</label>
                   <p className="text-sm text-gray-800 font-medium">{user?.name || "-"}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400">Email</label>
+                  <label className="text-xs text-gray-400">{t.settings.form.email}</label>
                   <p className="text-sm text-gray-800 font-medium">{user?.email || "-"}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400">Role</label>
+                  <label className="text-xs text-gray-400">{t.settings.form.role}</label>
                   <p className="text-sm text-gray-800 font-medium">{user?.role === "ADMIN" ? "Administrator" : "User"}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400">Status</label>
-                  <p className="text-sm text-gray-800 font-medium">Active</p>
+                  <label className="text-xs text-gray-400">{t.settings.form.status}</label>
+                  <p className="text-sm text-gray-800 font-medium">{t.settings.form.active}</p>
                 </div>
               </div>
             </div>
@@ -1061,24 +1141,24 @@ function AccountContent() {
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
           <button className="!p-3 text-left bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-            <h4 className="text-sm font-medium text-gray-800">Change Password</h4>
-            <p className="text-xs text-gray-400 !mt-0.5">Update your password</p>
+            <h4 className="text-sm font-medium text-gray-800">{t.settings.form.changePassword}</h4>
+            <p className="text-xs text-gray-400 !mt-0.5">{t.settings.form.changePasswordDesc}</p>
           </button>
           <button className="!p-3 text-left bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-            <h4 className="text-sm font-medium text-gray-800">Two-Factor Auth</h4>
-            <p className="text-xs text-gray-400 !mt-0.5">Enable 2FA security</p>
+            <h4 className="text-sm font-medium text-gray-800">{t.settings.form.twoFactor}</h4>
+            <p className="text-xs text-gray-400 !mt-0.5">{t.settings.form.twoFactorDesc}</p>
           </button>
           {user?.role === "ADMIN" && (
             <>
               <button className="!p-3 text-left bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                <h4 className="text-sm font-medium text-gray-800">API Keys</h4>
-                <p className="text-xs text-gray-400 !mt-0.5">Manage API keys</p>
+                <h4 className="text-sm font-medium text-gray-800">{t.settings.form.apiKeys}</h4>
+                <p className="text-xs text-gray-400 !mt-0.5">{t.settings.form.apiKeysDesc}</p>
               </button>
             </>
           )}
           <button className="!p-3 text-left bg-white rounded-lg border border-red-100 hover:border-red-200 hover:bg-red-50 transition-all">
-            <h4 className="text-sm font-medium text-red-600">Logout All Sessions</h4>
-            <p className="text-xs text-red-400 !mt-0.5">Sign out everywhere</p>
+            <h4 className="text-sm font-medium text-red-600">{t.settings.form.logoutAll}</h4>
+            <p className="text-xs text-red-400 !mt-0.5">{t.settings.form.logoutAllDesc}</p>
           </button>
         </div>
       </div>

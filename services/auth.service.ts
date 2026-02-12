@@ -19,6 +19,7 @@ export interface UserResponse {
   name: string;
   email: string;
   role: UserRole;
+  language?: string;
 }
 
 /**
@@ -99,6 +100,7 @@ export async function getUserById(userId: string): Promise<UserResponse | null> 
       name: true,
       email: true,
       role: true,
+      language: true,
     },
   });
 
@@ -111,6 +113,7 @@ export async function getUserById(userId: string): Promise<UserResponse | null> 
     name: user.name,
     email: user.email,
     role: user.role as UserRole,
+    language: user.language,
   };
 }
 
@@ -125,6 +128,7 @@ export async function getUserByEmail(email: string): Promise<UserResponse | null
       name: true,
       email: true,
       role: true,
+      language: true,
     },
   });
 
@@ -137,5 +141,6 @@ export async function getUserByEmail(email: string): Promise<UserResponse | null
     name: user.name,
     email: user.email,
     role: user.role as UserRole,
+    language: user.language,
   };
 }

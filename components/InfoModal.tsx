@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, RefreshCw, Newspaper, AlertCircle } from "lucide-react";
 import NewsCard from "./NewsCard";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface NewsItem {
   id: string;
@@ -21,6 +22,7 @@ interface InfoModalProps {
 }
 
 export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
+  const { t } = useLanguage();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
       setNews(data.news || []);
     } catch (err) {
       console.error("Error fetching news:", err);
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
+      setError(err instanceof Error ? err.message : t.info.errorGeneric);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -72,9 +74,9 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between !px-6 !py-4 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Berita BMKG</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t.info.title}</h2>
             <p className="text-sm text-gray-500">
-              Informasi terbaru dari BMKG seputar cuaca dan iklim
+              {t.info.subtitle}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -84,7 +86,7 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
               className="inline-flex items-center gap-2 px-4 !py-2 rounded-xl bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-              {refreshing ? "Memuat..." : "Refresh"}
+              {refreshing ? t.info.loading : t.info.refresh}
             </button>
             <button
               onClick={onClose}
@@ -115,7 +117,7 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
             <div className="text-center py-16">
               <AlertCircle size={48} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Gagal Memuat Berita
+                {t.info.errorTitle}
               </h3>
               <p className="text-gray-600 mb-6 text-sm">{error}</p>
               <button
@@ -123,26 +125,26 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
                 className="inline-flex items-center gap-2 px-6 !py-3 rounded-xl bg-[#005AE1] text-white font-semibold hover:bg-[#004BB8] transition-colors"
               >
                 <RefreshCw size={16} />
-                Coba Lagi
+                {t.info.retry}
               </button>
             </div>
           ) : news.length === 0 ? (
             <div className="text-center py-16">
               <Newspaper size={64} className="mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Belum Ada Berita
+                {t.info.noNews}
               </h3>
               <p className="text-gray-600 mb-6 text-sm">
-                Berita BMKG akan ditampilkan di sini
+                {t.info.noNewsDesc}
               </p>
             </div>
           ) : (
             <>
               {/* News Count */}
               <div className="mb-4 text-sm text-gray-500">
-                Menampilkan{" "}
-                <span className="font-semibold text-gray-900">{news.length}</span> berita
-                <span> dari <span className="font-semibold text-gray-900">BMKG</span></span>
+                {t.info.showing}{" "}
+                <span className="font-semibold text-gray-900">{news.length}</span> {t.info.news}
+                <span> {t.info.from} <span className="font-semibold text-gray-900">BMKG</span></span>
               </div>
 
               {/* News Grid */}

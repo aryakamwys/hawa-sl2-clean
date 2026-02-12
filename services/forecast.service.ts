@@ -76,7 +76,7 @@ export async function fetchHistoricalData(hours: number = 24): Promise<HistoryIt
     const cutoffTime = new Date(now.getTime() - hours * 60 * 60 * 1000);
 
     const historicalData: HistoryItem[] = rows
-      .map((row) => {
+      .map((row: any[]) => {
         try {
           const timestamp = new Date(row[1]); // Column B: timestamp
           const pm25 = parseFloat(row[3]) || 0; // Column D: pm25Density
@@ -98,8 +98,8 @@ export async function fetchHistoricalData(hours: number = 24): Promise<HistoryIt
           return null;
         }
       })
-      .filter((item): item is HistoryItem => item !== null)
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      .filter((item: HistoryItem | null): item is HistoryItem => item !== null)
+      .sort((a: HistoryItem, b: HistoryItem) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     // ML API requires exactly 24 hourly data points
     // Take the most recent 24 points to ensure we have enough data

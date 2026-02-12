@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllNews } from "@/services/news.service";
+import { getSession } from "@/lib/auth";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -37,6 +38,23 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const refresh = searchParams.get("refresh") === "true";
 
+    // Try to get user's language preference
+    let language: "EN" | "ID" = "EN";  // DEFAULT EN
+    try {
+      const session = await getSession();
+      if (session) {
+        const userRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/me`, {
+          headers: {
+            cookie: req.headers.get('cookie') || '',
+          },
+        });
+        const userData = await userRes.json();
+        language = (userData.user?.language as "EN" | "ID") || "EN";
+      }
+    } catch {
+      // Use default EN if can't get user language
+    }
+
     // Simple rate limiting by IP
     const ip = req.headers.get("x-forwarded-for") || "unknown";
     if (!checkRateLimit(ip)) {
@@ -46,9 +64,9 @@ export async function GET(req: Request) {
       );
     }
 
-    console.log(`[API /news] Fetching air quality news - refresh: ${refresh}`);
+    console.log(`[API /news] Fetching air quality news - refresh: ${refresh}, language: ${language}`);
 
-    const news = await getAllNews(refresh);
+    const news = await getAllNews(refresh, language);
 
     return NextResponse.json({
       success: true,
@@ -56,6 +74,7 @@ export async function GET(req: Request) {
       count: news.length,
       cached: !refresh,
       source: "multi",
+      language,
     });
   } catch (error) {
     console.error("[API /news] Error:", error);

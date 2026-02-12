@@ -19,11 +19,33 @@ export function useLanguage() {
 
   useEffect(() => {
     setMounted(true);
-    // Check localStorage first
+
+    const loadLanguageFromDB = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.user?.language && (data.user.language === "EN" || data.user.language === "ID")) {
+          const lang = data.user.language as Language;
+          setLanguage(lang);
+          setTranslations(dictionaries[lang]);
+          return true;
+        }
+      } catch {
+        console.error("Failed to load language from DB");
+      }
+      return false;
+    };
+
     const savedLang = localStorage.getItem("hawa_language") as Language;
     if (savedLang && (savedLang === "EN" || savedLang === "ID")) {
       setLanguage(savedLang);
       setTranslations(dictionaries[savedLang]);
+      loadLanguageFromDB();
+    } else {
+      loadLanguageFromDB().then((loaded) => {
+        if (!loaded) {
+        }
+      });
     }
   }, []);
 
@@ -32,7 +54,6 @@ export function useLanguage() {
     setTranslations(dictionaries[lang]);
     localStorage.setItem("hawa_language", lang);
 
-    // Sync with DB if user is logged in
     try {
       await fetch("/api/user/language", {
         method: "POST",
