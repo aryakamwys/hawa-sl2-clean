@@ -244,7 +244,20 @@
       "apiKeys": "API Keys",
       "apiKeysDesc": "Manage API keys",
       "logoutAll": "Logout All Sessions",
-      "logoutAllDesc": "Sign out everywhere"
+      "logoutAllDesc": "Sign out everywhere",
+      "options": {
+        "ageGroup": {
+          "child": "Child",
+          "teen": "Teen",
+          "adult": "Adult",
+          "elderly": "Elderly"
+        },
+        "gender": {
+          "male": "Male",
+          "female": "Female",
+          "other": "Other"
+        }
+      }
     }
   },
   "region": {

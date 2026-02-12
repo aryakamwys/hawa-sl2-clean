@@ -244,7 +244,20 @@
       "apiKeys": "API Key",
       "apiKeysDesc": "Kelola kunci API",
       "logoutAll": "Keluar Semua Sesi",
-      "logoutAllDesc": "Keluar dari semua perangkat"
+      "logoutAllDesc": "Keluar dari semua perangkat",
+      "options": {
+        "ageGroup": {
+          "child": "Anak",
+          "teen": "Remaja",
+          "adult": "Dewasa",
+          "elderly": "Lansia"
+        },
+        "gender": {
+          "male": "Pria",
+          "female": "Wanita",
+          "other": "Lainnya"
+        }
+      }
     }
   },
   "region": {

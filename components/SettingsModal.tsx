@@ -848,10 +848,10 @@ function ProfileContent() {
           </label>
           <div className="grid grid-cols-4 gap-2">
             {[
-              { value: "ANAK", label: "Anak" },
-              { value: "REMAJA", label: "Remaja" },
-              { value: "DEWASA", label: "Dewasa" },
-              { value: "LANSIA", label: "Lansia" },
+              { value: "ANAK", label: t.settings.form.options?.ageGroup?.child || "Child" },
+              { value: "REMAJA", label: t.settings.form.options?.ageGroup?.teen || "Teen" },
+              { value: "DEWASA", label: t.settings.form.options?.ageGroup?.adult || "Adult" },
+              { value: "LANSIA", label: t.settings.form.options?.ageGroup?.elderly || "Elderly" },
             ].map((item) => (
               <button
                 key={item.value}
@@ -876,9 +876,9 @@ function ProfileContent() {
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { value: "MALE", label: "Pria" },
-              { value: "FEMALE", label: "Wanita" },
-              { value: "OTHER", label: "Lainnya" },
+              { value: "MALE", label: t.settings.form.options?.gender?.male || "Male" },
+              { value: "FEMALE", label: t.settings.form.options?.gender?.female || "Female" },
+              { value: "OTHER", label: t.settings.form.options?.gender?.other || "Other" },
             ].map((item) => (
               <button
                 key={item.value}

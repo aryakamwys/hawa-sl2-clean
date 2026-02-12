@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/Hero";
+import LogoCarousel from "@/components/sections/LogoCarousel";
 import Features from "@/components/sections/Features";
 import DemoShowcase from "@/components/sections/DemoShowcase";
 import HowItWorks from "@/components/sections/HowItWorks";
@@ -32,6 +33,8 @@ export default function HomePage() {
         <div id="hero">
           <HeroSection />
         </div>
+
+        <LogoCarousel />
 
         <Features />
 

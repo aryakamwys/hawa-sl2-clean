@@ -19,6 +19,7 @@ const config: Config = {
       },
       animation: {
         float: "float 3s ease-in-out infinite",
+        marquee: "marquee 25s linear infinite",
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
         "fade-in-left": "fadeInLeft 0.8s ease-out forwards",
         "fade-in-right": "fadeInRight 0.8s ease-out forwards",
@@ -27,6 +28,10 @@ const config: Config = {
         float: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-15px)" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-100%)" },
         },
         fadeInUp: {
           from: { opacity: "0", transform: "translateY(30px)" },
