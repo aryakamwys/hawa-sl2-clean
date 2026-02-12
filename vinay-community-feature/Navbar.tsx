@@ -1,298 +1,299 @@
-"use client";
+// "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import AuthModal from "./AuthModal";
-import { LogOut, Menu, X } from "lucide-react";
-import { useLanguage } from "@/hooks/useLanguage";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { useEffect, useState } from "react";
+// import AuthModal from "./AuthModal";
+// import { LogOut, Menu, X } from "lucide-react";
+// import { useLanguage } from "@/hooks/useLanguage";
 
-/**
- * Navbar Component: Handles navigation, language switching, and user authentication state.
- * This version includes the new Community feature link and responsive mobile behavior.
- */
+// /**
+//  * Navbar Component: Handles navigation, language switching, and user authentication state.
+//  * This version includes the new Community feature link and responsive mobile behavior.
+//  */
 
-type NavItem = { label: string; href: string };
+// type NavItem = { label: string; href: string };
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN";
-}
+// interface User {
+//   id: string;
+//   name: string;
+//   email: string;
+//   role: "USER" | "ADMIN";
+// }
 
-export default function Navbar() {
-  const { t, language, changeLanguage, mounted } = useLanguage();
-  const [scrolled, setScrolled] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+// export default function Navbar() {
+//   const { t, language, changeLanguage, mounted } = useLanguage();
+//   const [scrolled, setScrolled] = useState(false);
+//   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+//   const [authMode, setAuthMode] = useState<"login" | "register">("login");
+//   const [user, setUser] = useState<User | null>(null);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // --- NAVIGATION CONFIGURATION ---
-  const navItems = [
-    { label: t?.nav?.home || "Home", href: "/" },
-    { label: t?.nav?.features || "Features", href: "/#features" },
-    { label: t?.nav?.howItWorks || "How It Works", href: "/#how-it-works" },
-    { label: t?.nav?.aboutUs || "About Us", href: "/#about-us" },
+//   // --- NAVIGATION CONFIGURATION ---
+//   const navItems = [
+//     { label: t?.nav?.home || "Home", href: "/" },
+//     { label: t?.nav?.features || "Features", href: "/#features" },
+//     { label: t?.nav?.howItWorks || "How It Works", href: "/#how-it-works" },
+//     { label: t?.nav?.aboutUs || "About Us", href: "/#about-us" },
     
-    // NEW: Community feature link added for global access 
-    { label: "Community", href: "/community" }, 
-  ];
+//     // NEW: Community feature link added for global access 
+//     { label: "Community", href: "/community" }, 
+//   ];
 
-  // Fetch user session on component mount
-  useEffect(() => {
-    fetchUser();
-  }, []);
+//   // Fetch user session on component mount
+//   useEffect(() => {
+//     fetchUser();
+//   }, []);
 
-  /**
-   * Checks current auth status via the backend API
-   */
-  const fetchUser = async () => {
-    try {
-      const res = await fetch("/api/auth/me");
-      const data = await res.json();
-      setUser(data.user);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+//   /**
+//    * Checks current auth status via the backend API
+//    */
+//   const fetchUser = async () => {
+//     try {
+//       const res = await fetch("/api/auth/me");
+//       const data = await res.json();
+//       setUser(data.user);
+//     } catch {
+//       setUser(null);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
 
-  /**
-   * Clears the user session and updates UI
-   */
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
-    setMobileMenuOpen(false);
-  };
+//   /**
+//    * Clears the user session and updates UI
+//    */
+//   const handleLogout = async () => {
+//     await fetch("/api/auth/logout", { method: "POST" });
+//     setUser(null);
+//     setMobileMenuOpen(false);
+//   };
 
-  /**
-   * Handles UI changes (scaling/padding) when the user scrolls down
-   */
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+//   /**
+//    * Handles UI changes (scaling/padding) when the user scrolls down
+//    */
+//   useEffect(() => {
+//     const onScroll = () => setScrolled(window.scrollY > 24);
+//     onScroll();
+//     window.addEventListener("scroll", onScroll, { passive: true });
+//     return () => window.removeEventListener("scroll", onScroll);
+//   }, []);
 
-  // Prevents hydration mismatch during server-side rendering
-  if (!mounted) return null;
+//   // Prevents hydration mismatch during server-side rendering
+//   if (!mounted) return null;
 
-  return (
-    <>
-      {/* --- DESKTOP NAVBAR (Visible on large screens) --- */}
-      <div className="fixed top-6 left-0 right-0 z-50 hidden lg:flex justify-center px-4">
-        <nav
-          className={[
-            "inline-flex items-center justify-center",
-            "rounded-full bg-white/90 backdrop-blur-sm",
-            "border-3 border-[#005AE1]/20",
-            "shadow-lg shadow-[#005AE1]/20",
-            "transition-all duration-300",
-            scrolled ? "py-2 px-10 gap-16" : "py-3 px-12 gap-8",
-          ].join(" ")}
-        >
-          {/* Logo Brand */}
-          <Link
-            href="/"
-            className="!ml-2 flex items-center justify-center !w-12 !h-12 rounded-full bg-transparent hover:scale-105 transition-transform duration-200"
-            aria-label="Hawa"
-          >
-            <Image src="/logo.png" alt="Hawa" width={28} height={28} priority />
-          </Link>
+//   return (
+//     <>
+//       {/* --- DESKTOP NAVBAR (Visible on large screens) --- */}
+//       <div className="fixed top-6 left-0 right-0 z-50 hidden lg:flex justify-center px-4">
+//         <nav
+//           className={[
+//             "inline-flex items-center justify-center",
+//             "rounded-full bg-white/90 backdrop-blur-sm",
+//             "border-3 border-[#005AE1]/20",
+//             "shadow-lg shadow-[#005AE1]/20",
+//             "transition-all duration-300",
+//             scrolled ? "py-2 px-10 gap-16" : "py-3 px-12 gap-8",
+//           ].join(" ")}
+//         >
+//           {/* Logo Brand */}
+//           <Link
+//             href="/"
+//             className="!ml-2 flex items-center justify-center !w-12 !h-12 rounded-full bg-transparent hover:scale-105 transition-transform duration-200"
+//             aria-label="Hawa"
+//           >
+//             <Image src="/logo.png" alt="Hawa" width={28} height={28} priority />
+//           </Link>
 
-          <div className="h-6 w-px bg-gray-200" />
+//           <div className="h-6 w-px bg-gray-200" />
 
-          {/* Navigation Links Mapping */}
-          <ul className={`flex items-center text-sm font-medium text-gray-700 transition-all duration-300 ${scrolled ? "gap-8" : "gap-6"}`}>
-            {navItems.map((it) => (
-              <li key={it.href}>
-                <Link
-                  href={it.href}
-                  className="hover:text-[#005AE1] transition-colors duration-200"
-                >
-                  {it.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+//           {/* Navigation Links Mapping */}
+//           <ul className={`flex items-center text-sm font-medium text-gray-700 transition-all duration-300 ${scrolled ? "gap-8" : "gap-6"}`}>
+//             {navItems.map((it) => (
+//               <li key={it.href}>
+//                 <Link
+//                   href={it.href}
+//                   className="hover:text-[#005AE1] transition-colors duration-200"
+//                 >
+//                   {it.label}
+//                 </Link>
+//               </li>
+//             ))}
+//           </ul>
 
-          <div className="h-6 w-px bg-gray-200" />
+//           <div className="h-6 w-px bg-gray-200" />
 
-          {/* Language and Auth Actions */}
-          <div className="flex items-center gap-4">
-            <details className="dropdown dropdown-end">
-              <summary className="flex items-center gap-1 cursor-pointer text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors">
-                {language}
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </summary>
-              <ul className="menu dropdown-content mt-3 w-28 rounded-xl bg-white p-2 shadow-lg">
-                {(["EN", "ID"] as const).map((v) => (
-                  <li key={v}>
-                    <button
-                      type="button"
-                      onClick={() => changeLanguage(v)}
-                      className={`text-base ${v === language ? "text-[#005AE1] font-semibold" : "text-gray-700"}`}
-                    >
-                      {v}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </details>
+//           {/* Language and Auth Actions */}
+//           <div className="flex items-center gap-4">
+//             <details className="dropdown dropdown-end">
+//               <summary className="flex items-center gap-1 cursor-pointer text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors">
+//                 {language}
+//                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+//                   <path
+//                     fillRule="evenodd"
+//                     d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+//                     clipRule="evenodd"
+//                   />
+//                 </svg>
+//               </summary>
+//               <ul className="menu dropdown-content mt-3 w-28 rounded-xl bg-white p-2 shadow-lg">
+//                 {(["EN", "ID"] as const).map((v) => (
+//                   <li key={v}>
+//                     <button
+//                       type="button"
+//                       onClick={() => changeLanguage(v)}
+//                       className={`text-base ${v === language ? "text-[#005AE1] font-semibold" : "text-gray-700"}`}
+//                     >
+//                       {v}
+//                     </button>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </details>
 
-            {/* Auth Buttons Logic */}
-            {isLoading ? (
-              <div className="!mr-4 text-sm text-gray-500">Loading...</div>
-            ) : user ? (
-              <button
-                onClick={handleLogout}
-                className="!mr-4 btn btn-sm btn-circle bg-[#005AE1] hover:bg-[#004BB8] text-white border-none"
-                title="Keluar"
-              >
-                <LogOut size={16} />
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    setAuthMode("login");
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="btn rounded-full !px-4 !py-1 text-base font-semibold bg-transparent text-[#005AE1] border border-[#005AE1] hover:bg-[#005AE1] hover:text-white transition-all duration-200"
-                >
-                  Masuk
-                </button>
-                <button
-                  onClick={() => {
-                    setAuthMode("register");
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="!mr-4 btn rounded-full !px-7 !py-2 text-base font-semibold bg-[#005AE1] text-white hover:bg-[#004BB8] transition-all duration-200 border-none"
-                >
-                  Daftar
-                </button>
-              </>
-            )}
-          </div>
-        </nav>
-      </div>
+//             {/* Auth Buttons Logic */}
+//             {isLoading ? (
+//               <div className="!mr-4 text-sm text-gray-500">Loading...</div>
+//             ) : user ? (
+//               <button
+//                 onClick={handleLogout}
+//                 className="!mr-4 btn btn-sm btn-circle bg-[#005AE1] hover:bg-[#004BB8] text-white border-none"
+//                 title="Keluar"
+//               >
+//                 <LogOut size={16} />
+//               </button>
+//             ) : (
+//               <>
+//                 <button
+//                   onClick={() => {
+//                     setAuthMode("login");
+//                     setIsAuthModalOpen(true);
+//                   }}
+//                   className="btn rounded-full !px-4 !py-1 text-base font-semibold bg-transparent text-[#005AE1] border border-[#005AE1] hover:bg-[#005AE1] hover:text-white transition-all duration-200"
+//                 >
+//                   Masuk
+//                 </button>
+//                 <button
+//                   onClick={() => {
+//                     setAuthMode("register");
+//                     setIsAuthModalOpen(true);
+//                   }}
+//                   className="!mr-4 btn rounded-full !px-7 !py-2 text-base font-semibold bg-[#005AE1] text-white hover:bg-[#004BB8] transition-all duration-200 border-none"
+//                 >
+//                   Daftar
+//                 </button>
+//               </>
+//             )}
+//           </div>
+//         </nav>
+//       </div>
 
-      {/* --- MOBILE NAVBAR (Visible on small screens) --- */}
-      <div className="fixed top-0 left-0 right-0 z-50 lg:hidden">
-        <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="Hawa" width={32} height={32} priority />
-              <span className="text-xl font-bold text-[#005AE1]">Hawa</span>
-            </Link>
+//       {/* --- MOBILE NAVBAR (Visible on small screens) --- */}
+//       <div className="fixed top-0 left-0 right-0 z-50 lg:hidden">
+//         <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+//           <div className="flex items-center justify-between px-4 py-3">
+//             <Link href="/" className="flex items-center gap-2">
+//               <Image src="/logo.png" alt="Hawa" width={32} height={32} priority />
+//               <span className="text-xl font-bold text-[#005AE1]">Hawa</span>
+//             </Link>
 
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+//             <button
+//               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+//               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+//               aria-label="Toggle menu"
+//             >
+//               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+//             </button>
+//           </div>
 
-          {/* Collapsible Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="border-t border-gray-200 bg-white">
-              <div className="px-4 py-3 space-y-3">
-                {navItems.map((it) => (
-                  <Link
-                    key={it.href}
-                    href={it.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block py-2 text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors"
-                  >
-                    {it.label}
-                  </Link>
-                ))}
+//           {/* Collapsible Mobile Menu */}
+//           {mobileMenuOpen && (
+//             <div className="border-t border-gray-200 bg-white">
+//               <div className="px-4 py-3 space-y-3">
+//                 {navItems.map((it) => (
+//                   <Link
+//                     key={it.href}
+//                     href={it.href}
+//                     onClick={() => setMobileMenuOpen(false)}
+//                     className="block py-2 text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors"
+//                   >
+//                     {it.label}
+//                   </Link>
+//                 ))}
 
-                <div className="border-t border-gray-200 pt-3 mt-3">
-                  {/* Language Selector (Mobile) */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">{t.nav.language}:</span>
-                    <div className="flex gap-2">
-                      {(["EN", "ID"] as const).map((v) => (
-                        <button
-                          key={v}
-                          onClick={() => {
-                            changeLanguage(v);
-                            setMobileMenuOpen(false);
-                          }}
-                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === language
-                            ? "bg-[#005AE1] text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+//                 <div className="border-t border-gray-200 pt-3 mt-3">
+//                   {/* Language Selector (Mobile) */}
+//                   <div className="flex items-center gap-2 mb-3">
+//                     <span className="text-sm text-gray-600">{t.nav.language}:</span>
+//                     <div className="flex gap-2">
+//                       {(["EN", "ID"] as const).map((v) => (
+//                         <button
+//                           key={v}
+//                           onClick={() => {
+//                             changeLanguage(v);
+//                             setMobileMenuOpen(false);
+//                           }}
+//                           className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === language
+//                             ? "bg-[#005AE1] text-white"
+//                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+//                             }`}
+//                         >
+//                           {v}
+//                         </button>
+//                       ))}
+//                     </div>
+//                   </div>
 
-                  {/* Auth Buttons (Mobile) */}
-                  {isLoading ? (
-                    <div className="text-sm text-gray-500">Loading...</div>
-                  ) : user ? (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
-                    >
-                      <LogOut size={18} />
-                      Keluar
-                    </button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setAuthMode("login");
-                          setIsAuthModalOpen(true);
-                          setMobileMenuOpen(false);
-                        }}
-                        className="flex-1 py-2 px-4 border border-[#005AE1] text-[#005AE1] rounded-lg font-medium hover:bg-[#005AE1] hover:text-white transition-colors"
-                      >
-                        Masuk
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAuthMode("register");
-                          setIsAuthModalOpen(true);
-                          setMobileMenuOpen(false);
-                        }}
-                        className="flex-1 py-2 px-4 bg-[#005AE1] text-white rounded-lg font-medium hover:bg-[#004BB8] transition-colors"
-                      >
-                        Daftar
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </nav>
-      </div>
+//                   {/* Auth Buttons (Mobile) */}
+//                   {isLoading ? (
+//                     <div className="text-sm text-gray-500">Loading...</div>
+//                   ) : user ? (
+//                     <button
+//                       onClick={handleLogout}
+//                       className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+//                     >
+//                       <LogOut size={18} />
+//                       Keluar
+//                     </button>
+//                   ) : (
+//                     <div className="flex gap-2">
+//                       <button
+//                         onClick={() => {
+//                           setAuthMode("login");
+//                           setIsAuthModalOpen(true);
+//                           setMobileMenuOpen(false);
+//                         }}
+//                         className="flex-1 py-2 px-4 border border-[#005AE1] text-[#005AE1] rounded-lg font-medium hover:bg-[#005AE1] hover:text-white transition-colors"
+//                       >
+//                         Masuk
+//                       </button>
+//                       <button
+//                         onClick={() => {
+//                           setAuthMode("register");
+//                           setIsAuthModalOpen(true);
+//                           setMobileMenuOpen(false);
+//                         }}
+//                         className="flex-1 py-2 px-4 bg-[#005AE1] text-white rounded-lg font-medium hover:bg-[#004BB8] transition-colors"
+//                       >
+//                         Daftar
+//                       </button>
+//                     </div>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           )}
+//         </nav>
+//       </div>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authMode}
-        onSuccess={fetchUser}
-      />
-    </>
-  );
-}
+//       <AuthModal
+//         isOpen={isAuthModalOpen}
+//         onClose={() => setIsAuthModalOpen(false)}
+//         initialMode={authMode}
+//         onSuccess={fetchUser}
+//       />
+//     </>
+//   );
+// }
+
