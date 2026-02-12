@@ -209,7 +209,7 @@ export function getQuizTimeLimit(difficulty: Difficulty): number {
 export async function generateBulkFillInTheBlank({
   difficulty = "MEDIUM",
   ageGroup = "REMAJA",
-  language = "ID"
+  language = "EN"
 }: {
   difficulty?: Difficulty;
   ageGroup?: AgeGroup;
@@ -223,7 +223,51 @@ export async function generateBulkFillInTheBlank({
       LANSIA: "Lansia usia 60+. Fokus pada dampak kesehatan dan langkah pencegahan praktis.",
     };
 
-    const prompt = `ROLE:
+    const isEnglish = language === "EN";
+
+    const prompt = isEnglish 
+      ? `ROLE:
+You are a quiz generator for HAWA - an air quality monitoring app in Bandung.
+
+TARGET AUDIENCE: ${ageGroupGuides[ageGroup]} (Translate concepts to English context if needed)
+DIFFICULTY: ${difficulty}
+
+TASK:
+Create 10 fill-in-the-blank questions about air quality, pollution, and environmental health.
+
+FORMAT:
+Each question must have a "fill-in-the-blank" format with 1 missing word/number represented by ___.
+Example: "PM2.5 is particulate matter with a size less than ___ micrometers"
+
+RETURN JSON ARRAY with format:
+[
+  {
+    "questionText": "question with ___ as blank",
+    "correctAnswers": ["correct answer"],
+    "distractors": ["wrong answer 1", "wrong answer 2", "wrong answer 3"],
+    "explanation": "brief explanation",
+    "category": "PM2.5" or "POLLUTION" or "HEALTH"
+  },
+  ... (9 more questions)
+]
+
+TOPICS:
+- PM2.5 and PM10
+- Health impacts of pollution
+- Air quality standards (ISPU/AQI)
+- Causes of pollution
+- Ways to reduce pollution
+- Weather and air quality
+- Pollution-absorbing plants
+- Masks and protection
+
+IMPORTANT:
+- Return ONLY JSON array, no other text
+- Each question has exactly 1 blank (___)
+- Distractors must be plausible but wrong
+- Language: ENGLISH
+- Educational and not fear-mongering`
+      : `ROLE:
 Kamu adalah quiz generator untuk aplikasi HAWA - aplikasi monitoring kualitas udara di Bandung.
 
 TARGET AUDIENCE: ${ageGroupGuides[ageGroup]}
@@ -310,20 +354,20 @@ PENTING:
 
     // If we got less than 10, generate fallback questions
     while (questions.length < 10) {
-      questions.push(generateFallbackFillInTheBlank(questions.length + 1, difficulty));
+      questions.push(generateFallbackFillInTheBlank(questions.length + 1, difficulty, language));
     }
 
     return questions;
   } catch (error) {
     console.error("[Quiz AI] Error generating bulk quiz:", error);
     // Return 10 fallback questions
-    return Array.from({ length: 10 }, (_, i) => generateFallbackFillInTheBlank(i + 1, difficulty));
+    return Array.from({ length: 10 }, (_, i) => generateFallbackFillInTheBlank(i + 1, difficulty, language));
   }
 }
 
 // Generate a fallback fill-in-the-blank question
-function generateFallbackFillInTheBlank(index: number, difficulty: Difficulty): FillInTheBlankQuestion {
-  const fallbacks = [
+function generateFallbackFillInTheBlank(index: number, difficulty: Difficulty, language: "EN" | "ID" = "ID"): FillInTheBlankQuestion {
+  const fallbacksID = [
     {
       questionText: "PM2.5 adalah partikel debu dengan ukuran kurang dari ___ mikrometer",
       correctAnswers: ["2.5"],
@@ -346,6 +390,32 @@ function generateFallbackFillInTheBlank(index: number, difficulty: Difficulty): 
       category: "KESEHATAN",
     },
   ];
+
+  const fallbacksEN = [
+    {
+      questionText: "PM2.5 is particulate matter with a size less than ___ micrometers",
+      correctAnswers: ["2.5"],
+      distractors: ["10", "5", "1"],
+      explanation: "PM2.5 are fine particles with a diameter of less than 2.5 micrometers",
+      category: "PM2.5",
+    },
+    {
+      questionText: "The color ___ indicates good air quality",
+      correctAnswers: ["green"],
+      distractors: ["red", "yellow", "purple"],
+      explanation: "Green indicates good air quality (0-50 PM2.5)",
+      category: "ISPU",
+    },
+    {
+      questionText: "WHO standard for PM2.5 annual mean is ___ µg/m³",
+      correctAnswers: ["5"],
+      distractors: ["15", "25", "10"],
+      explanation: "WHO established strict guidelines for PM2.5 at 5 µg/m³ annual mean",
+      category: "HEALTH",
+    },
+  ];
+
+  const fallbacks = language === "EN" ? fallbacksEN : fallbacksID;
 
   const template = fallbacks[index % fallbacks.length];
   const allOptions = [...template.correctAnswers, ...template.distractors].sort(() => Math.random() - 0.5);

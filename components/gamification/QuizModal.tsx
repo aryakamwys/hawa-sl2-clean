@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, RefreshCw, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface FillInTheBlankQuestion {
   id: string;
@@ -27,6 +28,7 @@ interface UserAnswer {
 }
 
 export default function QuizModal({ onClose }: QuizModalProps) {
+  const { language } = useLanguage(); // Get current language
   const [questions, setQuestions] = useState<FillInTheBlankQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -34,20 +36,25 @@ export default function QuizModal({ onClose }: QuizModalProps) {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedBlankIndex, setSelectedBlankIndex] = useState<number | null>(null);
 
   useEffect(() => {
     generateQuestions();
-  }, []);
+  }, [language]); // Re-generate if language changes
 
   const generateQuestions = async () => {
     setLoading(true);
     setShowResults(false);
     setResults(null);
     setUserAnswers(new Map());
+    setResults(null);
+    setUserAnswers(new Map());
     setCurrentQuestionIndex(0);
+    setSelectedBlankIndex(null); // Reset selection
 
     try {
-      const res = await fetch("/api/gamification/quiz/generate-bulk?difficulty=MEDIUM", {
+      // Pass language to API
+      const res = await fetch(`/api/gamification/quiz/generate-bulk?difficulty=MEDIUM&lang=${language}`, {
         method: "POST",
       });
 
@@ -65,6 +72,46 @@ export default function QuizModal({ onClose }: QuizModalProps) {
   const handleDragStart = (e: React.DragEvent, option: string) => {
     e.dataTransfer.setData("text/plain", option);
     e.dataTransfer.effectAllowed = "move";
+  };
+
+  // Click to fill logic
+  const handleOptionClick = (option: string) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!currentQuestion) return;
+
+    // Determine target blank: use selected or find first empty
+    let targetIndex = selectedBlankIndex;
+    
+    if (targetIndex === null) {
+      // Find first empty blank
+      const currentAnswers = userAnswers.get(currentQuestion.id) || [];
+      // Calculate total blanks based on parsing
+      const parts = currentQuestion.questionText.split("___");
+      const blankCount = parts.length - 1;
+      
+      for (let i = 0; i < blankCount; i++) {
+        if (!currentAnswers[i]) {
+          targetIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (targetIndex !== null) {
+      updateAnswer(currentQuestion.id, targetIndex, option);
+      // Move selection to next blank or clear
+      setSelectedBlankIndex(null); 
+    }
+  };
+
+  const updateAnswer = (questionId: string, blankIndex: number, value: string) => {
+    const currentAnswers = userAnswers.get(questionId) || [];
+    const newAnswers = [...currentAnswers];
+    newAnswers[blankIndex] = value;
+
+    const newMap = new Map(userAnswers);
+    newMap.set(questionId, newAnswers);
+    setUserAnswers(newMap);
   };
 
   const handleDrop = (e: React.DragEvent, questionId: string, blankIndex: number) => {
@@ -233,8 +280,8 @@ export default function QuizModal({ onClose }: QuizModalProps) {
 
         {/* Main Content */}
         <div className="!flex !flex-1 !overflow-hidden !min-h-0">
-          {/* Left Panel - Question List */}
-          <div className="!w-72 !border-r !border-gray-200 !py-4 !px-3 !overflow-y-auto !bg-gray-50/50 !flex-shrink-0">
+          {/* Left Panel - Question List (Hidden on Mobile) */}
+          <div className="!hidden md:!flex !w-72 !border-r !border-gray-200 !py-4 !px-3 !overflow-y-auto !bg-gray-50/50 !flex-shrink-0 !flex-col">
             <h3 className="!text-xs !font-semibold !text-gray-500 !mb-3 !uppercase !tracking-wider !px-2">
               Questions
             </h3>
@@ -244,7 +291,10 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                 return (
                   <button
                     key={q.id}
-                    onClick={() => setCurrentQuestionIndex(index)}
+                    onClick={() => {
+                        setCurrentQuestionIndex(index);
+                        setSelectedBlankIndex(null);
+                    }}
                     className={`!w-full !flex !items-center !gap-3 !px-3 !py-3 !rounded-xl !transition-all !border-none !cursor-pointer !text-left ${
                       currentQuestionIndex === index
                         ? "!bg-[#005AE1] !text-white !shadow-md"
@@ -281,7 +331,24 @@ export default function QuizModal({ onClose }: QuizModalProps) {
           </div>
 
           {/* Right Panel - Current Question */}
-          <div className="!flex-1 !flex !flex-col !p-8 !overflow-y-auto">
+          <div className="!flex-1 !flex !flex-col !p-4 md:!p-8 !overflow-y-auto">
+            {/* Mobile Progress Bar */}
+            <div className="!mb-4 md:!hidden">
+                <div className="!flex !items-center !justify-between !mb-2">
+                    <span className="!text-xs !font-semibold !text-gray-500">
+                        Question {currentQuestionIndex + 1} / {questions.length}
+                    </span>
+                    <span className="!text-xs !text-[#005AE1] !font-medium">
+                        {getQuestionStatus(questions[currentQuestionIndex]?.id) === "answered" ? "Answered" : "Unanswered"}
+                    </span>
+                </div>
+                <div className="!w-full !h-1.5 !bg-gray-100 !rounded-full !overflow-hidden">
+                    <div 
+                        className="!h-full !bg-[#005AE1] !transition-all !duration-300" 
+                        style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                    />
+                </div>
+            </div>
             {currentQuestion && (
               <>
                 {/* Question Header */}
@@ -295,32 +362,42 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                 </div>
 
                 {/* Question with Blanks */}
-                <div className="!mb-8 !p-6 !bg-gray-50 !rounded-xl !border !border-gray-200">
-                  <div className="!text-lg !font-medium !text-gray-900 !leading-relaxed">
+                <div className="!mb-6 md:!mb-8 !p-4 md:!p-6 !bg-gray-50 !rounded-xl !border !border-gray-200">
+                  <div className="!text-base md:!text-lg !font-medium !text-gray-900 !leading-loose">
                     {parseQuestionText(currentQuestion.questionText).map((part, index) => (
                       <span key={index} className="!inline">
                         <span>{part}</span>
                         {index < currentQuestion.correctAnswers.length && (
-                          <span
+                            <span
+                            onClick={() => setSelectedBlankIndex(selectedBlankIndex === index ? null : index)}
                             onDrop={(e) => handleDrop(e, currentQuestion.id, index)}
                             onDragOver={handleDragOver}
-                            className="!inline-flex !items-center !mx-1 !min-w-[100px] !px-4 !py-1.5 !border-2 !border-dashed !border-[#005AE1] !rounded-lg !bg-white !align-middle"
+                            className={`!inline-flex !items-center !mx-1 !min-w-[80px] md:!min-w-[100px] !px-3 md:!px-4 !py-1.5 !border-2 !rounded-lg !align-middle !transition-all !cursor-pointer ${
+                                selectedBlankIndex === index 
+                                    ? "!border-[#005AE1] !bg-blue-50 !ring-2 !ring-[#005AE1]/20" 
+                                    : "!border-dashed !border-gray-300 !bg-white hover:!border-[#005AE1]"
+                            }`}
                             style={{ verticalAlign: "middle" }}
                           >
                             {currentAnswers[index] ? (
-                              <span className="!flex !items-center !gap-2">
-                                <span className="!font-semibold !text-[#005AE1] !text-base">
+                              <span className="!flex !items-center !gap-1.5">
+                                <span className="!font-semibold !text-[#005AE1] !text-sm md:!text-base">
                                   {currentAnswers[index]}
                                 </span>
                                 <button
-                                  onClick={() => removeAnswer(currentQuestion.id, index)}
-                                  className="!text-red-400 hover:!text-red-600 !bg-transparent !border-none !cursor-pointer !p-0 !leading-none"
+                                  onClick={(e) => {
+                                      e.stopPropagation(); // Prevent toggling selection
+                                      removeAnswer(currentQuestion.id, index);
+                                  }}
+                                  className="!text-red-400 hover:!text-red-600 !bg-transparent !border-none !cursor-pointer !p-1"
                                 >
                                   <X size={14} />
                                 </button>
                               </span>
                             ) : (
-                              <span className="!text-gray-400 !text-sm">Drop here</span>
+                              <span className={`!text-sm ${selectedBlankIndex === index ? "!text-[#005AE1]" : "!text-gray-400"}`}>
+                                {selectedBlankIndex === index ? "Select..." : "Empty"}
+                              </span>
                             )}
                           </span>
                         )}
@@ -332,9 +409,9 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                 {/* Answer Options */}
                 <div className="!mb-6">
                   <h4 className="!text-xs !font-semibold !text-gray-500 !mb-3 !uppercase !tracking-wider !m-0">
-                    Drag answers below
+                    Tap or Drag to Fill
                   </h4>
-                  <div className="!flex !flex-wrap !gap-3">
+                  <div className="!flex !flex-wrap !gap-2 md:!gap-3">
                     {currentQuestion.allOptions.map((option, index) => {
                       const isUsed = currentAnswers.includes(option);
                       return (
@@ -342,10 +419,11 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                           key={index}
                           draggable={!isUsed}
                           onDragStart={(e) => handleDragStart(e, option)}
-                          className={`!px-5 !py-2.5 !rounded-lg !border-2 !font-medium !text-sm !transition-all !select-none ${
+                          onClick={() => !isUsed && handleOptionClick(option)}
+                          className={`!px-4 md:!px-5 !py-2 md:!py-2.5 !rounded-lg !border-2 !font-medium !text-sm !transition-all !select-none ${
                             isUsed
                               ? "!bg-gray-100 !border-gray-200 !text-gray-400 !cursor-not-allowed !opacity-50"
-                              : "!bg-white !border-[#005AE1] !text-[#005AE1] !cursor-grab hover:!bg-[#E0F4FF] hover:!shadow-md active:!cursor-grabbing"
+                              : "!bg-white !border-[#005AE1] !text-[#005AE1] !cursor-pointer hover:!bg-[#E0F4FF] hover:!shadow-md active:!scale-95"
                           }`}
                         >
                           {option}
@@ -374,16 +452,22 @@ export default function QuizModal({ onClose }: QuizModalProps) {
           </div>
           <div className="!flex !gap-3">
             <button
-              onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+              onClick={() => {
+                  setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1));
+                  setSelectedBlankIndex(null);
+              }}
               disabled={currentQuestionIndex === 0}
-              className="!px-5 !py-2.5 !border-2 !border-gray-300 !text-gray-700 !rounded-xl !font-semibold hover:!bg-gray-50 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !bg-white !cursor-pointer !text-sm"
+              className="!px-4 md:!px-5 !py-2 md:!py-2.5 !border-2 !border-gray-300 !text-gray-700 !rounded-xl !font-semibold hover:!bg-gray-50 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !bg-white !cursor-pointer !text-sm"
             >
               Previous
             </button>
             {currentQuestionIndex < questions.length - 1 ? (
               <button
-                onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-                className="!px-5 !py-2.5 !bg-[#005AE1] !text-white !rounded-xl !font-semibold hover:!bg-[#004BB8] !transition-colors !border-none !cursor-pointer !text-sm"
+                onClick={() => {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    setSelectedBlankIndex(null);
+                }}
+                className="!px-4 md:!px-5 !py-2 md:!py-2.5 !bg-[#005AE1] !text-white !rounded-xl !font-semibold hover:!bg-[#004BB8] !transition-colors !border-none !cursor-pointer !text-sm"
               >
                 Next
               </button>
@@ -391,7 +475,7 @@ export default function QuizModal({ onClose }: QuizModalProps) {
               <button
                 onClick={submitAllAnswers}
                 disabled={submitting || userAnswers.size === 0}
-                className="!px-6 !py-2.5 !bg-green-600 !text-white !rounded-xl !font-semibold hover:!bg-green-700 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !flex !items-center !gap-2 !border-none !cursor-pointer !text-sm"
+                className="!px-4 md:!px-6 !py-2 md:!py-2.5 !bg-green-600 !text-white !rounded-xl !font-semibold hover:!bg-green-700 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !flex !items-center !gap-2 !border-none !cursor-pointer !text-sm"
               >
                 {submitting ? (
                   <>

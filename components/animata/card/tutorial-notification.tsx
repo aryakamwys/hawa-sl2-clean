@@ -234,7 +234,7 @@ export function SimpleTutorialNotification({
           role="alert"
           aria-live="polite"
         >
-          <div className="p-5 relative">
+          <div className="p-8 relative">
             {/* Info button in top left */}
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}

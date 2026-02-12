@@ -513,7 +513,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                                       <div className="mt-3 bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm text-gray-800 animate-in fade-in slide-in-from-top-2">
                                         <div className="flex items-center gap-2 mb-1 text-[#005AE1] font-semibold text-xs uppercase tracking-wide">
                                           <Sparkles size={12} />
-                                          HAWA Analysis
+                                          Meta
                                         </div>
                                         <p className="whitespace-pre-wrap leading-relaxed">{post.aiExplanation}</p>
                                       </div>

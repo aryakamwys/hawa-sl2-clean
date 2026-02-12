@@ -28,7 +28,9 @@ export async function POST(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const difficulty = (searchParams.get("difficulty") || "MEDIUM") as "EASY" | "MEDIUM" | "HARD";
-    const language = (user?.language as "EN" | "ID") || "EN";
+    // Prioritize query param language, then user profile language, then default to EN
+    const langParam = searchParams.get("lang")?.toUpperCase();
+    const language = (langParam === "ID" || langParam === "EN" ? langParam : (user?.language as "EN" | "ID") || "EN");
 
     const questions = await generateBulkFillInTheBlank({ difficulty, ageGroup: profile.ageGroup, language });
     const totalXP = questions.reduce((sum, q) => sum + q.xpReward, 0);

@@ -193,8 +193,8 @@ export default function MapPage() {
     { title: "Forecast", icon: <TrendingUp size={22} />, href: "#", active: false, onClick: () => setShowForecast(true) },
     { title: "Point", icon: <Gamepad2 size={22} />, href: "#", active: false, onClick: () => setShowGameHub(true) },
     { title: "Info", icon: <BookTextIcon size={22} />, href: "#", active: false, onClick: () => setShowInfo(true) },
-    { title: "Settings", icon: <CogIcon size={22} />, href: "#", active: false, onClick: handleSettingsClick },
     { title: "Community", icon: <MessageSquare size={22} />, href: "#", active: false, onClick: () => setShowCommunityModal(true) },
+    { title: "Settings", icon: <CogIcon size={22} />, href: "#", active: false, onClick: handleSettingsClick },
   ];
 
   // Fetch user session

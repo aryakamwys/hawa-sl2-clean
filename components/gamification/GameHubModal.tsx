@@ -67,31 +67,57 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
 
   return (
     <>
-      <div className="!fixed !inset-0 !bg-black/50 !flex !items-center !justify-center !z-50 !p-4">
-        <div className="!bg-white !rounded-2xl !p-4 sm:!p-6 md:!p-8 !max-w-md !w-full !border-2 !border-black !max-h-[90vh] !overflow-y-auto">
+      <div className="!fixed !inset-0 !bg-black/40 !backdrop-blur-sm !flex !items-center !justify-center !z-50 !p-4">
+        <div className="!bg-white !rounded-2xl !shadow-2xl !p-6 md:!p-8 !max-w-md !w-full !max-h-[90vh] !overflow-y-auto relative">
+          {/* Close button absolute top right */}
+          <button
+            onClick={onClose}
+            className="!absolute !right-4 !top-4 !p-2 !text-gray-400 hover:!text-gray-600 !transition-colors"
+          >
+            <span className="sr-only">Close</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
           {/* Header */}
-          <div className="!text-center !mb-6 md:!mb-8">
-            <h2 className="!text-2xl sm:!text-3xl !font-bold !text-black">
-              {t?.game?.title || "Point Quiz"}
+          <div className="!text-center !mb-8">
+            <h2 className="!text-2xl !font-bold !text-gray-900 mb-1">
+              {t?.game?.title || "Game Hub"}
             </h2>
-            <div className="!mt-3 md:!mt-4">
+            <p className="!text-gray-500 !text-sm">Challenge yourself and earn rewards</p>
+            
+            <div className="!mt-6">
               {userLevel && (
-                <div className="!flex !items-center !justify-center !gap-3 sm:!gap-4">
-                  <div className="!text-center">
-                    <div className="!text-xs sm:!text-sm !text-gray-600">{t?.game?.level || "Level"}</div>
-                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
+                <div className="!flex !items-center !justify-center !gap-2 !bg-gray-50 !rounded-xl !p-3 !border !border-gray-100">
+                  <div className="!flex-1 !text-center">
+                    <div className="!text-xs !text-gray-500 !uppercase !tracking-wider !font-medium">{t?.game?.level || "Level"}</div>
+                    <div className="!text-xl !font-bold !text-[#005AE1]">
                       {userLevel.level}
                     </div>
                   </div>
-                  <div className="!text-center">
-                    <div className="!text-xs sm:!text-sm !text-gray-600">XP</div>
-                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
+                  <div className="!w-px !h-8 !bg-gray-200"></div>
+                  <div className="!flex-1 !text-center">
+                    <div className="!text-xs !text-gray-500 !uppercase !tracking-wider !font-medium">XP</div>
+                    <div className="!text-xl !font-bold !text-gray-900">
                       {userLevel.xp}
                     </div>
                   </div>
-                  <div className="!text-center">
-                    <div className="!text-xs sm:!text-sm !text-gray-600">{t?.game?.streak || "Streak"}</div>
-                    <div className="!text-lg sm:!text-xl !font-bold !text-black">
+                  <div className="!w-px !h-8 !bg-gray-200"></div>
+                  <div className="!flex-1 !text-center">
+                    <div className="!text-xs !text-gray-500 !uppercase !tracking-wider !font-medium">{t?.game?.streak || "Streak"}</div>
+                    <div className="!text-xl !font-bold !text-orange-500">
                       🔥 {userLevel.streak}
                     </div>
                   </div>
@@ -101,37 +127,33 @@ export default function GameHubModal({ onClose }: GameHubModalProps) {
           </div>
 
           {/* Menu Buttons */}
-          <div className="!space-y-3 md:!space-y-4">
+          <div className="!space-y-3">
             <button
               onClick={handleQuizClick}
-              className="!w-full !h-20 sm:!h-24 !text-lg sm:!text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-3 sm:!gap-4 !px-4 sm:!px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
+              className="!w-full !p-4 !bg-white !text-left !border !border-gray-200 !rounded-xl !flex !items-center !gap-4 !transition-all hover:!border-[#005AE1] hover:!shadow-md hover:!ring-1 hover:!ring-[#005AE1]/10 group"
             >
-              <span className="!text-3xl sm:!text-4xl">🎯</span>
-              <div className="!text-left">
-                <div className="!font-bold">{t?.game?.quizGame || "Quiz Game"}</div>
-                <div className="!text-xs sm:!text-sm">{t?.game?.quizDesc || "Answer questions & earn XP!"}</div>
+              <div className="!w-12 !h-12 !rounded-full !bg-blue-50 !flex !items-center !justify-center !text-2xl group-hover:!scale-110 !transition-transform">
+                🎯
+              </div>
+              <div className="!flex-1">
+                <div className="!font-bold !text-gray-900 !mb-0.5">{t?.game?.quizGame || "Quiz Game"}</div>
+                <div className="!text-xs !text-gray-500">{t?.game?.quizDesc || "Answer questions & earn XP!"}</div>
               </div>
             </button>
 
             <button
               onClick={handleLeaderboardClick}
-              className="!w-full !h-20 sm:!h-24 !text-lg sm:!text-xl !bg-white !text-black !border-2 !border-[#005AE1] !rounded-xl !flex !items-center !gap-3 sm:!gap-4 !px-4 sm:!px-6 !transition-all hover:!scale-105 active:!scale-95 hover:!bg-[#E0F4FF]"
+              className="!w-full !p-4 !bg-white !text-left !border !border-gray-200 !rounded-xl !flex !items-center !gap-4 !transition-all hover:!border-[#005AE1] hover:!shadow-md hover:!ring-1 hover:!ring-[#005AE1]/10 group"
             >
-              <span className="!text-3xl sm:!text-4xl">🏆</span>
-              <div className="!text-left">
-                <div className="!font-bold">{t?.game?.leaderboard || "Leaderboard"}</div>
-                <div className="!text-xs sm:!text-sm">{t?.game?.leaderboardDesc || "View your rankings!"}</div>
+              <div className="!w-12 !h-12 !rounded-full !bg-yellow-50 !flex !items-center !justify-center !text-2xl group-hover:!scale-110 !transition-transform">
+                🏆
+              </div>
+              <div className="!flex-1">
+                <div className="!font-bold !text-gray-900 !mb-0.5">{t?.game?.leaderboard || "Leaderboard"}</div>
+                <div className="!text-xs !text-gray-500">{t?.game?.leaderboardDesc || "View your rankings!"}</div>
               </div>
             </button>
           </div>
-
-          {/* Close */}
-          <button
-            onClick={onClose}
-            className="!mt-4 md:!mt-6 !w-full !py-2.5 md:!py-3 !bg-white !text-black !border-2 !border-[#005AE1] !rounded-lg !font-semibold hover:!bg-[#E0F4FF]"
-          >
-            {t?.game?.close || "Close"}
-          </button>
         </div>
       </div>
 
