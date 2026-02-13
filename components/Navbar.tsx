@@ -17,7 +17,7 @@ interface User {
 }
 
 export default function Navbar() {
-  const { t, language, changeLanguage, mounted } = useLanguage();
+  const { t, mounted } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -105,31 +105,7 @@ export default function Navbar() {
           <div className="h-6 w-px bg-gray-200" />
 
           <div className="flex items-center gap-4">
-            <details className="dropdown dropdown-end">
-              <summary className="flex items-center gap-1 cursor-pointer text-base font-medium text-gray-700 hover:text-[#005AE1] transition-colors">
-                {language}
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </summary>
-              <ul className="menu dropdown-content mt-3 w-28 rounded-xl bg-white p-2 shadow-lg">
-                {(["EN", "ID"] as const).map((v) => (
-                  <li key={v}>
-                    <button
-                      type="button"
-                      onClick={() => changeLanguage(v)}
-                      className={`text-base ${v === language ? "text-[#005AE1] font-semibold" : "text-gray-700"}`}
-                    >
-                      {v}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </details>
+
 
             {isLoading ? (
               <div className="!mr-4 text-sm text-gray-500">{t.common.loading}</div>
@@ -204,27 +180,7 @@ export default function Navbar() {
                 ))}
 
                 <div className="border-t border-gray-200 pt-3 mt-3">
-                  {/* Language Selector */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">{t.nav.language}:</span>
-                    <div className="flex gap-2">
-                      {(["EN", "ID"] as const).map((v) => (
-                        <button
-                          key={v}
-                          onClick={() => {
-                            changeLanguage(v);
-                            setMobileMenuOpen(false);
-                          }}
-                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${v === language
-                            ? "bg-[#005AE1] text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+
 
                   {/* Auth Buttons */}
                   {isLoading ? (
