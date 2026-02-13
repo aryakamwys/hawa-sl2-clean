@@ -94,34 +94,39 @@ export async function sendWhatsAppMessage(
 export function formatAirQualityAlert(data: {
   userName: string;
   location: string;
-  pm25: number;
-  pm10: number;
   ispu: number;
   category: string;
   recommendations: string[];
+  language?: "ID" | "EN";
 }): string {
-  const { userName, location, pm25, pm10, ispu, category, recommendations } = data;
+  const { userName, location, ispu, category, recommendations, language = "ID" } = data;
 
-  return `🚨 *PERINGATAN KUALITAS UDARA*
+  const recommendationText = recommendations.join(". ");
 
-Halo ${userName}!
+  if (language === "EN") {
+    // English simplified category map
+    const categoryEn = {
+      BAIK: "GOOD",
+      SEDANG: "MODERATE",
+      "TIDAK SEHAT": "UNHEALTHY",
+      "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
+      BERBAHAYA: "HAZARDOUS",
+    }[category] || category;
 
-Kualitas udara di ${location} saat ini *${category}*
+    return `⚠️ Air Quality Warning: Hello ${userName}, air quality in ${location} is currently ${categoryEn} (ISPU: ${ispu}). ${recommendationText}. Always take care of your lung health!
 
-📊 Data Saat Ini:
-• PM2.5: ${pm25.toFixed(1)} µg/m³
-• PM10: ${pm10.toFixed(1)} µg/m³
-• ISPU: ${ispu} (${category})
+Check details & forecast: https://hawa.app/map`;
+  }
 
-⚠️ Rekomendasi:
-${recommendations.map((r) => `• ${r}`).join("\n")}
+  // Default Indonesia
+  return `⚠️ Peringatan Kualitas Udara: Halo ${userName}, kualitas udara di ${location} saat ini ${category} (ISPU: ${ispu}). ${recommendationText}. Selalu jaga kesehatan paru-paru Anda!
 
-Cek detail di: https://hawa.app/map
-
----
-HAWA - Air Quality Monitoring`;
+Detail & forecast: https://hawa.app/map`;
 }
 
+/**
+ * Format scheduled daily notification
+ */
 /**
  * Format scheduled daily notification
  */
@@ -135,6 +140,7 @@ export function formatDailyNotification(data: {
   forecastAfternoon?: string;
   forecastEvening?: string;
   advice: string;
+  language?: "ID" | "EN";
 }): string {
   const {
     userName,
@@ -146,11 +152,48 @@ export function formatDailyNotification(data: {
     forecastAfternoon,
     forecastEvening,
     advice,
+    language = "ID",
   } = data;
 
   const now = new Date();
   const time = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
+  if (language === "EN") {
+    let forecastSectionEn = "";
+    if (forecastMorning || forecastAfternoon || forecastEvening) {
+      forecastSectionEn = `\n📈 Today's Forecast:
+${forecastMorning ? `• Morning: ${forecastMorning}` : ""}
+${forecastAfternoon ? `• Afternoon: ${forecastAfternoon}` : ""}
+${forecastEvening ? `• Evening: ${forecastEvening}` : ""}`;
+    }
+
+    const categoryEn = {
+      BAIK: "GOOD",
+      SEDANG: "MODERATE",
+      "TIDAK SEHAT": "UNHEALTHY",
+      "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
+      BERBAHAYA: "HAZARDOUS",
+    }[currentCategory] || currentCategory;
+
+    return `☀️ *AIR QUALITY REPORT*
+
+Good morning ${userName}!
+
+Air quality today in ${location}:
+
+📊 Current (${time}):
+• PM2.5: ${currentPM25.toFixed(1)} µg/m³
+• ISPU: ${currentISPU} (${categoryEn})${forecastSectionEn}
+
+💡 Advice: ${advice}
+
+View full forecast: https://hawa.app/map
+
+---
+HAWA - Air Quality Monitoring`;
+  }
+
+  // Default Indonesia
   let forecastSection = "";
   if (forecastMorning || forecastAfternoon || forecastEvening) {
     forecastSection = `\n📈 Prediksi Hari Ini:
@@ -180,10 +223,47 @@ HAWA - Air Quality Monitoring`;
 /**
  * Get recommendations based on ISPU category
  */
-export function getRecommendations(category: string): string[] {
+export function getRecommendations(category: string, language: "ID" | "EN" = "ID"): string[] {
+  if (language === "EN") {
+    switch (category) {
+      case "BAIK":
+        return ["Enjoy the fresh air! Air is healthy and safe for outdoor activities"];
+      case "SEDANG":
+        return [
+          "Safe for normal activities",
+          "Sensitive groups should reduce prolonged outdoor exertion",
+        ];
+      case "TIDAK SEHAT":
+        return [
+          "Wear a mask when going outside",
+          "Reduce heavy outdoor activities",
+          "Close windows at home",
+          "Sensitive groups should stay indoors",
+        ];
+      case "SANGAT TIDAK SEHAT":
+        return [
+          "MUST wear an N95 mask",
+          "Avoid outdoor activities",
+          "Close all windows and doors",
+          "Use an air purifier if available",
+          "Vulnerable groups must stay indoors",
+        ];
+      case "BERBAHAYA":
+        return [
+          "DO NOT go outside unless absolutely necessary!",
+          "Use an N95 mask if forced to go out",
+          "Close all windows and doors tightly",
+          "Seek medical help immediately if experiencing shortness of breath",
+        ];
+      default:
+        return ["Monitor air quality periodically"];
+    }
+  }
+
+  // Default Indonesia
   switch (category) {
     case "BAIK":
-      return ["Udara sehat, aman untuk aktivitas outdoor", "Nikmati udara segar!"];
+      return ["Nikmati udara segar! Udara sehat, aman untuk aktivitas outdoor"];
     case "SEDANG":
       return [
         "Aman untuk aktivitas normal",
@@ -194,7 +274,7 @@ export function getRecommendations(category: string): string[] {
         "Gunakan masker saat keluar rumah",
         "Kurangi aktivitas outdoor yang berat",
         "Tutup jendela rumah",
-        "Kelompok sensitif sebaiknya di dalam ruangan",
+        "Kelompok sensitif sebaiknya tetap di dalam ruangan",
       ];
     case "SANGAT TIDAK SEHAT":
       return [
@@ -202,14 +282,13 @@ export function getRecommendations(category: string): string[] {
         "Hindari aktivitas outdoor",
         "Tutup semua jendela dan pintu",
         "Gunakan air purifier jika ada",
-        "Kelompok rentan harus di dalam ruangan",
+        "Kelompok rentan harus tetap di dalam ruangan",
       ];
     case "BERBAHAYA":
       return [
-        "JANGAN keluar rumah kecuali sangat mendesak",
+        "JANGAN keluar rumah kecuali sangat mendesak!",
         "Gunakan masker N95 jika terpaksa keluar",
         "Tutup rapat semua jendela dan pintu",
-        "Gunakan air purifier",
         "Segera cari bantuan medis jika mengalami sesak napas",
       ];
     default:

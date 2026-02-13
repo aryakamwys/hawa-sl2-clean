@@ -35,9 +35,13 @@ interface Post {
 export default function CommunityModal({ isOpen, onClose }: CommunityModalProps) {
   const [user, setUser] = useState<{ name: string; id: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [displayedPosts, setDisplayedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const POSTS_PER_PAGE = 5;
 
   const [newPostContent, setNewPostContent] = useState("");
 
@@ -115,9 +119,15 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
     }
   }, [isOpen]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (loadMore = false) => {
     try {
-      setLoading(true);
+      if (loadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setDisplayedPosts([]);
+      }
+
       const res = await fetch("/api/community/posts");
       const data = await res.json();
 
@@ -147,10 +157,20 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
       }));
 
       setPosts(transformedPosts);
+
+      // Show only first 5 posts initially
+      const currentLength = loadMore ? displayedPosts.length : 0;
+      const newPosts = transformedPosts.slice(currentLength, currentLength + POSTS_PER_PAGE);
+      const updatedPosts = loadMore ? [...displayedPosts, ...newPosts] : newPosts;
+      setDisplayedPosts(updatedPosts);
+
+      // Check if there are more posts to load
+      setHasMore(transformedPosts.length > currentLength + POSTS_PER_PAGE);
     } catch (err) {
       console.error("Error fetching posts:", err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -195,6 +215,10 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create post");
     }
+  };
+
+  const handleLoadMore = () => {
+    fetchPosts(true);
   };
 
   const handleToggleReplies = (postId: string) => {
@@ -318,118 +342,137 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
               <h2 className="text-lg font-semibold text-gray-900">Community Hub</h2>
             </div>
 
-            <div className="flex flex-1 min-h-0">
+            <div className="flex flex-1 min-h-0 flex flex-col">
               {/* Content */}
-              <div className="flex-1 !p-6 overflow-y-auto">
+              <div className="flex-1 flex flex-col min-h-0">
                 {/* Messages */}
-                {error && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 !px-4 !py-3 text-sm text-red-700 mb-4">
-                    {error}
-                  </div>
-                )}
-                {success && (
-                  <div className="rounded-xl border border-green-200 bg-green-50 !px-4 !py-3 text-sm text-green-700 mb-4">
-                    {success}
-                  </div>
-                )}
+                <div className="!px-6 !py-4 flex-shrink-0">
+                  {error && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 !px-4 !py-3 text-sm text-red-700 mb-4">
+                      {error}
+                    </div>
+                  )}
+                  {success && (
+                    <div className="rounded-xl border border-green-200 bg-green-50 !px-4 !py-3 text-sm text-green-700 mb-4">
+                      {success}
+                    </div>
+                  )}
+                </div>
 
-                <div className="space-y-6">
-                  {/* Create Post Section */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                      {!user ? (
-                        <div className="text-center py-6">
-                          <p className="text-gray-500 mb-4 text-sm">Join the conversation by logging in</p>
+                {/* Sticky Create Post Section */}
+                <div className="!px-6 flex-shrink-0">
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                    {!user ? (
+                      <div className="text-center py-6">
+                        <p className="text-gray-500 mb-4 text-sm">Join the conversation by logging in</p>
+                        <button
+                          onClick={() => {
+                            onClose();
+                            window.location.href = "/";
+                          }}
+                          className="!px-6 !py-2.5 bg-[#005AE1] hover:bg-[#004BB8] text-white rounded-xl font-semibold text-sm transition-all"
+                        >
+                          Login to Post
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="flex gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#005AE1] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <textarea
+                              value={newPostContent}
+                              onChange={(e) => setNewPostContent(e.target.value)}
+                              placeholder="What's happening in your area?"
+                              className="w-full bg-white border border-gray-200 rounded-xl !px-4 !py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005AE1]/25 resize-none min-h-[80px]"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Actions: Image Upload & Post Button */}
+                        <div className="flex items-center justify-between pt-2">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelect}
+                            className="hidden"
+                          />
+                          {imagePreview ? (
+                            <div className="relative">
+                              <img
+                                src={imagePreview}
+                                alt="Preview"
+                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                              />
+                              <button
+                                onClick={handleRemoveImage}
+                                className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors"
+                                title="Remove image"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={triggerFileInput}
+                              className="p-2 text-gray-500 hover:bg-gray-200 rounded-lg transition-colors"
+                              title="Add Image (max 5MB)"
+                            >
+                              <Upload size={18} />
+                            </button>
+                          )}
+
                           <button
-                            onClick={() => {
-                              onClose();
-                              window.location.href = "/";
-                            }}
-                            className="!px-6 !py-2.5 bg-[#005AE1] hover:bg-[#004BB8] text-white rounded-xl font-semibold text-sm transition-all"
+                            onClick={handleCreatePost}
+                            disabled={!newPostContent.trim()}
+                            className="!px-5 !py-2.5 bg-[#005AE1] hover:bg-[#004BB8] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                           >
-                            Login to Post
+                            <span>Post</span>
+                            <Send size={14} />
                           </button>
                         </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="flex gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#005AE1] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                              {user.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-1">
-                              <textarea
-                                value={newPostContent}
-                                onChange={(e) => setNewPostContent(e.target.value)}
-                                placeholder="What's happening in your area?"
-                                className="w-full bg-white border border-gray-200 rounded-xl !px-4 !py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#005AE1]/25 resize-none min-h-[80px]"
-                              />
-                            </div>
-                          </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                          {/* Actions: Image Upload & Post Button */}
-                          <div className="flex items-center justify-between pt-2">
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageSelect}
-                              className="hidden"
-                            />
-                            {imagePreview ? (
-                              <div className="relative">
-                                <img
-                                  src={imagePreview}
-                                  alt="Preview"
-                                  className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                                />
-                                <button
-                                  onClick={handleRemoveImage}
-                                  className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors"
-                                  title="Remove image"
-                                >
-                                  <X size={12} />
-                                </button>
+                {/* Scrollable Posts Feed */}
+                <div className="flex-1 overflow-y-auto !px-6">
+                  <div className="space-y-4 py-4">
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                      Recent Activity
+                    </h3>
+
+                    {loading ? (
+                      // Skeleton Loading
+                      <div className="space-y-4">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <div key={i} className="bg-gray-50 border border-gray-200 rounded-xl p-4 animate-pulse">
+                            <div className="flex items-start gap-3 mb-3">
+                              <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0" />
+                              <div className="flex-1">
+                                <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
+                                <div className="h-3 bg-gray-200 rounded w-20" />
                               </div>
-                            ) : (
-                              <button
-                                onClick={triggerFileInput}
-                                className="p-2 text-gray-500 hover:bg-gray-200 rounded-lg transition-colors"
-                                title="Add Image (max 5MB)"
-                              >
-                                <Upload size={18} />
-                              </button>
-                            )}
-
-                            <button
-                              onClick={handleCreatePost}
-                              disabled={!newPostContent.trim()}
-                              className="!px-5 !py-2.5 bg-[#005AE1] hover:bg-[#004BB8] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                              <span>Post</span>
-                              <Send size={14} />
-                            </button>
+                            </div>
+                            <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                            <div className="h-4 bg-gray-200 rounded w-1/2" />
                           </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Posts Feed */}
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                        Recent Activity
-                      </h3>
-
-                      {loading ? (
-                        <div className="flex items-center justify-center !py-12">
-                          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                        </div>
-                      ) : posts.length === 0 ? (
-                        <div className="text-center py-12">
-                          <MessageSquare size={48} className="text-gray-300 mx-auto mb-4" />
-                          <p className="text-gray-500">No posts yet. Be the first to share!</p>
-                        </div>
-                      ) : (
+                        ))}
+                      </div>
+                    ) : displayedPosts.length === 0 ? (
+                      <div className="text-center py-12">
+                        <MessageSquare size={48} className="text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500">No posts yet. Be the first to share!</p>
+                      </div>
+                    ) : (
+                      <>
                         <div className="space-y-4">
-                          {posts.map((post) => (
+                          {displayedPosts.map((post) => (
                             <div
                               key={post.id}
                               className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-gray-300 transition-all"
@@ -575,14 +618,39 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                             </div>
                           ))}
                         </div>
-                      )}
-                    </div>
+
+                        {/* Load More Button */}
+                        {hasMore && !loading && displayedPosts.length > 0 && (
+                          <div className="flex justify-center pt-4">
+                            <button
+                              onClick={handleLoadMore}
+                              disabled={loadingMore}
+                              className="px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold text-sm transition-all flex items-center gap-2"
+                            >
+                              {loadingMore ? (
+                                <>
+                                  <Loader2 size={16} className="animate-spin" />
+                                  <span>Loading...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>Load More Posts</span>
+                                  <ChevronDown size={16} />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    </div>
+
   );
 }

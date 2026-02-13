@@ -1,8 +1,8 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+const groq = process.env.GROQ_API_KEY 
+  ? new Groq({ apiKey: process.env.GROQ_API_KEY }) 
+  : null;
 
 const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
@@ -207,8 +207,26 @@ async function summarizeNews(
     : "\nSumber: ";
 
   for (const item of items) {
+    // Local reference for type narrowing
+    const client = groq;
+    
+    if (!client) {
+      // Fallback if no API key
+      results.push({
+        id: Buffer.from(`${item.source}-${item.title}-${language}`).toString("base64").substring(0, 40),
+        title: item.title,
+        summary: item.title, // Use title as summary
+        imageUrl: null,
+        source: item.source,
+        sourceUrl: item.link,
+        publishedAt: item.pubDate,
+        category: item.category,
+      });
+      continue;
+    }
+
     try {
-      const completion = await groq.chat.completions.create({
+      const completion = await client.chat.completions.create({
         messages: [
           {
             role: "system",

@@ -23,6 +23,10 @@ export function useLanguage() {
     const loadLanguageFromDB = async () => {
       try {
         const res = await fetch("/api/auth/me");
+        if (!res.ok) {
+           // Should fail silently if not authorized or other error
+           return false;
+        }
         const data = await res.json();
         if (data.user?.language && (data.user.language === "EN" || data.user.language === "ID")) {
           const lang = data.user.language as Language;
@@ -30,8 +34,8 @@ export function useLanguage() {
           setTranslations(dictionaries[lang]);
           return true;
         }
-      } catch {
-        console.error("Failed to load language from DB");
+      } catch (err) {
+        console.error("Failed to load language from DB:", err);
       }
       return false;
     };

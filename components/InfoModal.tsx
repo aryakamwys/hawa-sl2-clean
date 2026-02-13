@@ -13,7 +13,7 @@ interface NewsItem {
   source: string;
   sourceUrl: string;
   publishedAt: string;
-  category: "bmkg";
+  category: "air-quality";
 }
 
 interface InfoModalProps {
@@ -144,7 +144,7 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
               <div className="mb-4 text-sm text-gray-500">
                 {t.info.showing}{" "}
                 <span className="font-semibold text-gray-900">{news.length}</span> {t.info.news}
-                <span> {t.info.from} <span className="font-semibold text-gray-900">BMKG</span></span>
+                <span> {t.info.from} <span className="font-semibold text-gray-900">Berbagai Sumber</span></span>
               </div>
 
               {/* News Grid */}

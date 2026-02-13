@@ -2,22 +2,17 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-  adapter: PrismaMariaDb | undefined;
+  prismaClient: PrismaClient | undefined;
 };
 
-// Use DATABASE_URL from .env
 const connectionString = process.env.DATABASE_URL!;
-
-// Create adapter factory once
-if (!globalForPrisma.adapter) {
-  globalForPrisma.adapter = new PrismaMariaDb(connectionString);
-}
+const adapter = new PrismaMariaDb(connectionString);
 
 export const prisma =
-  globalForPrisma.prisma ??
+  globalForPrisma.prismaClient ??
   new PrismaClient({
-    adapter: globalForPrisma.adapter,
+    adapter,
+    log: ['query', 'error', 'warn'],
   });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaClient = prisma;

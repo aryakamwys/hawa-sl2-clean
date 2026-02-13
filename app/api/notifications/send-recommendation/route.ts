@@ -62,7 +62,8 @@ export async function POST(request: Request) {
     }
 
     // Get recommendations based on category
-    const recommendations = getRecommendations(category);
+    const userLanguage = (profile.user.language as "ID" | "EN") || "EN";
+    const recommendations = getRecommendations(category, userLanguage);
 
     // Prepare message data
     const messageData: MessageData = {
@@ -77,9 +78,9 @@ export async function POST(request: Request) {
 
     // Format message based on age group
     const ageGroup = profile.ageGroup || "DEWASA";
-    const message = formatMessageByAgeGroup(messageData, ageGroup);
+    const message = formatMessageByAgeGroup(messageData, ageGroup, userLanguage);
 
-    console.log(`[Send Recommendation] Sending to ${ageGroup} user: ${profile.user.name}`);
+    console.log(`[Send Recommendation] Sending to ${ageGroup} user: ${profile.user.name} (${userLanguage})`);
 
     // Generate voice note for LANSIA (elderly)
     let mediaUrl: string | null = null;
@@ -128,10 +129,58 @@ export async function POST(request: Request) {
 }
 
 // Helper function to get recommendations
-function getRecommendations(category: string): string[] {
+function getRecommendations(category: string, language: "ID" | "EN" = "ID"): string[] {
+  // Use the service function instead of local helper if possible, but since we are inside api route,
+  // ensure consistent logic. Actually, better to import from service to avoid code duplication.
+  // BUT the existing code had a local helper. Let's redirect to use the service one?
+  // The file imports `getRecommendations` from local function at bottom, but `kirimi.service` also exports it.
+  // The route currently has a local function. I should replace it with the imported one or update local one.
+  // I will update the local one for now to match logic in kirimi.service if I can't easily import.
+  // Actually, I can just import it.
+  
+  // Re-implementing logic here for safety as per local existing pattern, or better:
+  // Since I can't delete the function easily with replace_file_content without potentially breaking if I miss lines,
+  // I will just update this local function to support EN.
+  
+  if (language === "EN") {
+    switch (category) {
+      case "BAIK":
+        return ["Enjoy the fresh air! Air is healthy and safe for outdoor activities"];
+      case "SEDANG":
+        return [
+          "Safe for normal activities",
+          "Sensitive groups should reduce prolonged outdoor exertion",
+        ];
+      case "TIDAK SEHAT":
+        return [
+          "Wear a mask when going outside",
+          "Reduce heavy outdoor activities",
+          "Close windows at home",
+          "Sensitive groups should stay indoors",
+        ];
+      case "SANGAT TIDAK SEHAT":
+        return [
+          "MUST wear an N95 mask",
+          "Avoid outdoor activities",
+          "Close all windows and doors",
+          "Use an air purifier if available",
+          "Vulnerable groups must stay indoors",
+        ];
+      case "BERBAHAYA":
+        return [
+          "DO NOT go outside unless absolutely necessary!",
+          "Use an N95 mask if forced to go out",
+          "Close all windows and doors tightly",
+          "Seek medical help immediately if experiencing shortness of breath",
+        ];
+      default:
+        return ["Monitor air quality periodically"];
+    }
+  }
+
   switch (category) {
     case "BAIK":
-      return ["Udara sehat, aman untuk aktivitas outdoor", "Nikmati udara segar!"];
+      return ["Nikmati udara segar! Udara sehat, aman untuk aktivitas outdoor"];
     case "SEDANG":
       return [
         "Aman untuk aktivitas normal",
@@ -142,7 +191,7 @@ function getRecommendations(category: string): string[] {
         "Gunakan masker saat keluar rumah",
         "Kurangi aktivitas outdoor yang berat",
         "Tutup jendela rumah",
-        "Kelompok sensitif sebaiknya di dalam ruangan",
+        "Kelompok sensitif sebaiknya tetap di dalam ruangan",
       ];
     case "SANGAT TIDAK SEHAT":
       return [
@@ -150,14 +199,13 @@ function getRecommendations(category: string): string[] {
         "Hindari aktivitas outdoor",
         "Tutup semua jendela dan pintu",
         "Gunakan air purifier jika ada",
-        "Kelompok rentan harus di dalam ruangan",
+        "Kelompok rentan harus tetap di dalam ruangan",
       ];
     case "BERBAHAYA":
       return [
-        "JANGAN keluar rumah kecuali sangat mendesak",
+        "JANGAN keluar rumah kecuali sangat mendesak!",
         "Gunakan masker N95 jika terpaksa keluar",
         "Tutup rapat semua jendela dan pintu",
-        "Gunakan air purifier",
         "Segera cari bantuan medis jika mengalami sesak napas",
       ];
     default:

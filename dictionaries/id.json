@@ -149,7 +149,7 @@
       "label": "Berita AI",
       "title": "Berita Kualitas Udara dengan Ringkasan AI",
       "desc": "Berita terkini dari berbagai sumber mengenai kualitas udara, dilengkapi dengan ringkasan otomatis dari Meta AI untuk kemudahan membaca.",
-      "features": ["Multi-sumber berita", "Ringkasan Meta AI", "Google News & BMKG", "Update harian"]
+      "features": ["Multi-sumber berita", "Ringkasan Meta AI", "Berita Kualitas Udara", "Update harian"]
     },
     "quiz": {
       "label": "Quiz & Game",
@@ -301,17 +301,17 @@
     "close": "Tutup"
   },
   "info": {
-    "title": "Berita BMKG",
-    "subtitle": "Informasi terbaru dari BMKG seputar cuaca dan iklim",
+    "title": "Berita Kualitas Udara",
+    "subtitle": "Informasi terbaru seputar polusi udara dan kualitas udara",
     "loading": "Memuat...",
     "refresh": "Refresh",
     "showing": "Menampilkan",
-    "newsFrom": "berita dari BMKG",
+    "newsFrom": "berita dari",
     "errorTitle": "Gagal Memuat Berita",
     "errorGeneric": "Terjadi kesalahan",
     "retry": "Coba Lagi",
     "noNews": "Belum Ada Berita",
-    "noNewsDesc": "Berita BMKG akan ditampilkan di sini",
+    "noNewsDesc": "Berita kualitas udara akan ditampilkan di sini",
     "news": "berita",
     "from": "dari"
   },

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { sendWhatsAppMessage, formatDailyNotification, getRecommendations } from "./kirimi.service";
+import { sendWhatsAppMessage, formatDailyNotification, getRecommendations, formatAirQualityAlert } from "./kirimi.service";
 import { calculateISPU, getISPUCategory } from "./forecast.service";
 
 /**
@@ -52,25 +52,17 @@ export async function checkAndSendAlerts() {
             continue;
           }
 
+          const userLanguage = (profile.user.language as "ID" | "EN") || "ID";
+
           // Send alert
-          const message = `🚨 *PERINGATAN KUALITAS UDARA*
-
-Halo ${profile.user.name}!
-
-Kualitas udara di ${location || profile.district || "Bandung"} saat ini *${category}*
-
-📊 Data Saat Ini:
-• PM2.5: ${pm25.toFixed(1)} µg/m³
-• PM10: ${pm10.toFixed(1)} µg/m³
-• ISPU: ${ispu} (${category})
-
-⚠️ Rekomendasi:
-${getRecommendations(category).map((r) => `• ${r}`).join("\n")}
-
-Cek detail di: https://hawa.app/map
-
----
-HAWA - Air Quality Monitoring`;
+          const message = formatAirQualityAlert({
+            userName: profile.user.name,
+            location: location || profile.district || "Bandung",
+            ispu,
+            category,
+            recommendations: getRecommendations(category, userLanguage),
+            language: userLanguage,
+          });
 
           await sendWhatsAppMessage(profile.phoneNumber!, message);
           
@@ -132,6 +124,7 @@ export async function sendScheduledNotifications() {
         const { pm25, pm10, location } = latestData;
         const ispu = calculateISPU(pm25, pm10);
         const category = getISPUCategory(ispu);
+        const userLanguage = (profile.user.language as "ID" | "EN") || "ID";
 
         const message = formatDailyNotification({
           userName: profile.user.name,
@@ -139,7 +132,8 @@ export async function sendScheduledNotifications() {
           currentPM25: pm25,
           currentISPU: ispu,
           currentCategory: category,
-          advice: getRecommendations(category)[0] || "Pantau kualitas udara secara berkala",
+          advice: getRecommendations(category, userLanguage)[0] || (userLanguage === "EN" ? "Monitor air quality periodically" : "Pantau kualitas udara secara berkala"),
+          language: userLanguage,
         });
 
         await sendWhatsAppMessage(profile.phoneNumber!, message);
@@ -168,10 +162,16 @@ async function getLatestAirQualityData(): Promise<{ pm25: number; pm10: number; 
     }
 
     const latest = data.devices[0];
+    
+    // Use device name as location if available, otherwise "Bandung"
+    // For now assuming the first device is representative, but ideally we match user district
+    const deviceName = latest.name || "Station";
+    const cleanLocation = deviceName.replace("HAWA IoT Sensor — ", "").replace("Gas Pollutant", "Sensor Gas").replace("Particle", "Sensor Partikel");
+
     return {
       pm25: parseFloat(latest.pm25Density),
       pm10: parseFloat(latest.pm10Density),
-      location: "Jalan Cisirung, Bandung",
+      location: cleanLocation || "Bandung",
     };
   } catch (error) {
     console.error("[Notification Service] Failed to get latest air quality:", error);

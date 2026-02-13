@@ -147,7 +147,7 @@
       "label": "AI News",
       "title": "Air Quality News with AI Summary",
       "desc": "Latest news from various sources regarding air quality, equipped with automatic summaries from Meta AI for easy reading.",
-      "features": ["Multi-source news", "Meta AI Summary", "Google News & BMKG", "Daily updates"]
+      "features": ["Multi-source news", "Meta AI Summary", "Air Quality News", "Daily updates"]
     },
     "quiz": {
       "label": "Quiz & Game",
@@ -299,17 +299,17 @@
     "close": "Close"
   },
   "info": {
-    "title": "BMKG News",
-    "subtitle": "Latest information from BMKG about weather and climate",
+    "title": "Air Quality News",
+    "subtitle": "Latest information about air pollution and air quality",
     "loading": "Loading...",
     "refresh": "Refresh",
     "showing": "Showing",
-    "newsFrom": "news from BMKG",
+    "newsFrom": "news from",
     "errorTitle": "Failed to Load News",
     "errorGeneric": "An error occurred",
     "retry": "Try Again",
     "noNews": "No News Yet",
-    "noNewsDesc": "BMKG news will be displayed here",
+    "noNewsDesc": "Air quality news will be displayed here",
     "news": "news",
     "from": "from"
   },

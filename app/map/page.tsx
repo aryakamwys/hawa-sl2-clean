@@ -99,6 +99,20 @@ export default function MapPage() {
 
       // Get the latest record (first one)
       const latestData = devicesData.devices[0];
+      
+      // Determine location name from device name
+      // Example: "HAWA IoT Sensor — Gas Pollutant 1" -> "Sensor Gas 1"
+      let locationName = latestData.name || "Bandung";
+      if (locationName.includes("HAWA IoT Sensor")) {
+        locationName = locationName.replace("HAWA IoT Sensor — ", "");
+        locationName = locationName.replace("Gas Pollutant", "Sensor Gas");
+        locationName = locationName.replace("Particle", "Sensor Partikel");
+      }
+      
+      // If it looks like a raw ID or empty, fallback to Bandung
+      if (!locationName || locationName.length < 3) {
+        locationName = "Bandung";
+      }
 
       // Analyze with AI using real data
       const res = await fetch("/api/ai/analyze", {
@@ -114,7 +128,7 @@ export default function MapPage() {
           humidity: parseFloat(latestData.humidity),
           pressure: parseFloat(latestData.pressure),
           deviceId: latestData.deviceId,
-          location: "Jalan Cisirung, Bandung",
+          location: locationName,
           language // Pass language to API
         }),
       });
@@ -127,7 +141,7 @@ export default function MapPage() {
 
       const result = await res.json();
       setAiResult(result);
-      setLatestDeviceData(latestData); // Store for WhatsApp sending
+      setLatestDeviceData({ ...latestData, locationName }); // Store for WhatsApp sending with location
       setShowAiModal(true);
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -167,7 +181,7 @@ export default function MapPage() {
           pm10: pm10 || 1,
           ispu: ispu || 50,
           category,
-          location: "Jalan Cisirung, Bandung",
+          location: latestDeviceData.locationName || "Bandung",
         }),
       });
 
