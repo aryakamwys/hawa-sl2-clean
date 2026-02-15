@@ -35,13 +35,16 @@ interface Post {
 export default function CommunityModal({ isOpen, onClose }: CommunityModalProps) {
   const [user, setUser] = useState<{ name: string; id: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [displayedPosts, setDisplayedPosts] = useState<Post[]>([]);
+  const [visibleCount, setVisibleCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const POSTS_PER_PAGE = 5;
+
+  // Derived state to ensure reactivity
+  const displayedPosts = posts.slice(0, visibleCount);
 
   const [newPostContent, setNewPostContent] = useState("");
 
@@ -125,10 +128,11 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
         setLoadingMore(true);
       } else {
         setLoading(true);
-        setDisplayedPosts([]);
+        // Reset visible count on fresh load
+        setVisibleCount(POSTS_PER_PAGE);
       }
 
-      const res = await fetch("/api/community/posts");
+      const res = await fetch("/api/community/posts", { cache: "no-store" });
       const data = await res.json();
 
       if (!res.ok) {
@@ -158,14 +162,8 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
 
       setPosts(transformedPosts);
 
-      // Show only first 5 posts initially
-      const currentLength = loadMore ? displayedPosts.length : 0;
-      const newPosts = transformedPosts.slice(currentLength, currentLength + POSTS_PER_PAGE);
-      const updatedPosts = loadMore ? [...displayedPosts, ...newPosts] : newPosts;
-      setDisplayedPosts(updatedPosts);
-
       // Check if there are more posts to load
-      setHasMore(transformedPosts.length > currentLength + POSTS_PER_PAGE);
+      setHasMore(transformedPosts.length > (loadMore ? visibleCount : POSTS_PER_PAGE));
     } catch (err) {
       console.error("Error fetching posts:", err);
     } finally {
@@ -218,7 +216,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
   };
 
   const handleLoadMore = () => {
-    fetchPosts(true);
+    setVisibleCount(prev => prev + POSTS_PER_PAGE);
   };
 
   const handleToggleReplies = (postId: string) => {
