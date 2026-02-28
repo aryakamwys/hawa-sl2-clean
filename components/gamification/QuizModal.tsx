@@ -17,6 +17,7 @@ interface FillInTheBlankQuestion {
 
 interface QuizModalProps {
   onClose: () => void;
+  onViewLeaderboard?: () => void;
 }
 
 interface UserAnswer {
@@ -27,7 +28,7 @@ interface UserAnswer {
   category: string;
 }
 
-export default function QuizModal({ onClose }: QuizModalProps) {
+export default function QuizModal({ onClose, onViewLeaderboard }: QuizModalProps) {
   const { language } = useLanguage(); // Get current language
   const [questions, setQuestions] = useState<FillInTheBlankQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,14 +82,14 @@ export default function QuizModal({ onClose }: QuizModalProps) {
 
     // Determine target blank: use selected or find first empty
     let targetIndex = selectedBlankIndex;
-    
+
     if (targetIndex === null) {
       // Find first empty blank
       const currentAnswers = userAnswers.get(currentQuestion.id) || [];
       // Calculate total blanks based on parsing
       const parts = currentQuestion.questionText.split("___");
       const blankCount = parts.length - 1;
-      
+
       for (let i = 0; i < blankCount; i++) {
         if (!currentAnswers[i]) {
           targetIndex = i;
@@ -100,7 +101,7 @@ export default function QuizModal({ onClose }: QuizModalProps) {
     if (targetIndex !== null) {
       updateAnswer(currentQuestion.id, targetIndex, option);
       // Move selection to next blank or clear
-      setSelectedBlankIndex(null); 
+      setSelectedBlankIndex(null);
     }
   };
 
@@ -211,41 +212,66 @@ export default function QuizModal({ onClose }: QuizModalProps) {
   // Results state
   if (showResults && results) {
     return (
-      <div className="!fixed !inset-0 !bg-black/50 !backdrop-blur-sm !z-[2000] !flex !items-center !justify-center !p-4">
-        <div className="!bg-white !rounded-2xl !p-8 !max-w-2xl !w-full !shadow-2xl">
-          <div className="!text-center !mb-6">
-            <div className="!text-6xl !mb-4">
+      <div className="!fixed !inset-0 !bg-black/40 !backdrop-blur-sm !z-[2000] !flex !items-center !justify-center !p-4 !font-sans !text-slate-900 !tracking-tight">
+        <div className="!relative !bg-[#F8FAFC] !rounded-[2rem] !p-8 !max-w-2xl !w-full !shadow-2xl !overflow-hidden">
+          {/* Subtle glow background */}
+          <div className="!absolute !top-0 !left-0 !w-full !h-48 !bg-gradient-to-b !from-slate-200/50 !to-transparent !pointer-events-none !z-0"></div>
+
+          <div className="!relative !z-10 !text-center !mb-8">
+            <div className="!w-20 !h-20 !mx-auto !bg-white !rounded-3xl !flex !items-center !justify-center !shadow-sm !mb-6 !text-4xl">
               {results.totalCorrect >= 7 ? "🎉" : results.totalCorrect >= 5 ? "👍" : "💪"}
             </div>
-            <h2 className="!text-3xl !font-bold !text-gray-900 !mb-2">Quiz Completed!</h2>
-            <p className="!text-xl !text-gray-700">
+            <h2 className="!text-3xl !font-bold !text-slate-900 !mb-3">Quiz Completed!</h2>
+            <p className="!text-[17px] !text-slate-600 !font-medium">
               You got <span className="!font-bold !text-[#005AE1]">{results.totalCorrect}</span> out of{" "}
               <span className="!font-bold">{results.totalQuestions}</span> correct
             </p>
-            {results.xpEarned > 0 && (
-              <div className="!mt-4 !inline-block !bg-[#E0F4FF] !border-2 !border-[#005AE1] !rounded-full !px-6 !py-2">
-                <p className="!text-lg !font-bold !text-[#005AE1]">+{results.xpEarned} XP Earned!</p>
-              </div>
-            )}
-            {results.leveledUp && (
-              <div className="!mt-4 !bg-yellow-100 !border-2 !border-yellow-400 !rounded-xl !p-4">
-                <p className="!text-2xl">🎊</p>
-                <p className="!font-bold !text-gray-900">Level Up! Level {results.newLevel}</p>
+            <div className="!flex !flex-col md:!flex-row !items-stretch !justify-center !gap-3 !mt-6">
+              {results.xpEarned > 0 && (
+                <div className="!flex !items-center !justify-center !bg-gradient-to-r !from-[#005AE1] !to-[#399AF0] !rounded-2xl !px-6 !py-3.5 !shadow-[0_8px_20px_rgba(0,90,225,0.25)]">
+                  <p className="!text-[15px] !font-bold !text-white !m-0">+{results.xpEarned} XP Earned!</p>
+                </div>
+              )}
+              {results.leveledUp && (
+                <div className="!flex !items-center !justify-center !bg-gradient-to-r !from-amber-100 !to-yellow-50 !border !border-amber-200 !rounded-2xl !px-6 !py-3.5 !gap-3 !shadow-sm">
+                  <span className="!text-[22px] !m-0 !drop-shadow-sm !leading-none">🎊</span>
+                  <p className="!font-bold !text-slate-900 !text-[15px] !m-0">Level Up! Level {results.newLevel}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Mock Leaderboard Status (Can be hooked up to real API later) */}
+            {onViewLeaderboard ? (
+              <button
+                onClick={() => {
+                  onClose();
+                  onViewLeaderboard();
+                }}
+                className="!mt-5 !inline-flex !items-center !justify-center !gap-2 !bg-white hover:!bg-slate-50 !border !border-slate-200 hover:!border-slate-300 !rounded-full !px-5 !py-2 !transition-all !cursor-pointer !shadow-sm hover:!shadow-md hover:-!translate-y-[1px]"
+              >
+                <span className="!text-amber-500">🏆</span>
+                <p className="!text-[13px] !font-semibold !text-slate-600 !m-0">Naik ke peringkat <span className="!text-slate-900 !font-bold">#12</span> di District! 👉</p>
+              </button>
+            ) : (
+              <div className="!mt-5 !inline-flex !items-center !justify-center !gap-2 !bg-slate-50 !border !border-slate-200 !rounded-full !px-5 !py-2">
+                <span className="!text-amber-500">🏆</span>
+                <p className="!text-[13px] !font-semibold !text-slate-600 !m-0">Naik ke peringkat <span className="!text-slate-900 !font-bold">#12</span> di District!</p>
               </div>
             )}
           </div>
 
-          <div className="!flex !gap-3">
+          <div className="!flex !gap-4 !relative !z-10">
             <button
               onClick={generateQuestions}
-              className="!flex-1 !flex !items-center !justify-center !gap-2 !px-6 !py-3 !bg-[#005AE1] !text-white !rounded-xl !font-semibold hover:!bg-[#004BB8] !transition-colors !border-none !cursor-pointer"
+              className="!flex-1 !flex !items-center !justify-center !gap-2 !px-6 !py-3.5 !bg-gradient-to-r !from-[#005AE1] !to-[#399AF0] hover:!from-[#004BB8] hover:!to-[#2D8BE0] !text-white !rounded-full !font-bold hover:!shadow-lg hover:-!translate-y-[1px] !transition-all !border-none !cursor-pointer !text-[15px]"
             >
-              <RefreshCw size={20} />
+              <RefreshCw size={18} strokeWidth={2.5} />
               Try Again
             </button>
+
             <button
               onClick={onClose}
-              className="!px-6 !py-3 !border-2 !border-gray-300 !text-gray-700 !rounded-xl !font-semibold hover:!bg-gray-50 !transition-colors !bg-white !cursor-pointer"
+              className="!px-8 !py-3.5 !bg-white hover:!bg-slate-50 !text-slate-700 !rounded-full !font-bold !transition-all !cursor-pointer !text-[15px] !border !border-slate-200 !shadow-sm"
             >
               Close
             </button>
@@ -256,32 +282,40 @@ export default function QuizModal({ onClose }: QuizModalProps) {
   }
 
   return (
-    <div className="!fixed !inset-0 !bg-black/50 !backdrop-blur-sm !z-[2000] !flex !items-center !justify-center !p-4">
-      <div className="!bg-white !rounded-2xl !shadow-2xl !w-full !max-w-6xl !max-h-[90vh] !flex !flex-col !overflow-hidden">
+    <div className="!fixed !inset-0 !bg-black/40 !backdrop-blur-sm !z-[2000] !flex !items-center !justify-center !p-4 !font-sans !text-slate-900 !tracking-tight">
+      <div className="!relative !bg-[#F8FAFC] !rounded-[2rem] !shadow-2xl !w-full !max-w-6xl !max-h-[90vh] !flex !flex-col !overflow-hidden">
+        {/* Soft radial glow background behind header */}
+        <div className="!absolute !top-0 !left-0 !w-full !h-40 !bg-gradient-to-b !from-slate-200/50 !to-transparent !pointer-events-none !z-0"></div>
+
         {/* Header */}
-        <div className="!flex !items-center !justify-between !px-6 !py-4 !border-b !border-gray-200">
-          <h2 className="!text-xl !font-bold !text-gray-900 !m-0">Air Quality Quiz</h2>
+        <div className="!flex !items-center !justify-between !px-6 !py-5 !border-b !border-slate-200/60 !relative !z-10 !bg-white/40 !backdrop-blur-sm">
+          <div className="!flex !items-center !gap-3">
+            <div className="!w-10 !h-10 !bg-white !rounded-xl !flex !items-center !justify-center !shadow-sm">
+              <span className="!text-[22px]">🧠</span>
+            </div>
+            <h2 className="!text-[1.25rem] !font-bold !text-slate-900 !m-0">Air Quality Quiz</h2>
+          </div>
           <div className="!flex !items-center !gap-3">
             <button
               onClick={generateQuestions}
-              className="!flex !items-center !gap-2 !px-4 !py-2 !border-2 !border-[#005AE1] !text-[#005AE1] !rounded-xl !font-semibold hover:!bg-[#E0F4FF] !transition-colors !bg-white !cursor-pointer !text-sm"
+              className="!flex !items-center !gap-2 !px-4 !py-2.5 !bg-white !border !border-slate-200 hover:!border-slate-300 !text-slate-700 !rounded-full !font-bold hover:!bg-slate-50 !transition-all !cursor-pointer !shadow-sm !text-[13px]"
             >
               <RefreshCw size={16} />
               Generate Again
             </button>
             <button
               onClick={onClose}
-              className="!p-2 hover:!bg-gray-100 !rounded-lg !transition-colors !bg-transparent !border-none !cursor-pointer"
+              className="!text-slate-400 hover:!text-slate-800 !transition-colors !bg-transparent !border-none !p-2 !cursor-pointer"
             >
-              <X size={22} className="!text-gray-500" />
+              <X size={24} strokeWidth={2.5} />
             </button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="!flex !flex-1 !overflow-hidden !min-h-0">
+        <div className="!flex !flex-1 !overflow-hidden !min-h-0 !relative !z-10">
           {/* Left Panel - Question List (Hidden on Mobile) */}
-          <div className="!hidden md:!flex !w-72 !border-r !border-gray-200 !py-4 !px-3 !overflow-y-auto !bg-gray-50/50 !flex-shrink-0 !flex-col">
+          <div className="!hidden md:!flex !w-72 !border-r !border-slate-200/60 !py-5 !px-4 !overflow-y-auto !bg-slate-50/50 !flex-shrink-0 !flex-col !custom-scrollbar">
             <h3 className="!text-xs !font-semibold !text-gray-500 !mb-3 !uppercase !tracking-wider !px-2">
               Questions
             </h3>
@@ -292,21 +326,19 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                   <button
                     key={q.id}
                     onClick={() => {
-                        setCurrentQuestionIndex(index);
-                        setSelectedBlankIndex(null);
+                      setCurrentQuestionIndex(index);
+                      setSelectedBlankIndex(null);
                     }}
-                    className={`!w-full !flex !items-center !gap-3 !px-3 !py-3 !rounded-xl !transition-all !border-none !cursor-pointer !text-left ${
-                      currentQuestionIndex === index
-                        ? "!bg-[#005AE1] !text-white !shadow-md"
-                        : "!bg-white !text-gray-700 hover:!bg-gray-100"
-                    }`}
+                    className={`!w-full !flex !items-center !gap-3 !px-3 !py-3 !rounded-2xl !transition-all !border-none !cursor-pointer !text-left ${currentQuestionIndex === index
+                      ? "!bg-gradient-to-r !from-[#005AE1] !to-[#399AF0] !text-white !shadow-md"
+                      : "!bg-transparent hover:!bg-white !text-slate-700 hover:!shadow-sm"
+                      }`}
                   >
                     <div
-                      className={`!w-7 !h-7 !rounded-full !flex !items-center !justify-center !font-bold !text-xs !flex-shrink-0 ${
-                        currentQuestionIndex === index
-                          ? "!bg-white !text-[#005AE1]"
-                          : "!bg-gray-100 !text-gray-600"
-                      }`}
+                      className={`!w-7 !h-7 !rounded-full !flex !items-center !justify-center !font-bold !text-xs !flex-shrink-0 ${currentQuestionIndex === index
+                        ? "!bg-white !text-[#005AE1]"
+                        : "!bg-gray-100 !text-gray-600"
+                        }`}
                     >
                       {index + 1}
                     </div>
@@ -334,20 +366,20 @@ export default function QuizModal({ onClose }: QuizModalProps) {
           <div className="!flex-1 !flex !flex-col !p-4 md:!p-8 !overflow-y-auto">
             {/* Mobile Progress Bar */}
             <div className="!mb-4 md:!hidden">
-                <div className="!flex !items-center !justify-between !mb-2">
-                    <span className="!text-xs !font-semibold !text-gray-500">
-                        Question {currentQuestionIndex + 1} / {questions.length}
-                    </span>
-                    <span className="!text-xs !text-[#005AE1] !font-medium">
-                        {getQuestionStatus(questions[currentQuestionIndex]?.id) === "answered" ? "Answered" : "Unanswered"}
-                    </span>
-                </div>
-                <div className="!w-full !h-1.5 !bg-gray-100 !rounded-full !overflow-hidden">
-                    <div 
-                        className="!h-full !bg-[#005AE1] !transition-all !duration-300" 
-                        style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-                    />
-                </div>
+              <div className="!flex !items-center !justify-between !mb-2">
+                <span className="!text-xs !font-semibold !text-gray-500">
+                  Question {currentQuestionIndex + 1} / {questions.length}
+                </span>
+                <span className="!text-xs !text-[#005AE1] !font-medium">
+                  {getQuestionStatus(questions[currentQuestionIndex]?.id) === "answered" ? "Answered" : "Unanswered"}
+                </span>
+              </div>
+              <div className="!w-full !h-1.5 !bg-gray-100 !rounded-full !overflow-hidden">
+                <div
+                  className="!h-full !bg-[#005AE1] !transition-all !duration-300"
+                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                />
+              </div>
             </div>
             {currentQuestion && (
               <>
@@ -362,21 +394,20 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                 </div>
 
                 {/* Question with Blanks */}
-                <div className="!mb-6 md:!mb-8 !p-4 md:!p-6 !bg-gray-50 !rounded-xl !border !border-gray-200">
-                  <div className="!text-base md:!text-lg !font-medium !text-gray-900 !leading-loose">
+                <div className="!mb-6 md:!mb-8 !p-5 md:!p-8 !bg-white !rounded-[2rem] !border !border-slate-100 !shadow-sm">
+                  <div className="!text-base md:!text-lg !font-medium !text-slate-800 !leading-loose">
                     {parseQuestionText(currentQuestion.questionText).map((part, index) => (
                       <span key={index} className="!inline">
                         <span>{part}</span>
                         {index < currentQuestion.correctAnswers.length && (
-                            <span
+                          <span
                             onClick={() => setSelectedBlankIndex(selectedBlankIndex === index ? null : index)}
                             onDrop={(e) => handleDrop(e, currentQuestion.id, index)}
                             onDragOver={handleDragOver}
-                            className={`!inline-flex !items-center !mx-1 !min-w-[80px] md:!min-w-[100px] !px-3 md:!px-4 !py-1.5 !border-2 !rounded-lg !align-middle !transition-all !cursor-pointer ${
-                                selectedBlankIndex === index 
-                                    ? "!border-[#005AE1] !bg-blue-50 !ring-2 !ring-[#005AE1]/20" 
-                                    : "!border-dashed !border-gray-300 !bg-white hover:!border-[#005AE1]"
-                            }`}
+                            className={`!inline-flex !items-center !mx-1 !min-w-[80px] md:!min-w-[100px] !px-3 md:!px-4 !py-1.5 !border-2 !rounded-xl !align-middle !transition-all !cursor-pointer ${selectedBlankIndex === index
+                              ? "!border-[#005AE1] !bg-blue-50/50 !ring-4 !ring-[#005AE1]/10"
+                              : "!border-dashed !border-slate-300 !bg-slate-50 hover:!border-[#005AE1] hover:!bg-white"
+                              }`}
                             style={{ verticalAlign: "middle" }}
                           >
                             {currentAnswers[index] ? (
@@ -386,16 +417,16 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                                 </span>
                                 <button
                                   onClick={(e) => {
-                                      e.stopPropagation(); // Prevent toggling selection
-                                      removeAnswer(currentQuestion.id, index);
+                                    e.stopPropagation(); // Prevent toggling selection
+                                    removeAnswer(currentQuestion.id, index);
                                   }}
-                                  className="!text-red-400 hover:!text-red-600 !bg-transparent !border-none !cursor-pointer !p-1"
+                                  className="!text-slate-400 hover:!text-slate-600 !bg-transparent !border-none !cursor-pointer !p-1 !transition-colors"
                                 >
-                                  <X size={14} />
+                                  <X size={14} strokeWidth={2.5} />
                                 </button>
                               </span>
                             ) : (
-                              <span className={`!text-sm ${selectedBlankIndex === index ? "!text-[#005AE1]" : "!text-gray-400"}`}>
+                              <span className={`!text-sm ${selectedBlankIndex === index ? "!text-[#005AE1]" : "!text-slate-400"}`}>
                                 {selectedBlankIndex === index ? "Select..." : "Empty"}
                               </span>
                             )}
@@ -408,7 +439,7 @@ export default function QuizModal({ onClose }: QuizModalProps) {
 
                 {/* Answer Options */}
                 <div className="!mb-6">
-                  <h4 className="!text-xs !font-semibold !text-gray-500 !mb-3 !uppercase !tracking-wider !m-0">
+                  <h4 className="!text-xs !font-bold !text-slate-400 !mb-3 !uppercase !tracking-wider !m-0">
                     Tap or Drag to Fill
                   </h4>
                   <div className="!flex !flex-wrap !gap-2 md:!gap-3">
@@ -420,11 +451,10 @@ export default function QuizModal({ onClose }: QuizModalProps) {
                           draggable={!isUsed}
                           onDragStart={(e) => handleDragStart(e, option)}
                           onClick={() => !isUsed && handleOptionClick(option)}
-                          className={`!px-4 md:!px-5 !py-2 md:!py-2.5 !rounded-lg !border-2 !font-medium !text-sm !transition-all !select-none ${
-                            isUsed
-                              ? "!bg-gray-100 !border-gray-200 !text-gray-400 !cursor-not-allowed !opacity-50"
-                              : "!bg-white !border-[#005AE1] !text-[#005AE1] !cursor-pointer hover:!bg-[#E0F4FF] hover:!shadow-md active:!scale-95"
-                          }`}
+                          className={`!px-5 md:!px-6 !py-2.5 md:!py-3 !rounded-full !border-[1.5px] !font-bold !text-[14px] !transition-all !select-none !shadow-sm ${isUsed
+                            ? "!bg-slate-100 !border-slate-200 !text-slate-400 !cursor-not-allowed !opacity-50 !shadow-none"
+                            : "!bg-white !border-slate-200 !text-[#005AE1] !cursor-pointer hover:!border-[#005AE1] hover:!bg-[#F8FAFC] hover:-!translate-y-[2px] hover:!shadow-md active:!scale-95"
+                            }`}
                         >
                           {option}
                         </div>
@@ -435,9 +465,9 @@ export default function QuizModal({ onClose }: QuizModalProps) {
 
                 {/* Explanation (shown after submission) */}
                 {showResults && (
-                  <div className="!p-4 !bg-gray-50 !border !border-gray-200 !rounded-xl !mt-auto">
-                    <h4 className="!font-semibold !text-gray-900 !mb-2 !text-sm !m-0">Explanation:</h4>
-                    <p className="!text-gray-600 !text-sm !m-0">{currentQuestion.explanation}</p>
+                  <div className="!p-4 !bg-slate-50 !border !border-slate-200 !rounded-2xl !mt-auto">
+                    <h4 className="!font-bold !text-slate-900 !mb-2 !text-sm !m-0">Explanation:</h4>
+                    <p className="!text-slate-600 !text-sm !leading-relaxed !m-0">{currentQuestion.explanation}</p>
                   </div>
                 )}
               </>
@@ -446,28 +476,28 @@ export default function QuizModal({ onClose }: QuizModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="!flex !items-center !justify-between !px-6 !py-4 !border-t !border-gray-200 !bg-white">
-          <div className="!text-sm !text-gray-500">
+        <div className="!flex !items-center !justify-between !px-6 !py-5 !border-t !border-slate-200/60 !bg-white/40 !backdrop-blur-sm !relative !z-10">
+          <div className="!text-[14px] !font-bold !text-slate-500">
             {userAnswers.size} of {questions.length} answered
           </div>
           <div className="!flex !gap-3">
             <button
               onClick={() => {
-                  setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1));
-                  setSelectedBlankIndex(null);
+                setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1));
+                setSelectedBlankIndex(null);
               }}
               disabled={currentQuestionIndex === 0}
-              className="!px-4 md:!px-5 !py-2 md:!py-2.5 !border-2 !border-gray-300 !text-gray-700 !rounded-xl !font-semibold hover:!bg-gray-50 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !bg-white !cursor-pointer !text-sm"
+              className="!px-5 md:!px-6 !py-2.5 md:!py-3 !bg-white !border !border-slate-200 !text-slate-700 !rounded-full !font-bold hover:!bg-slate-50 !transition-all disabled:!opacity-40 disabled:!cursor-not-allowed !cursor-pointer !text-[14px] !shadow-sm"
             >
               Previous
             </button>
             {currentQuestionIndex < questions.length - 1 ? (
               <button
                 onClick={() => {
-                    setCurrentQuestionIndex(currentQuestionIndex + 1);
-                    setSelectedBlankIndex(null);
+                  setCurrentQuestionIndex(currentQuestionIndex + 1);
+                  setSelectedBlankIndex(null);
                 }}
-                className="!px-4 md:!px-5 !py-2 md:!py-2.5 !bg-[#005AE1] !text-white !rounded-xl !font-semibold hover:!bg-[#004BB8] !transition-colors !border-none !cursor-pointer !text-sm"
+                className="!px-6 md:!px-8 !py-2.5 md:!py-3 !bg-gradient-to-r !from-[#005AE1] !to-[#399AF0] hover:!from-[#004BB8] hover:!to-[#2D8BE0] !text-white !rounded-full !font-bold !transition-all hover:!shadow-lg hover:-!translate-y-[1px] !border-none !cursor-pointer !text-[14px] !shadow-md"
               >
                 Next
               </button>
@@ -475,7 +505,7 @@ export default function QuizModal({ onClose }: QuizModalProps) {
               <button
                 onClick={submitAllAnswers}
                 disabled={submitting || userAnswers.size === 0}
-                className="!px-4 md:!px-6 !py-2 md:!py-2.5 !bg-green-600 !text-white !rounded-xl !font-semibold hover:!bg-green-700 !transition-colors disabled:!opacity-40 disabled:!cursor-not-allowed !flex !items-center !gap-2 !border-none !cursor-pointer !text-sm"
+                className="!px-6 md:!px-8 !py-2.5 md:!py-3 !bg-gradient-to-r !from-emerald-500 !to-teal-400 hover:!from-emerald-600 hover:!to-teal-500 !text-white !rounded-full !font-bold !transition-all disabled:!opacity-40 disabled:!cursor-not-allowed !flex !items-center !gap-2 !border-none !cursor-pointer !text-[14px] !shadow-md hover:!shadow-lg hover:-!translate-y-[1px]"
               >
                 {submitting ? (
                   <>
