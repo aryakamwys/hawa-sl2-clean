@@ -3,11 +3,27 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Load Google credentials from file or env vars.
- * File-based approach is more reliable (no \n escaping issues).
+ * Load Google credentials.
+ * Priority: GOOGLE_CREDENTIALS env var (Vercel) > file (Docker) > individual env vars
  */
 function getGoogleCredentials() {
-  // Try 1: Load from google-credentials.json file
+  // Try 1: Load from GOOGLE_CREDENTIALS env var (for Vercel)
+  const envCreds = process.env.GOOGLE_CREDENTIALS;
+  if (envCreds) {
+    try {
+      const creds = JSON.parse(envCreds);
+      creds.private_key = creds.private_key.replace(/\\n/g, '\n');
+      console.log('[Devices API] Loaded credentials from GOOGLE_CREDENTIALS env var');
+      return {
+        client_email: creds.client_email,
+        private_key: creds.private_key,
+      };
+    } catch (error) {
+      console.error('[Devices API] Failed to parse GOOGLE_CREDENTIALS env var:', error);
+    }
+  }
+
+  // Try 2: Load from google-credentials.json file (for Docker)
   const possiblePaths = [
     path.join(process.cwd(), 'google-credentials.json'),
     '/app/google-credentials.json',
@@ -29,14 +45,13 @@ function getGoogleCredentials() {
     }
   }
 
-  // Try 2: Fall back to env vars
-  console.log('[Devices API] Falling back to env vars for credentials');
+  // Try 3: Fall back to individual env vars
+  console.log('[Devices API] Falling back to individual env vars for credentials');
   const privateKey = process.env.GOOGLE_PRIVATE_KEY;
   if (!privateKey) return null;
 
   return {
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-    // Handle both escaped and raw newlines
     private_key: privateKey.includes('\\n') 
       ? privateKey.replace(/\\n/g, '\n') 
       : privateKey,

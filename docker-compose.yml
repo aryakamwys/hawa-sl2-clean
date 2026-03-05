@@ -56,10 +56,9 @@ services:
       - GOOGLE_SPREADSHEET_ID=${GOOGLE_SPREADSHEET_ID}
       - GOOGLE_SERVICE_ACCOUNT_EMAIL=${GOOGLE_SERVICE_ACCOUNT_EMAIL}
       - GOOGLE_PRIVATE_KEY=${GOOGLE_PRIVATE_KEY}
+      - GOOGLE_CREDENTIALS=${GOOGLE_CREDENTIALS}
     env_file:
       - .env
-    volumes:
-      - ./google-credentials.json:/app/google-credentials.json:ro
     networks:
       - hawa_network
 

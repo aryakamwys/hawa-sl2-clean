@@ -54,9 +54,6 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy Google credentials file
-COPY --from=builder /app/google-credentials.json ./google-credentials.json
-
 # Set correct permissions
 RUN chown -R nextjs:nodejs /app
 
