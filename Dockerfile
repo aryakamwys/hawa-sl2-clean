@@ -13,7 +13,6 @@ WORKDIR /app
 # Build args for environment variables needed at build time
 ARG GROQ_API_KEY
 ARG GOOGLE_SPREADSHEET_ID
-ARG GOOGLE_SERVICE_ACCOUNT_EMAIL
 
 # Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
@@ -25,7 +24,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy"
 ENV GROQ_API_KEY=$GROQ_API_KEY
 ENV GOOGLE_SPREADSHEET_ID=$GOOGLE_SPREADSHEET_ID
-ENV GOOGLE_SERVICE_ACCOUNT_EMAIL=$GOOGLE_SERVICE_ACCOUNT_EMAIL
 
 # Generate Prisma Client
 RUN npx prisma generate
@@ -53,6 +51,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules ./node_modules
+COPY google-credentials.json* ./
 
 # Set correct permissions
 RUN chown -R nextjs:nodejs /app

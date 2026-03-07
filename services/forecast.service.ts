@@ -22,22 +22,8 @@ export interface ForecastResponse {
   predictions: ForecastPrediction[];
 }
 
-// Get Google credentials - supports env var (Vercel) and file (Docker)
+// Get Google credentials from file
 function getGoogleCredentials() {
-  // Try 1: Load from GOOGLE_CREDENTIALS env var (for Vercel)
-  const envCreds = process.env.GOOGLE_CREDENTIALS;
-  if (envCreds) {
-    try {
-      const creds = JSON.parse(envCreds);
-      creds.private_key = creds.private_key.replace(/\\n/g, '\n');
-      console.log("[Forecast] Loaded credentials from GOOGLE_CREDENTIALS env var");
-      return creds;
-    } catch (error) {
-      console.error("[Forecast] Failed to parse GOOGLE_CREDENTIALS env var:", error);
-    }
-  }
-
-  // Try 2: Load from file (for Docker)
   try {
     const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 
                      join(process.cwd(), "google-credentials.json");
