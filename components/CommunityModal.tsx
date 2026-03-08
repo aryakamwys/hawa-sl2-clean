@@ -32,19 +32,70 @@ interface Post {
   isAiAnalyzing?: boolean;
 }
 
+function formatTimestamp(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+  }) + ", " + date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+async function compressImage(file: File, maxWidth = 1200, quality = 0.7): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(file); return; }
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { resolve(file); return; }
+          const compressed = new File([blob], file.name, {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+          });
+          resolve(compressed);
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function safeParseJson(res: Response): Promise<any> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Server returned an invalid response. The image may be too large.");
+  }
+}
+
 export default function CommunityModal({ isOpen, onClose }: CommunityModalProps) {
   const [user, setUser] = useState<{ name: string; id: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [visibleCount, setVisibleCount] = useState(5);
   const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const POSTS_PER_PAGE = 5;
-
-  // Derived state to ensure reactivity
-  const displayedPosts = posts.slice(0, visibleCount);
 
   const [newPostContent, setNewPostContent] = useState("");
 
@@ -56,23 +107,27 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (max 5MB)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      const MAX_FILE_SIZE = 10 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
-        setError("File size must be less than 5MB");
+        setError("Maximum upload size is 10MB. Please choose a smaller image file.");
         return;
       }
-      setSelectedImage(file);
 
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file);
+        setSelectedImage(compressed);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(compressed);
+      } catch {
+        setError("Failed to process image");
+      }
     }
   };
 
@@ -125,15 +180,13 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
   const fetchPosts = async (loadMore = false) => {
     try {
       if (loadMore) {
-        setLoadingMore(true);
+        setLoading(true);
       } else {
         setLoading(true);
-        // Reset visible count on fresh load
-        setVisibleCount(POSTS_PER_PAGE);
       }
 
       const res = await fetch("/api/community/posts", { cache: "no-store" });
-      const data = await res.json();
+      const data = await safeParseJson(res);
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to fetch posts");
@@ -161,14 +214,10 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
       }));
 
       setPosts(transformedPosts);
-
-      // Check if there are more posts to load
-      setHasMore(transformedPosts.length > (loadMore ? visibleCount : POSTS_PER_PAGE));
     } catch (err) {
       console.error("Error fetching posts:", err);
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
   };
 
@@ -195,7 +244,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await safeParseJson(res);
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to create post");
@@ -213,10 +262,6 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create post");
     }
-  };
-
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + POSTS_PER_PAGE);
   };
 
   const handleToggleReplies = (postId: string) => {
@@ -403,7 +448,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                               <img
                                 src={imagePreview}
                                 alt="Preview"
-                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                className="w-24 h-24 object-cover rounded-xl border border-gray-200"
                               />
                               <button
                                 onClick={handleRemoveImage}
@@ -417,7 +462,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                             <button
                               onClick={triggerFileInput}
                               className="p-2 text-gray-500 hover:bg-gray-200 rounded-lg transition-colors"
-                              title="Add Image (max 5MB)"
+                              title="Add Image (max 10MB)"
                             >
                               <Upload size={18} />
                             </button>
@@ -447,7 +492,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                     {loading ? (
                       // Skeleton Loading
                       <div className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((i) => (
+                        {[1, 2, 3].map((i) => (
                           <div key={i} className="bg-gray-50 border border-gray-200 rounded-xl p-4 animate-pulse">
                             <div className="flex items-start gap-3 mb-3">
                               <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0" />
@@ -462,7 +507,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                           </div>
                         ))}
                       </div>
-                    ) : displayedPosts.length === 0 ? (
+                    ) : posts.length === 0 ? (
                       <div className="text-center py-12">
                         <MessageSquare size={48} className="text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500">No posts yet. Be the first to share!</p>
@@ -470,7 +515,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                     ) : (
                       <>
                         <div className="space-y-4">
-                          {displayedPosts.map((post) => (
+                          {posts.map((post) => (
                             <div
                               key={post.id}
                               className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-gray-300 transition-all"
@@ -482,10 +527,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                                     <span className="font-semibold text-gray-900 text-sm">{post.author}</span>
                                     <span className="text-gray-300 text-[10px]">•</span>
                                     <span className="text-gray-400 text-xs">
-                                      {new Intl.RelativeTimeFormat("en-US", {
-                                        numeric: "auto",
-                                        style: "short",
-                                      }).format(-(Date.now() - post.timestamp.getTime()) / (1000 * 60 * 60) > -1 ? (Date.now() - post.timestamp.getTime()) / (1000 * 60) : (Date.now() - post.timestamp.getTime()) / (1000 * 60 * 60), "hour")}
+                                      {formatTimestamp(post.timestamp)}
                                     </span>
                                   </div>
 
@@ -495,7 +537,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
 
                                   {post.image && (
                                     <div className="rounded-xl overflow-hidden border border-gray-200 mb-3">
-                                      <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-60" />
+                                      <img src={post.image} alt="Post content" className="w-full h-auto object-contain max-h-96" />
                                     </div>
                                   )}
 
@@ -600,10 +642,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                                             <span className="text-lg">{reply.avatar}</span>
                                             <span className="font-semibold text-gray-700 text-xs">{reply.author}</span>
                                             <span className="text-gray-400 text-[10px]">
-                                              {new Intl.RelativeTimeFormat("en-US", {
-                                                numeric: "auto",
-                                                style: "short",
-                                              }).format(-(Date.now() - reply.timestamp.getTime()) / (1000 * 60 * 60) > -1 ? (Date.now() - reply.timestamp.getTime()) / (1000 * 60) : (Date.now() - reply.timestamp.getTime()) / (1000 * 60 * 60), "hour")}
+                                              {formatTimestamp(reply.timestamp)}
                                             </span>
                                           </div>
                                           <p className="text-gray-600 text-sm pl-7">{reply.content}</p>
@@ -617,28 +656,7 @@ export default function CommunityModal({ isOpen, onClose }: CommunityModalProps)
                           ))}
                         </div>
 
-                        {/* Load More Button */}
-                        {hasMore && !loading && displayedPosts.length > 0 && (
-                          <div className="flex justify-center pt-4">
-                            <button
-                              onClick={handleLoadMore}
-                              disabled={loadingMore}
-                              className="px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold text-sm transition-all flex items-center gap-2"
-                            >
-                              {loadingMore ? (
-                                <>
-                                  <Loader2 size={16} className="animate-spin" />
-                                  <span>Loading...</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span>Load More Posts</span>
-                                  <ChevronDown size={16} />
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        )}
+
                       </>
                     )}
                   </div>
