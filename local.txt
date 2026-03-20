@@ -1,0 +1,16 @@
+//command
+
+docker-compose down
+
+//buat database
+docker-compose up -d mysql phpmyadmin
+
+//install package
+npm install
+
+//generate prisma
+npx prisma generate
+
+npx prisma db push
+
+npm run dev

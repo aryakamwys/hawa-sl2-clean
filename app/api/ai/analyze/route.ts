@@ -47,17 +47,15 @@ function checkRateLimit(userId: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // Check authentication (optional for AI Analyze)
     const session = await getSession();
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized. Please login first." },
-        { status: 401 }
-      );
-    }
+    
+    // Rate limiting key: userId if logged in, otherwise IP address
+    const clientIp = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
+    const rateLimitKey = session ? session.userId : clientIp;
 
     // Rate limiting
-    if (!checkRateLimit(session.userId)) {
+    if (!checkRateLimit(rateLimitKey)) {
       return NextResponse.json(
         { error: "Rate limit exceeded. Max 10 requests per minute." },
         { status: 429 }
@@ -84,10 +82,10 @@ export async function POST(request: NextRequest) {
 
     // Save usage to database (skip if table doesn't exist yet)
     try {
-      if (prisma.aIUsageLog) {
+      if (session && prisma.aIUsageLog) {
         await prisma.aIUsageLog.create({
           data: {
-            userId: session.userId,
+            userId: session?.userId as string,
             model: analysis.model,
             promptTokens: analysis.tokenUsage.promptTokens,
             completionTokens: analysis.tokenUsage.completionTokens,
@@ -115,7 +113,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Add usage info for admin only
-    if (session.role === "ADMIN") {
+    if (session?.role === "ADMIN") {
       response.usage = {
         tokenUsage: analysis.tokenUsage,
         cost: `$${analysis.cost.toFixed(6)}`,

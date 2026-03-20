@@ -152,6 +152,12 @@ export default function MapPage() {
   };
 
   const sendToWhatsApp = async () => {
+    if (!user) {
+      setShowAiModal(false);
+      setShowLoginRequired(true);
+      return;
+    }
+
     if (!latestDeviceData || !aiResult) {
       alert("No data available to send");
       return;
