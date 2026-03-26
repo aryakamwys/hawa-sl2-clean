@@ -8,6 +8,7 @@ import Features from "@/components/sections/Features";
 import DemoShowcase from "@/components/sections/DemoShowcase";
 import HowItWorks from "@/components/sections/HowItWorks";
 import AboutUs from "@/components/sections/AboutUs";
+import HowImportant from "@/components/sections/HowImportant";
 import Footer from "@/components/sections/Footer";
 import SplashScreen from "@/components/SplashScreen";
 import FlyingMascot from "@/components/FlyingMascot";
@@ -48,6 +49,7 @@ export default function HomePage() {
 
         <HowItWorks />
 
+        <HowImportant />
         <AboutUs />
 
         <div style={{ background: 'linear-gradient(180deg, #70D8FF 0%, #399AF0 41%, #005AE1 100%)' }}>

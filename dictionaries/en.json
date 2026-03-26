@@ -59,6 +59,18 @@
     "statMonitoring": "Monitoring",
     "initiative": "HAWA was developed through the YDCT by SL2 program as an initiative to utilize data-based technology to create real solutions to urban environmental challenges."
   },
+  "howImportant": {
+    "badge": "Why It Matters",
+    "headline": "Why Is Air Quality",
+    "headlineHighlight": "So Important?",
+    "description": "Understanding air quality helps protect you and your loved ones from invisible threats in the environment.",
+    "health": "Health Protection",
+    "healthDesc": "Long-term exposure to polluted air can cause respiratory diseases, heart problems, and other severe health issues.",
+    "productivity": "Daily Productivity",
+    "productivityDesc": "Clean air improves focus, brain function, and overall well-being, keeping you active and productive.",
+    "future": "Future Generations",
+    "futureDesc": "Monitoring and improving air quality today ensures a healthier, safer environment for our children tomorrow."
+  },
   "showcase": {
     "title": "Experience",
     "titleHighlight": "HAWA",

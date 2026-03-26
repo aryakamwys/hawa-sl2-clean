@@ -60,6 +60,18 @@
     "statMonitoring": "Monitoring",
     "initiative": "HAWA dikembangkan melalui program YDCT by SL2 sebagai inisiatif pemanfaatan teknologi berbasis data untuk menciptakan solusi nyata terhadap tantangan lingkungan perkotaan."
   },
+  "howImportant": {
+    "badge": "Mengapa Penting",
+    "headline": "Seberapa Penting",
+    "headlineHighlight": "Kualitas Udara?",
+    "description": "Memahami kualitas udara membantu melindungi Anda dan keluarga dari ancaman tak terlihat di lingkungan.",
+    "health": "Perlindungan Kesehatan",
+    "healthDesc": "Paparan udara berpolusi dalam jangka panjang dapat menyebabkan penyakit pernapasan, masalah jantung, dan gangguan kesehatan lainnya.",
+    "productivity": "Produktivitas Harian",
+    "productivityDesc": "Udara bersih meningkatkan fokus, fungsi otak, dan kesejahteraan, menjaga Anda tetap aktif dan produktif.",
+    "future": "Generasi Masa Depan",
+    "futureDesc": "Memantau dan memperbaiki kualitas udara hari ini memastikan lingkungan yang lebih sehat bagi anak-anak kita esok."
+  },
   "showcase": {
     "title": "Experience",
     "titleHighlight": "HAWA",
