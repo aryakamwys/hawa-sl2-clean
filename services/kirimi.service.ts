@@ -36,13 +36,9 @@ export async function sendWhatsAppMessage(
       };
     }
 
-    // Format phone number (remove +, -, spaces)
-    const formattedPhone = phoneNumber.replace(/[\+\-\s]/g, "");
-
-    // Ensure it starts with 62 (Indonesia)
-    const receiver = formattedPhone.startsWith("62")
-      ? formattedPhone
-      : `62${formattedPhone.startsWith("0") ? formattedPhone.slice(1) : formattedPhone}`;
+    // Allow any phone number format as supported by Kirimi API natively
+    // (e.g. 08xxx, +62xxx, 62xxx, 0812-7012-400, etc)
+    const receiver = phoneNumber.trim();
 
     console.log(`[Kirimi] Sending WhatsApp to ${receiver}${mediaUrl ? " (with media)" : ""}`);
 

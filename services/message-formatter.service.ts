@@ -146,6 +146,7 @@ export function formatForRemaja(data: MessageData, language: "ID" | "EN" = "ID")
       "TIDAK SEHAT": "UNHEALTHY",
       "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
       BERBAHAYA: "HAZARDOUS",
+      AMAN: "SAFE",
     }[category] || category;
 
     return `Hi ${userName}!
