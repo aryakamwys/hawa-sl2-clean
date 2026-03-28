@@ -269,6 +269,39 @@
           "other": "Lainnya"
         }
       }
+    },
+    "notificationSettings": {
+      "title": "Notifikasi WhatsApp",
+      "description": "Dapatkan peringatan kualitas udara langsung di WhatsApp",
+      "phoneMissing": "Nomor telepon belum diisi",
+      "phoneMissingDesc": "Silakan isi nomor telepon di profil Anda terlebih dahulu untuk mengaktifkan notifikasi WhatsApp.",
+      "enable": "Aktifkan Notifikasi WhatsApp",
+      "sendTo": "Kirim ke",
+      "autoAlerts": "Peringatan Otomatis",
+      "autoAlertsDesc": "Kirim notifikasi saat kualitas udara melebihi ambang batas",
+      "dailyReport": "Laporan Harian",
+      "enableDaily": "Aktifkan laporan harian",
+      "time": "Jam",
+      "days": "Hari",
+      "save": "Simpan Pengaturan",
+      "saving": "Menyimpan...",
+      "success": "Pengaturan notifikasi berhasil disimpan!",
+      "error": "Gagal menyimpan pengaturan",
+      "thresholds": {
+        "50": "SEDANG (ISPU > 50)",
+        "100": "TIDAK SEHAT (ISPU > 100)",
+        "200": "SANGAT TIDAK SEHAT (ISPU > 200)",
+        "300": "BERBAHAYA (ISPU > 300)"
+      },
+      "daysMap": {
+        "MON": "Sen",
+        "TUE": "Sel",
+        "WED": "Rab",
+        "THU": "Kam",
+        "FRI": "Jum",
+        "SAT": "Sab",
+        "SUN": "Min"
+      }
     }
   },
   "region": {

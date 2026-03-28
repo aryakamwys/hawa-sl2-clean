@@ -8,7 +8,7 @@ import SectionTransition from "@/components/SectionTransition";
 import FluidTabs from "@/components/animata/card/fluid-tabs";
 
 export default function DemoShowcase() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState("map");
 
   const demos = [
@@ -117,8 +117,12 @@ export default function DemoShowcase() {
                           <Map size={32} className="text-[#005AE1] opacity-60" />
                         </div>
                         <div className="flex gap-2">
-                          <div className="flex-1 h-8 bg-green-50 rounded-lg border border-green-200 flex items-center justify-center text-xs font-semibold text-green-700">AMAN</div>
-                          <div className="flex-1 h-8 bg-orange-50 rounded-lg border border-orange-200 flex items-center justify-center text-xs font-semibold text-orange-700">PM2.5: 12</div>
+                          <div className="flex-1 h-8 bg-green-50 rounded-lg border border-green-200 flex items-center justify-center text-xs font-semibold text-green-700">
+                            {language === "EN" ? "SAFE" : "AMAN"}
+                          </div>
+                          <div className="flex-1 h-8 bg-orange-50 rounded-lg border border-orange-200 flex items-center justify-center text-xs font-semibold text-orange-700">
+                            PM2.5: 12
+                          </div>
                         </div>
                       </div>
                     )}

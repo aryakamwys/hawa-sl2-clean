@@ -29,21 +29,22 @@ export function formatForLansia(data: MessageData, language: "ID" | "EN" = "ID")
       "TIDAK SEHAT": "NOT GOOD",
       "SANGAT TIDAK SEHAT": "BAD",
       BERBAHAYA: "VERY BAD",
+      AMAN: "SAFE",
     }[category] || category;
 
-    return `🚨 AIR WARNING
+    return `[AIR WARNING]
 
 Hello ${userName}!
 
-Air in ${location} is now ${simplifiedCategory} ⚠️
+Air in ${location} is now ${simplifiedCategory}
 
 What it means:
 ${getCategoryExplanation(category, "EN")}
 
 What to do:
-${topRecommendations.map((r) => `✅ ${simplifyRecommendation(r, "EN")}`).join("\n")}
+${topRecommendations.map((r) => `- ${simplifyRecommendation(r, "EN")}`).join("\n")}
 
-Stay healthy! 🙏
+Stay healthy!
 
 ---
 HAWA - Air Monitor`;
@@ -58,19 +59,19 @@ HAWA - Air Monitor`;
     BERBAHAYA: "SANGAT BURUK",
   }[category] || category;
 
-  return `🚨 PERINGATAN UDARA
+  return `[PERINGATAN UDARA]
 
 Halo ${userName}!
 
-Udara di ${location} sekarang ${simplifiedCategory} ⚠️
+Udara di ${location} sekarang ${simplifiedCategory}
 
 Artinya:
 ${getCategoryExplanation(category, "ID")}
 
 Yang harus dilakukan:
-${topRecommendations.map((r) => `✅ ${simplifyRecommendation(r, "ID")}`).join("\n")}
+${topRecommendations.map((r) => `- ${simplifyRecommendation(r, "ID")}`).join("\n")}
 
-Jaga kesehatan ya! 🙏
+Jaga kesehatan!
 
 ---
 HAWA - Pantau Udara`;
@@ -89,21 +90,22 @@ export function formatForDewasa(data: MessageData, language: "ID" | "EN" = "ID")
       "TIDAK SEHAT": "UNHEALTHY",
       "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
       BERBAHAYA: "HAZARDOUS",
+      AMAN: "SAFE",
     }[category] || category;
 
-    return `🚨 AIR QUALITY WARNING
+    return `[AIR QUALITY WARNING]
 
 Hello ${userName}!
 
 Air quality in ${location} is currently *${categoryEn}*
 
-📊 Current Data:
-• PM2.5: ${pm25.toFixed(1)} µg/m³
-• PM10: ${pm10.toFixed(1)} µg/m³
-• ISPU: ${ispu}
+Current Data:
+- PM2.5: ${pm25.toFixed(1)} µg/m³
+- PM10: ${pm10.toFixed(1)} µg/m³
+- ISPU: ${ispu}
 
-⚠️ Recommendations:
-${recommendations.map((r) => `• ${r}`).join("\n")}
+Recommendations:
+${recommendations.map((r) => `- ${r}`).join("\n")}
 
 Check details: https://hawa.app/map
 
@@ -111,19 +113,19 @@ Check details: https://hawa.app/map
 HAWA - Air Quality Monitoring`;
   }
 
-  return `🚨 PERINGATAN KUALITAS UDARA
+  return `[PERINGATAN KUALITAS UDARA]
 
 Halo ${userName}!
 
 Kualitas udara di ${location} saat ini *${category}*
 
-📊 Data Saat Ini:
-• PM2.5: ${pm25.toFixed(1)} µg/m³
-• PM10: ${pm10.toFixed(1)} µg/m³
-• ISPU: ${ispu}
+Data Saat Ini:
+- PM2.5: ${pm25.toFixed(1)} µg/m³
+- PM10: ${pm10.toFixed(1)} µg/m³
+- ISPU: ${ispu}
 
-⚠️ Rekomendasi:
-${recommendations.map((r) => `• ${r}`).join("\n")}
+Rekomendasi:
+${recommendations.map((r) => `- ${r}`).join("\n")}
 
 Cek detail: https://hawa.app/map
 
@@ -137,14 +139,6 @@ HAWA - Air Quality Monitoring`;
 export function formatForRemaja(data: MessageData, language: "ID" | "EN" = "ID"): string {
   const { userName, category, recommendations } = data;
 
-  const emoji = {
-    BAIK: "😊",
-    SEDANG: "😐",
-    "TIDAK SEHAT": "😷",
-    "SANGAT TIDAK SEHAT": "🤢",
-    BERBAHAYA: "☠️",
-  }[category] || "⚠️";
-
   if (language === "EN") {
      const categoryEn = {
       BAIK: "GOOD",
@@ -154,24 +148,24 @@ export function formatForRemaja(data: MessageData, language: "ID" | "EN" = "ID")
       BERBAHAYA: "HAZARDOUS",
     }[category] || category;
 
-    return `${emoji} Hi ${userName}!
+    return `Hi ${userName}!
 
 Air is currently: *${categoryEn}*
 
 What you need to do:
-${recommendations.slice(0, 3).map((r) => `• ${r}`).join("\n")}
+${recommendations.slice(0, 3).map((r) => `- ${r}`).join("\n")}
 
-Stay safe! 🙏`;
+Stay safe!`;
   }
 
-  return `${emoji} Halo ${userName}!
+  return `Halo ${userName}!
 
 Udara sekarang: *${category}*
 
 Yang perlu kamu lakukan:
-${recommendations.slice(0, 3).map((r) => `• ${r}`).join("\n")}
+${recommendations.slice(0, 3).map((r) => `- ${r}`).join("\n")}
 
-Stay safe! 🙏`;
+Stay safe!`;
 }
 
 /**
@@ -182,32 +176,33 @@ export function formatForAnak(data: MessageData, language: "ID" | "EN" = "ID"): 
 
   if (language === "EN") {
     const messages = {
-      BAIK: "Air is good today! Safe to play outside! 🌈",
-      SEDANG: "Air is okay. You can play but not too long! 🏃",
-      "TIDAK SEHAT": "Air is not good. Wear a mask if you go out! 😷",
-      "SANGAT TIDAK SEHAT": "Air is bad! Better play inside the house! 🏠",
-      BERBAHAYA: "Air is very bad! Do not go outside! ⚠️",
+      BAIK: "Air is good today! Safe to play outside!",
+      SEDANG: "Air is okay. You can play but not too long!",
+      "TIDAK SEHAT": "Air is not good. Wear a mask if you go out!",
+      "SANGAT TIDAK SEHAT": "Air is bad! Better play inside the house!",
+      BERBAHAYA: "Air is very bad! Do not go outside!",
+      AMAN: "Air is good today! Safe to play outside!",
     };
-    return `Hi ${userName}! 👋
+    return `Hi ${userName}!
 
 ${messages[category as keyof typeof messages] || "Be careful!"}
 
-Stay healthy! 💪`;
+Stay healthy!`;
   }
 
   const messages = {
-    BAIK: "Udara hari ini bagus! Aman main di luar! 🌈",
-    SEDANG: "Udara lumayan. Boleh main tapi jangan lama-lama ya! 🏃",
-    "TIDAK SEHAT": "Udara kurang bagus. Pakai masker kalau keluar ya! 😷",
-    "SANGAT TIDAK SEHAT": "Udara buruk! Lebih baik main di dalam rumah! 🏠",
-    BERBAHAYA: "Udara sangat buruk! Jangan keluar rumah ya! ⚠️",
+    BAIK: "Udara hari ini bagus! Aman main di luar!",
+    SEDANG: "Udara lumayan. Boleh main tapi jangan lama-lama ya!",
+    "TIDAK SEHAT": "Udara kurang bagus. Pakai masker kalau keluar ya!",
+    "SANGAT TIDAK SEHAT": "Udara buruk! Lebih baik main di dalam rumah!",
+    BERBAHAYA: "Udara sangat buruk! Jangan keluar rumah ya!",
   };
 
-  return `Halo ${userName}! 👋
+  return `Halo ${userName}!
 
 ${messages[category as keyof typeof messages] || "Hati-hati ya!"}
 
-Jaga kesehatan! 💪`;
+Jaga kesehatan!`;
 }
 
 /**
@@ -221,6 +216,7 @@ function getCategoryExplanation(category: string, language: "ID" | "EN"): string
       "TIDAK SEHAT": "Dirty air, can cause breathing issues",
       "SANGAT TIDAK SEHAT": "Very dirty air, dangerous for health",
       BERBAHAYA: "Very dangerous air, do not go outside",
+      AMAN: "Clean air, safe for activities",
     };
     return explanations[category as keyof typeof explanations] || "Check air quality";
   }

@@ -593,7 +593,12 @@ export default function MapPage() {
                   aiResult.status === "WASPADA" ? "bg-amber-50 text-amber-700 border border-amber-200" :
                   "bg-red-50 text-red-700 border border-red-200"
                 }`}>
-                  {aiResult.status}
+                  {language === "EN" 
+                    ? (aiResult.status === "AMAN" ? "SAFE" 
+                       : aiResult.status === "WASPADA" ? "WARNING" 
+                       : aiResult.status === "BAHAYA" ? "DANGEROUS" 
+                       : aiResult.status) 
+                    : aiResult.status}
                 </div>
               </div>
               <button onClick={() => setShowAiModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors">

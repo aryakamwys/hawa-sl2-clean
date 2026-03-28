@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Bell, BellOff, Clock, AlertTriangle, Loader2, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface NotificationSettingsProps {
   phoneNumber?: string;
 }
 
 export default function NotificationSettings({ phoneNumber }: NotificationSettingsProps) {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -21,20 +23,20 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
   });
 
   const days = [
-    { value: "MON", label: "Sen" },
-    { value: "TUE", label: "Sel" },
-    { value: "WED", label: "Rab" },
-    { value: "THU", label: "Kam" },
-    { value: "FRI", label: "Jum" },
-    { value: "SAT", label: "Sab" },
-    { value: "SUN", label: "Min" },
+    { value: "MON", label: t?.settings?.notificationSettings?.daysMap?.MON || "Sen" },
+    { value: "TUE", label: t?.settings?.notificationSettings?.daysMap?.TUE || "Sel" },
+    { value: "WED", label: t?.settings?.notificationSettings?.daysMap?.WED || "Rab" },
+    { value: "THU", label: t?.settings?.notificationSettings?.daysMap?.THU || "Kam" },
+    { value: "FRI", label: t?.settings?.notificationSettings?.daysMap?.FRI || "Jum" },
+    { value: "SAT", label: t?.settings?.notificationSettings?.daysMap?.SAT || "Sab" },
+    { value: "SUN", label: t?.settings?.notificationSettings?.daysMap?.SUN || "Min" },
   ];
 
   const thresholds = [
-    { value: 50, label: "SEDANG (ISPU > 50)", color: "text-yellow-600" },
-    { value: 100, label: "TIDAK SEHAT (ISPU > 100)", color: "text-orange-600" },
-    { value: 200, label: "SANGAT TIDAK SEHAT (ISPU > 200)", color: "text-red-600" },
-    { value: 300, label: "BERBAHAYA (ISPU > 300)", color: "text-red-800" },
+    { value: 50, label: t?.settings?.notificationSettings?.thresholds?.["50"] || "SEDANG (ISPU > 50)", color: "text-yellow-600" },
+    { value: 100, label: t?.settings?.notificationSettings?.thresholds?.["100"] || "TIDAK SEHAT (ISPU > 100)", color: "text-orange-600" },
+    { value: 200, label: t?.settings?.notificationSettings?.thresholds?.["200"] || "SANGAT TIDAK SEHAT (ISPU > 200)", color: "text-red-600" },
+    { value: 300, label: t?.settings?.notificationSettings?.thresholds?.["300"] || "BERBAHAYA (ISPU > 300)", color: "text-red-800" },
   ];
 
   useEffect(() => {
@@ -77,10 +79,10 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
         setTimeout(() => setSuccess(false), 3000);
       } else {
         const errorData = await res.json();
-        setError(errorData.message || "Gagal menyimpan pengaturan");
+        setError(errorData.message || t?.settings?.notificationSettings?.error || "Gagal menyimpan pengaturan");
       }
     } catch (err) {
-      setError("Gagal menyimpan pengaturan");
+      setError(t?.settings?.notificationSettings?.error || "Gagal menyimpan pengaturan");
     } finally {
       setSaving(false);
     }
@@ -109,7 +111,7 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
       {success && (
         <div className="!rounded-xl !border !border-green-200 !bg-green-50 !px-4 !py-3 !text-sm !text-green-700 flex !items-center !gap-2">
           <CheckCircle2 size={16} />
-          Pengaturan notifikasi berhasil disimpan!
+          {t?.settings?.notificationSettings?.success || "Pengaturan notifikasi berhasil disimpan!"}
         </div>
       )}
 
@@ -123,9 +125,9 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
       {/* Header */}
       <div className="flex !items-start !justify-between">
         <div>
-          <h3 className="!text-lg !font-semibold !mb-1">Notifikasi WhatsApp</h3>
+          <h3 className="!text-lg !font-semibold !mb-1">{t?.settings?.notificationSettings?.title || "Notifikasi WhatsApp"}</h3>
           <p className="!text-sm !text-gray-600">
-            Dapatkan peringatan kualitas udara langsung di WhatsApp
+            {t?.settings?.notificationSettings?.description || "Dapatkan peringatan kualitas udara langsung di WhatsApp"}
           </p>
         </div>
         {settings.whatsappNotifEnabled ? (
@@ -142,10 +144,10 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
             <AlertTriangle className="w-5 h-5 text-yellow-600 !mt-0.5" />
             <div>
               <p className="!text-sm !font-medium !text-yellow-800">
-                Nomor telepon belum diisi
+                {t?.settings?.notificationSettings?.phoneMissing || "Nomor telepon belum diisi"}
               </p>
               <p className="!text-sm !text-yellow-700 !mt-1">
-                Silakan isi nomor telepon di profil Anda terlebih dahulu untuk mengaktifkan notifikasi WhatsApp.
+                {t?.settings?.notificationSettings?.phoneMissingDesc || "Silakan isi nomor telepon di profil Anda terlebih dahulu untuk mengaktifkan notifikasi WhatsApp."}
               </p>
             </div>
           </div>
@@ -156,9 +158,9 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
       <div className="!p-4 !bg-gray-50 !rounded-lg">
         <label className="flex !items-center !justify-between !cursor-pointer">
           <div>
-            <p className="!font-medium">Aktifkan Notifikasi WhatsApp</p>
+            <p className="!font-medium">{t?.settings?.notificationSettings?.enable || "Aktifkan Notifikasi WhatsApp"}</p>
             <p className="!text-sm !text-gray-600 !mt-1">
-              {phoneNumber ? `Kirim ke: ${phoneNumber}` : "Nomor telepon belum diisi"}
+              {phoneNumber ? `${t?.settings?.notificationSettings?.sendTo || "Kirim ke"}: ${phoneNumber}` : (t?.settings?.notificationSettings?.phoneMissing || "Nomor telepon belum diisi")}
             </p>
           </div>
           <input
@@ -179,10 +181,10 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
           <div className="!space-y-3">
             <div className="flex !items-center !gap-2">
               <AlertTriangle className="w-5 h-5 text-orange-600" />
-              <h4 className="!font-medium">Peringatan Otomatis</h4>
+              <h4 className="!font-medium">{t?.settings?.notificationSettings?.autoAlerts || "Peringatan Otomatis"}</h4>
             </div>
             <p className="!text-sm !text-gray-600">
-              Kirim notifikasi saat kualitas udara melebihi ambang batas
+              {t?.settings?.notificationSettings?.autoAlertsDesc || "Kirim notifikasi saat kualitas udara melebihi ambang batas"}
             </p>
             <div className="!space-y-2">
               {thresholds.map((threshold) => (
@@ -211,10 +213,10 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
           <div className="!space-y-3">
             <div className="flex !items-center !gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
-              <h4 className="!font-medium">Laporan Harian</h4>
+              <h4 className="!font-medium">{t?.settings?.notificationSettings?.dailyReport || "Laporan Harian"}</h4>
             </div>
             <label className="flex !items-center !justify-between !p-3 !bg-gray-50 !rounded-lg !cursor-pointer">
-              <span className="!text-sm">Aktifkan laporan harian</span>
+              <span className="!text-sm">{t?.settings?.notificationSettings?.enableDaily || "Aktifkan laporan harian"}</span>
               <input
                 type="checkbox"
                 className="toggle toggle-info toggle-sm !bg-white"
@@ -229,7 +231,7 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
               <div className="!space-y-3 !pl-4">
                 {/* Time Picker */}
                 <div>
-                  <label className="!text-sm !font-medium !mb-2 !block">Jam</label>
+                  <label className="!text-sm !font-medium !mb-2 !block">{t?.settings?.notificationSettings?.time || "Jam"}</label>
                   <input
                     type="time"
                     className="input input-bordered !w-full"
@@ -242,7 +244,7 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
 
                 {/* Day Selector */}
                 <div>
-                  <label className="!text-sm !font-medium !mb-2 !block">Hari</label>
+                  <label className="!text-sm !font-medium !mb-2 !block">{t?.settings?.notificationSettings?.days || "Hari"}</label>
                   <div className="flex !gap-2 !flex-wrap">
                     {days.map((day) => (
                       <button
@@ -275,10 +277,10 @@ export default function NotificationSettings({ phoneNumber }: NotificationSettin
         {saving ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin !inline !mr-2" />
-            Menyimpan...
+            {t?.settings?.notificationSettings?.saving || "Menyimpan..."}
           </>
         ) : (
-          "Simpan Pengaturan"
+          t?.settings?.notificationSettings?.save || "Simpan Pengaturan"
         )}
       </button>
     </div>

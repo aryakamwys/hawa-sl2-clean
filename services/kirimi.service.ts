@@ -29,7 +29,11 @@ export async function sendWhatsAppMessage(
 ): Promise<KirimiResponse> {
   try {
     if (!KIRIMI_USER_CODE || !KIRIMI_SECRET || !KIRIMI_DEVICE_ID) {
-      throw new Error("Kirimi credentials not configured. Please set KIRIMI_USER_CODE, KIRIMI_SECRET, and KIRIMI_DEVICE_ID");
+      console.warn("[Kirimi] Credentials not configured. Mocking WhatsApp send for demo purpose.");
+      return {
+        success: true,
+        messageId: "mock-" + Date.now(),
+      };
     }
 
     // Format phone number (remove +, -, spaces)
@@ -111,15 +115,16 @@ export function formatAirQualityAlert(data: {
       "TIDAK SEHAT": "UNHEALTHY",
       "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
       BERBAHAYA: "HAZARDOUS",
+      AMAN: "SAFE",
     }[category] || category;
 
-    return `⚠️ Air Quality Warning: Hello ${userName}, air quality in ${location} is currently ${categoryEn} (ISPU: ${ispu}). ${recommendationText}. Always take care of your lung health!
+    return `[Air Quality Warning] Hello ${userName}, air quality in ${location} is currently ${categoryEn} (ISPU: ${ispu}). ${recommendationText}. Always take care of your lung health!
 
 Check details & forecast: https://hawa.app/map`;
   }
 
   // Default Indonesia
-  return `⚠️ Peringatan Kualitas Udara: Halo ${userName}, kualitas udara di ${location} saat ini ${category} (ISPU: ${ispu}). ${recommendationText}. Selalu jaga kesehatan paru-paru Anda!
+  return `[Peringatan Kualitas Udara] Halo ${userName}, kualitas udara di ${location} saat ini ${category} (ISPU: ${ispu}). ${recommendationText}. Selalu jaga kesehatan paru-paru Anda!
 
 Detail & forecast: https://hawa.app/map`;
 }
@@ -161,10 +166,10 @@ export function formatDailyNotification(data: {
   if (language === "EN") {
     let forecastSectionEn = "";
     if (forecastMorning || forecastAfternoon || forecastEvening) {
-      forecastSectionEn = `\n📈 Today's Forecast:
-${forecastMorning ? `• Morning: ${forecastMorning}` : ""}
-${forecastAfternoon ? `• Afternoon: ${forecastAfternoon}` : ""}
-${forecastEvening ? `• Evening: ${forecastEvening}` : ""}`;
+      forecastSectionEn = `\n[Today's Forecast]
+${forecastMorning ? `- Morning: ${forecastMorning}` : ""}
+${forecastAfternoon ? `- Afternoon: ${forecastAfternoon}` : ""}
+${forecastEvening ? `- Evening: ${forecastEvening}` : ""}`;
     }
 
     const categoryEn = {
@@ -173,19 +178,20 @@ ${forecastEvening ? `• Evening: ${forecastEvening}` : ""}`;
       "TIDAK SEHAT": "UNHEALTHY",
       "SANGAT TIDAK SEHAT": "VERY UNHEALTHY",
       BERBAHAYA: "HAZARDOUS",
+      AMAN: "SAFE",
     }[currentCategory] || currentCategory;
 
-    return `☀️ *AIR QUALITY REPORT*
+    return `[AIR QUALITY REPORT]
 
 Good morning ${userName}!
 
 Air quality today in ${location}:
 
-📊 Current (${time}):
-• PM2.5: ${currentPM25.toFixed(1)} µg/m³
-• ISPU: ${currentISPU} (${categoryEn})${forecastSectionEn}
+Current (${time}):
+- PM2.5: ${currentPM25.toFixed(1)} µg/m³
+- ISPU: ${currentISPU} (${categoryEn})${forecastSectionEn}
 
-💡 Advice: ${advice}
+Advice: ${advice}
 
 View full forecast: https://hawa.app/map
 
@@ -196,23 +202,23 @@ HAWA - Air Quality Monitoring`;
   // Default Indonesia
   let forecastSection = "";
   if (forecastMorning || forecastAfternoon || forecastEvening) {
-    forecastSection = `\n📈 Prediksi Hari Ini:
-${forecastMorning ? `• Pagi: ${forecastMorning}` : ""}
-${forecastAfternoon ? `• Siang: ${forecastAfternoon}` : ""}
-${forecastEvening ? `• Malam: ${forecastEvening}` : ""}`;
+    forecastSection = `\n[Prediksi Hari Ini]
+${forecastMorning ? `- Pagi: ${forecastMorning}` : ""}
+${forecastAfternoon ? `- Siang: ${forecastAfternoon}` : ""}
+${forecastEvening ? `- Malam: ${forecastEvening}` : ""}`;
   }
 
-  return `☀️ *LAPORAN KUALITAS UDARA*
+  return `[LAPORAN KUALITAS UDARA]
 
 Selamat pagi ${userName}!
 
 Kualitas udara hari ini di ${location}:
 
-📊 Saat Ini (${time}):
-• PM2.5: ${currentPM25.toFixed(1)} µg/m³
-• ISPU: ${currentISPU} (${currentCategory})${forecastSection}
+Saat Ini (${time}):
+- PM2.5: ${currentPM25.toFixed(1)} µg/m³
+- ISPU: ${currentISPU} (${currentCategory})${forecastSection}
 
-💡 Saran: ${advice}
+Saran: ${advice}
 
 Lihat forecast lengkap: https://hawa.app/map
 

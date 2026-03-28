@@ -140,6 +140,7 @@
     "button": "Start Now"
   },
   "demo": {
+    "badge": "Complete Features",
     "headline": "All in One Platform",
     "subtitle": "Click any tab to see detailed feature explanations",
     "subtitleFull": "From interactive map to educational games, HAWA has it all.",
@@ -266,6 +267,39 @@
           "female": "Female",
           "other": "Other"
         }
+      }
+    },
+    "notificationSettings": {
+      "title": "WhatsApp Notifications",
+      "description": "Get air quality alerts directly on WhatsApp",
+      "phoneMissing": "Phone number not set",
+      "phoneMissingDesc": "Please fill your phone number in your profile first to enable WhatsApp notifications.",
+      "enable": "Enable WhatsApp Notifications",
+      "sendTo": "Send to",
+      "autoAlerts": "Automatic Alerts",
+      "autoAlertsDesc": "Send notification when air quality exceeds limit",
+      "dailyReport": "Daily Report",
+      "enableDaily": "Enable daily report",
+      "time": "Time",
+      "days": "Days",
+      "save": "Save Settings",
+      "saving": "Saving...",
+      "success": "Notification settings saved successfully!",
+      "error": "Failed to save settings",
+      "thresholds": {
+        "50": "MODERATE (ISPU > 50)",
+        "100": "UNHEALTHY (ISPU > 100)",
+        "200": "VERY UNHEALTHY (ISPU > 200)",
+        "300": "HAZARDOUS (ISPU > 300)"
+      },
+      "daysMap": {
+        "MON": "Mon",
+        "TUE": "Tue",
+        "WED": "Wed",
+        "THU": "Thu",
+        "FRI": "Fri",
+        "SAT": "Sat",
+        "SUN": "Sun"
       }
     }
   },
